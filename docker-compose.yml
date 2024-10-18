@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  app_client:
+    container_name: app_client
+    image: app_client_image
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app_server
+  
+  app_server:
+    container_name: app_server
+    image: app_server_image
+    env_file:
+      - server/.env
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/:/src
+    ports:
+      - "16000:8000"
+    depends_on:
+      - app_db
+
+  app_db:
+    container_name: app_db
+    hostname: app_db
+    image: library/postgres:14.1
+    env_file:
+      - server/.env
+    volumes:
+      - app_pg_data:/var/lib/postgresql/data
+      - app_pg_data_backups:/backups
+      - ./server/scripts/postgres:/scripts
+    ports:
+      - "65432:5432"
+
+volumes:
+  app_pg_data:
+    driver: "local"
+  app_pg_data_backups:
+    driver: "local"
+
+networks:
+  default:
+    external: true
+    name: app_main

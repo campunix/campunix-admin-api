@@ -15,3 +15,6 @@ sentry-sdk==1.29.*
 sqlalchemy-searchable==2.0.0
 dependency-injector==4.42.*
 sqlmodel==0.0.22
+
+pyjwt
+passlib

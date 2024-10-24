@@ -8,7 +8,11 @@ class AuthServiceContract(ABC):
         pass
 
     @abstractmethod
-    def register_user(self, userRegister: UserRegister) -> UserOut:
+    async def register_user(self, userRegister: UserRegister) -> UserOut:
+        pass
+
+    @abstractmethod
+    def get_current_user(self, token: str) -> UserOut:
         pass
 
     @abstractmethod

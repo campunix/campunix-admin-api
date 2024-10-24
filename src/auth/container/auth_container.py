@@ -5,14 +5,15 @@ from src.auth.services.auth_service import AuthService
 from src.auth.services.auth_service_contract import AuthServiceContract
 from src.infrastructure.database import Database
 from src.core.config import settings
+from src.infrastructure.database2 import Database2
 
 
 class AuthContainer(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(
-        modules=["..routes.auth_routes"]
-    )
+    wiring_config = containers.WiringConfiguration(modules=["..routes.auth_routes"])
 
-    db_session = providers.Singleton(Database, db_url=str(settings.DATABASE_URL))
+    db = providers.Singleton(Database2)
 
-    auth_repository = providers.Factory(AuthRepository, session_factory=db_session)
+    db_session = providers.Resource(db.provided.get_session())
+
+    auth_repository = providers.Factory(AuthRepository, db_session=db_session)
     auth_service = providers.Factory(AuthService, repository=auth_repository)

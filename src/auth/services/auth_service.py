@@ -4,21 +4,21 @@ from src.auth.repositories.auth_repository_contract import AuthRepositoryContrac
 from src.auth.services.auth_service_contract import AuthServiceContract
 from src.auth.services.auth_service_core import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
-    UserOut,
     create_access_token,
     get_password_hash,
+    get_token_user,
     verify_password,
 )
-from src.core.entities.auth.user import UserBase
-from src.models.auth.user_models import Token, UserRegister
+from src.core.entities.auth.user import UserBase, user_entity_to_model
+from src.models.auth.user_models import Token, UserOut, UserRegister
 
 
 class AuthService(AuthServiceContract):
     def __init__(self, repository: AuthRepositoryContract):
         self.repository = repository
 
-    def authenticate_user(self, username: str, password: str) -> Token:
-        user = self.repository.get_user_by_username(username)
+    async def authenticate_user(self, username: str, password: str) -> Token:
+        user = await self.repository.get_user_by_username(username)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -41,7 +41,10 @@ class AuthService(AuthServiceContract):
 
         return Token(access_token=access_token, token_type="Bearer")
 
-    def register_user(self, userRegister: UserRegister) -> UserOut:
+    async def get_current_user(self, token: str) -> UserOut:
+        return user_entity_to_model(await self.repository.get_user_by_username(await get_token_user(token)))
+
+    async def register_user(self, userRegister: UserRegister) -> UserOut:
         email = userRegister.email
         if not email:
             raise HTTPException(
@@ -83,7 +86,7 @@ class AuthService(AuthServiceContract):
                 detail="Password did not matched!",
             )
 
-        user = self.repository.get_user_by_username(username)
+        user = await self.repository.get_user_by_username(username)
         if user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -91,14 +94,17 @@ class AuthService(AuthServiceContract):
             )
 
         hashed_password = get_password_hash(password)
-        new_user = UserBase(
-            username=username,
-            full_name=full_name,
-            email=email,
-            password_hash=hashed_password,
+
+        new_user = await self.repository.create_user(
+            UserBase(
+                username=username,
+                full_name=full_name,
+                email=email,
+                password_hash=hashed_password,
+            )
         )
 
-        return self.repository.create_user(new_user)
+        return user_entity_to_model(new_user)
 
     def logout_user(self, token: str):
         raise NotImplementedError("Logout functionality is not implemented.")

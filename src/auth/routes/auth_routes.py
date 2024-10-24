@@ -1,20 +1,21 @@
 from dependency_injector.wiring import inject, Provide
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.security import OAuth2PasswordRequestForm
 from src.auth.container.auth_container import AuthContainer
 from src.auth.services.auth_service_contract import AuthServiceContract
 from src.models.auth.user_models import Token, UserLogin, UserRegister
+from src.auth.services.auth_service_core import  oauth2_scheme
 
 router = APIRouter()
 
-
-@router.post("/login", response_model=Token, summary="Login to get access token")
+@router.post("/token", response_model=Token, summary="Login to get access token")
 @inject
 async def login(
-    login_data: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     auth_service: AuthServiceContract = Depends(Provide[AuthContainer.auth_service]),
 ):
-    token = auth_service.authenticate_user(login_data.username, login_data.password)
+    token = await auth_service.authenticate_user(form_data.username, form_data.password)
     return token
 
 
@@ -26,5 +27,14 @@ async def register(
     register_data: UserRegister,
     auth_service: AuthServiceContract = Depends(Provide[AuthContainer.auth_service]),
 ):
-    user = auth_service.register_user(register_data)
+    user = await auth_service.register_user(register_data)
     return user
+
+
+@router.get("/me")
+@inject
+async def current_user(
+    token: str = Depends(oauth2_scheme),
+    auth_service: AuthServiceContract = Depends(Provide[AuthContainer.auth_service]),
+):
+    return await auth_service.get_current_user(token)

@@ -18,3 +18,4 @@ sqlmodel==0.0.22
 
 pyjwt
 passlib
+python-multipart

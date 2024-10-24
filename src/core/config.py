@@ -25,7 +25,7 @@ class Config(BaseSettings):
 
 settings = Config()
 
-app_configs: dict[str, Any] = {"title": "Digital Library API"}
+app_configs: dict[str, Any] = {"title": "CAMPUNIX"}
 if settings.ENVIRONMENT.is_deployed:
     app_configs["root_path"] = f"/v{settings.APP_VERSION}"
 

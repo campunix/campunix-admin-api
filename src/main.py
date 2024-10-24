@@ -4,10 +4,12 @@ from starlette.middleware.cors import CORSMiddleware
 from src.infrastructure.container import Container
 from src.routers.books import router as book_router
 from src.core.config import app_configs, settings
+from src.auth.container import auth_container
+from src.auth.routes.auth_routes import router as auth_router
 
 app = FastAPI(**app_configs)
 
-container = Container()
+# container = Container()
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,4 +28,7 @@ async def index() -> dict[str, str]:
 async def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
 
-app.include_router(book_router, tags=["Book"])
+#app.include_router(book_router, tags=["Book"])
+
+auth_container = auth_container.AuthContainer()
+app.include_router(auth_router, tags=["auth"])

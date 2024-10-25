@@ -1,21 +1,21 @@
 from datetime import timedelta
 from fastapi import HTTPException, status
-from src.auth.repositories.auth_repository_contract import AuthRepositoryContract
 from src.auth.services.auth_service_contract import AuthServiceContract
-from src.auth.services.auth_service_core import (
+from src.auth.utils.oauth2_utils import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     create_access_token,
     get_password_hash,
     get_token_user,
     verify_password,
 )
+from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.entities.auth.user import UserBase, user_entity_to_model
 from src.models.auth.user_models import Token, UserOut, UserRegister
 
 
 class AuthService(AuthServiceContract):
-    def __init__(self, repository: AuthRepositoryContract):
-        self.repository = repository
+    def __init__(self, users_repository: UsersRepositoryContract):
+        self.repository = users_repository
 
     async def authenticate_user(self, username: str, password: str) -> Token:
         user = await self.repository.get_user_by_username(username)
@@ -42,7 +42,9 @@ class AuthService(AuthServiceContract):
         return Token(access_token=access_token, token_type="Bearer")
 
     async def get_current_user(self, token: str) -> UserOut:
-        return user_entity_to_model(await self.repository.get_user_by_username(await get_token_user(token)))
+        return user_entity_to_model(
+            await self.repository.get_user_by_username(await get_token_user(token))
+        )
 
     async def register_user(self, userRegister: UserRegister) -> UserOut:
         email = userRegister.email
@@ -95,13 +97,11 @@ class AuthService(AuthServiceContract):
 
         hashed_password = get_password_hash(password)
 
-        new_user = await self.repository.create_user(
-            UserBase(
-                username=username,
-                full_name=full_name,
-                email=email,
-                password_hash=hashed_password,
-            )
+        new_user = await self.repository.create_new_user(
+            username=username,
+            full_name=full_name,
+            email=email,
+            password_hash=hashed_password,
         )
 
         return user_entity_to_model(new_user)

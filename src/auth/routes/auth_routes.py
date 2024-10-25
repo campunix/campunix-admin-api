@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from src.auth.container.auth_container import AuthContainer
 from src.auth.services.auth_service_contract import AuthServiceContract
 from src.models.auth.user_models import Token, UserLogin, UserRegister
-from src.auth.services.auth_service_core import  oauth2_scheme
+from src.auth.utils.oauth2_utils import  oauth2_scheme
 
 router = APIRouter()
 

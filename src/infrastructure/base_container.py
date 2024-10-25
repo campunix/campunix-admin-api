@@ -4,4 +4,5 @@ from src.infrastructure.database2 import Database2
 
 
 class BaseContainer(containers.DeclarativeContainer):
-    pass
+    db = providers.Singleton(Database2)
+    db_session = providers.Resource(db.provided.get_session())

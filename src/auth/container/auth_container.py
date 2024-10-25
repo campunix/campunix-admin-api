@@ -12,8 +12,5 @@ from src.infrastructure.database2 import Database2
 class AuthContainer(BaseContainer):
     wiring_config = containers.WiringConfiguration(modules=["..routes.auth_routes"])
 
-    db = providers.Singleton(Database2)
-    db_session = providers.Resource(db.provided.get_session())
-
-    auth_repository = providers.Factory(AuthRepository, db_session=db_session)
+    auth_repository = providers.Factory(AuthRepository, db_session=BaseContainer.db_session)
     auth_service = providers.Factory(AuthService, repository=auth_repository)

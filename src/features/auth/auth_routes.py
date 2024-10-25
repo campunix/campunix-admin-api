@@ -2,10 +2,10 @@ from dependency_injector.wiring import inject, Provide
 
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
-from src.auth.container.auth_container import AuthContainer
-from src.auth.services.auth_service_contract import AuthServiceContract
+from src.features.auth.services.auth_service_contract import AuthServiceContract
+from src.features.auth.auth_container import AuthContainer
 from src.models.auth.user_models import Token, UserLogin, UserRegister
-from src.auth.utils.oauth2_utils import  oauth2_scheme
+from src.features.auth.utils.oauth2_utils import  oauth2_scheme
 
 router = APIRouter()
 

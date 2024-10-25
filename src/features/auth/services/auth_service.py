@@ -1,7 +1,7 @@
 from datetime import timedelta
 from fastapi import HTTPException, status
-from src.auth.services.auth_service_contract import AuthServiceContract
-from src.auth.utils.oauth2_utils import (
+from src.features.auth.services.auth_service_contract import AuthServiceContract
+from src.features.auth.utils.oauth2_utils import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     create_access_token,
     get_password_hash,

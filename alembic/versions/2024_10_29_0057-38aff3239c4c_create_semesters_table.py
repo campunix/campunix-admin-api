@@ -1,8 +1,8 @@
-"""create organizations table
+"""create semesters table
 
-Revision ID: d5ebd0f8435a
-Revises: 2e50b9f1ffa3
-Create Date: 2024-10-28 14:45:40.190801
+Revision ID: 38aff3239c4c
+Revises: 493a14ad9264
+Create Date: 2024-10-29 00:57:37.701016
 
 """
 from typing import Sequence, Union
@@ -12,17 +12,22 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd5ebd0f8435a'
-down_revision: Union[str, None] = '2e50b9f1ffa3'
+revision: str = '38aff3239c4c'
+down_revision: Union[str, None] = '493a14ad9264'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
     op.create_table(
-        "organizations",
+        "semesters",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("name", sa.String(length=255), nullable=False, unique=True),
+        sa.Column("year", sa.Integer, nullable=False),
+        sa.Column("number", sa.Integer, nullable=False),
+        sa.Column("department_id", sa.BigInteger, nullable=True),
+        sa.ForeignKeyConstraint(
+            ["department_id"], ["departments.id"], ondelete="CASCADE"
+        ),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
         ),
@@ -31,4 +36,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table("organizations")
+    op.drop_table("semesters")
+

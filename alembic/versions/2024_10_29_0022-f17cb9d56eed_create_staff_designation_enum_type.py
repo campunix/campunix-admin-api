@@ -1,8 +1,8 @@
 """create staff_designation enum type
 
-Revision ID: 64de9738ce39
-Revises: fe52becd5da1
-Create Date: 2024-10-28 17:33:55.809943
+Revision ID: f17cb9d56eed
+Revises: ed696a6b1f2c
+Create Date: 2024-10-29 00:22:34.900232
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '64de9738ce39'
-down_revision: Union[str, None] = 'fe52becd5da1'
+revision: str = 'f17cb9d56eed'
+down_revision: Union[str, None] = 'ed696a6b1f2c'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

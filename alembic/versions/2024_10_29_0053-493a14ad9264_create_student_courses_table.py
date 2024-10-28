@@ -1,8 +1,8 @@
-"""create courses table
+"""create student_courses table
 
-Revision ID: 452195b50ff0
-Revises: 003e724152eb
-Create Date: 2024-10-28 16:12:17.203133
+Revision ID: 493a14ad9264
+Revises: 2c5d2ebfea77
+Create Date: 2024-10-29 00:53:59.833519
 
 """
 from typing import Sequence, Union
@@ -12,20 +12,20 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '452195b50ff0'
-down_revision: Union[str, None] = '003e724152eb'
+revision: str = '493a14ad9264'
+down_revision: Union[str, None] = '2c5d2ebfea77'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
     op.create_table(
-        "courses",
+        "student_courses",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("name", sa.String(length=255), nullable=False, unique=True),
-        sa.Column("department_id", sa.BigInteger, nullable=False),
-        sa.Column("type", sa.Enum(name="course_type"), nullable=False),
-        sa.ForeignKeyConstraint(["department_id"], ["departemnts.id"], ondelete="CASCADE"),
+        sa.Column("student_id", sa.BigInteger, nullable=False),
+        sa.Column("course_id", sa.BigInteger, nullable=False),
+        sa.ForeignKeyConstraint(["student_id"], ["students.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(["course_id"], ["courses.id"], ondelete="CASCADE"),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
         ),
@@ -34,4 +34,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table("courses")
+    op.drop_table("student_courses")

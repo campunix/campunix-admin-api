@@ -1,8 +1,8 @@
 """create course_type enum type
 
-Revision ID: 003e724152eb
-Revises: ea79a89610c6
-Create Date: 2024-10-28 15:57:50.238109
+Revision ID: 955f70d7f2a6
+Revises: e5940d9f8529
+Create Date: 2024-10-29 00:21:24.824673
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '003e724152eb'
-down_revision: Union[str, None] = 'ea79a89610c6'
+revision: str = '955f70d7f2a6'
+down_revision: Union[str, None] = 'e5940d9f8529'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

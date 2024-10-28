@@ -1,8 +1,8 @@
 """create room_type enum type
 
-Revision ID: 8cd574be581c
-Revises: 452195b50ff0
-Create Date: 2024-10-28 16:20:02.969834
+Revision ID: c92c40703264
+Revises: 955f70d7f2a6
+Create Date: 2024-10-29 00:21:36.186927
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '8cd574be581c'
-down_revision: Union[str, None] = '452195b50ff0'
+revision: str = 'c92c40703264'
+down_revision: Union[str, None] = '955f70d7f2a6'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

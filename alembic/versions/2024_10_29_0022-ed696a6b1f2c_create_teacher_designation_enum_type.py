@@ -1,11 +1,10 @@
 """create teacher_designation enum type
 
-Revision ID: 6272a9fe6937
-Revises: 35a43ddc85aa
-Create Date: 2024-10-28 17:00:14.001725
+Revision ID: ed696a6b1f2c
+Revises: 1826137946ce
+Create Date: 2024-10-29 00:22:24.620475
 
 """
-
 from typing import Sequence, Union
 
 from alembic import op
@@ -13,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "6272a9fe6937"
-down_revision: Union[str, None] = "35a43ddc85aa"
+revision: str = 'ed696a6b1f2c'
+down_revision: Union[str, None] = '1826137946ce'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

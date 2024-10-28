@@ -25,12 +25,24 @@ async def save(
     return syllabus
 
 
-@router.get("/get")
+@router.get("/getByDeptID", summary="Get department wise syllabus")
 @inject
-async def get(
+async def getByDepartmentID(
         token: str = Depends(oauth2_scheme),
+        department_id: int = None,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    course = await syllabus_service.getByDepartmentID(department_id)
+    return course
+
+
+@router.get("/getByCourseCode", summary="Get course wise syllabus")
+@inject
+async def getByDeptIDAndCourseCode(
+        token: str = Depends(oauth2_scheme),
+        department_id: int = None,
         course_code: str = None,
         syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
 ):
-    course = await syllabus_service.get(course_code)
+    course = await syllabus_service.getByDeptIDAndCourseCode(department_id, course_code)
     return course

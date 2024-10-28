@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from src.models.syllabus.syllabus_models import Course
+from src.models.syllabus.syllabus_models import SyllabusOut
 
 
 class SyllabusRepositoryContract(ABC):
@@ -11,5 +11,9 @@ class SyllabusRepositoryContract(ABC):
         pass
 
     @abstractmethod
-    async def get(self, course_code) -> Course:
+    async def getByDeptID(self, department_id) -> SyllabusOut:
+        pass
+
+    @abstractmethod
+    async def getByDeptIDAndCourseCode(self, department_id, course_code) -> SyllabusOut:
         pass

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from pydantic import BaseModel
 
 
@@ -51,7 +51,7 @@ class Course(BaseModel):
     HardwareSoftwareRequirements: Optional[HardwareSoftwareRequirements] = None
 
 
-class Syllabus(BaseModel):
+class SyllabusOut(BaseModel):
     Department: str
     Semester: str
-    Courses: List[Course]
+    Courses: dict[str, Any]

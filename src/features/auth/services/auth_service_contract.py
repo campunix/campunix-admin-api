@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict
 from src.models.auth.user_models import Token, UserOut, UserRegister
 
 
@@ -17,4 +18,10 @@ class AuthServiceContract(ABC):
 
     @abstractmethod
     def logout_user(self, token: str):
+        pass
+
+    @abstractmethod
+    async def get_all_users(
+        self, page: int = 1, page_size: int = 10, paginate: bool = False
+    ) -> Dict[str, Any]:
         pass

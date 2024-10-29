@@ -24,7 +24,7 @@ def upgrade() -> None:
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column("name", sa.String(length=255), nullable=False, unique=True),
         sa.Column("department_id", sa.BigInteger, nullable=True),
-        sa.Column("type", postgresql.ENUM(name='room_type', create_type=False), nullable=False),
+        sa.Column("room_type", postgresql.ENUM(name='room_type', create_type=False), nullable=False),
         sa.ForeignKeyConstraint(
             ["department_id"], ["departments.id"], ondelete="CASCADE"
         ),

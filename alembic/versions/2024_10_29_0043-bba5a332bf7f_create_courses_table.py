@@ -24,7 +24,7 @@ def upgrade() -> None:
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column("name", sa.String(length=255), nullable=False, unique=True),
         sa.Column("department_id", sa.BigInteger, nullable=False),
-        sa.Column("type", postgresql.ENUM(name='course_type', create_type=False), nullable=False),
+        sa.Column("course_type", postgresql.ENUM(name='course_type', create_type=False), nullable=False),
         sa.ForeignKeyConstraint(["department_id"], ["departments.id"], ondelete="CASCADE"),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False

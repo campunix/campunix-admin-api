@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = 'bba5a332bf7f'
@@ -24,7 +24,7 @@ def upgrade() -> None:
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column("name", sa.String(length=255), nullable=False, unique=True),
         sa.Column("department_id", sa.BigInteger, nullable=False),
-        sa.Column("type", sa.Enum(name="course_type"), nullable=False),
+        sa.Column("type", postgresql.ENUM(name='course_type', create_type=False), nullable=False),
         sa.ForeignKeyConstraint(["department_id"], ["departments.id"], ondelete="CASCADE"),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False

@@ -20,9 +20,9 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute(
-        "CREATE TYPE teachers_designation AS ENUM ('PROFESSOR', 'ASSOCIATE_PROFESSOR', 'ASSISTANT_PROFESSOR', 'LECTURER');"
+        "CREATE TYPE teacher_designation AS ENUM ('PROFESSOR', 'ASSOCIATE_PROFESSOR', 'ASSISTANT_PROFESSOR', 'LECTURER');"
     )
 
 
 def downgrade() -> None:
-    op.execute("DROP TYPE teachers_designation;")
+    op.execute("DROP TYPE teacher_designation;")

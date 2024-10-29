@@ -11,7 +11,7 @@ from src.features.auth.utils.oauth2_utils import (
 )
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.entities.user import UserBase, user_entity_to_model
-from src.models.auth.user_models import Token, UserOut, UserRegister
+from src.models.user_models import Token, UserOut, UserRegister
 
 
 class AuthService(AuthServiceContract):

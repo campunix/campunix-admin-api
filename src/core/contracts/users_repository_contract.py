@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.core.entities.auth.user import User, UserBase
+from src.core.entities.user import User, UserBase
 
 
 class UsersRepositoryContract(ABC):

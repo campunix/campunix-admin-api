@@ -2,7 +2,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
-from src.core.entities.auth.user import User, UserBase
+from src.core.entities.user import User, UserBase
 
 
 class UsersRepository(UsersRepositoryContract):

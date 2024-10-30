@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
+from src.core.contracts.base_repository_contract import BaseRepositoryContract
 from src.core.entities.user import User, UserBase
 
 
-class UsersRepositoryContract(ABC):
+class UsersRepositoryContract(BaseRepositoryContract):
 
     @abstractmethod
     async def get_user_by_username(self, username: str) -> Optional[User]:

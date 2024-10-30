@@ -4,11 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, or_
 from math import ceil
 
+from src.core.contracts.base_repository_contract import BaseRepositoryContract
+
 # Define a type variable for generic use in BaseRepository
 T = TypeVar("T", bound=SQLModel)
 
 
-class BaseRepository(Generic[T]):
+class BaseRepository(Generic[T], BaseRepositoryContract):
     def __init__(self, db_session: AsyncSession, model: Type[T]):
         self.db_session = db_session
         self.model = model

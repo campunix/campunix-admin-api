@@ -9,8 +9,6 @@ from src.features.syllabus.syllabus_routes import router as syllabus_router
 
 app = FastAPI(**app_configs)
 
-# container = Container()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,

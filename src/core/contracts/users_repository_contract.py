@@ -1,12 +1,24 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional
 
-from src.core.entities.auth.user import User, UserBase
+from src.core.contracts.base_repository_contract import BaseRepositoryContract
+from src.core.entities.user import User, UserBase
 
 
-class UsersRepositoryContract(ABC):
+class UsersRepositoryContract(BaseRepositoryContract):
 
     @abstractmethod
-    async def get_user_by_username(self, username: str) -> User:
+    async def get_user_by_username(self, username: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    async def get_user_by_email(self, email: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    async def get_user_by_email_or_username(
+        self, email_or_username: str
+    ) -> Optional[User]:
         pass
 
     @abstractmethod
@@ -21,4 +33,13 @@ class UsersRepositoryContract(ABC):
         email: str,
         password_hash: str,
     ) -> User:
+        pass
+
+    @abstractmethod
+    async def get_all_users(
+        self,
+        page: int = 1,
+        page_size: int = 10,
+        paginate: bool = False,
+    ) -> Dict[str, Any]:
         pass

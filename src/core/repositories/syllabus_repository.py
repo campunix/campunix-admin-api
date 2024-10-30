@@ -9,6 +9,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
 from src.core.entities.syllabus.syllabus import Syllabus, SyllabusBase
 from src.models.syllabus.syllabus_models import SyllabusOut
+from sqlalchemy import cast, String
 
 
 class SyllabusRepository(SyllabusRepositoryContract):
@@ -40,3 +41,8 @@ class SyllabusRepository(SyllabusRepositoryContract):
         await self.db_session.commit()
         await self.db_session.refresh(new_syllabus)
         return new_syllabus
+    
+    async def getSyllabusByJsonFilter(self):
+        stmt = select(Syllabus).where(cast(Syllabus.syllabus['semester'], String) == '2')
+        result = await self.db_session.exec(stmt)
+        print(result.fetchall())

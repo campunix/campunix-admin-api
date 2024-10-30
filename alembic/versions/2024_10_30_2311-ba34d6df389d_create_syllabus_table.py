@@ -1,20 +1,20 @@
-"""Create syllabuses table
+"""create syllabus table
 
-Revision ID: 782a85dcb855
-Revises: d47a1f328b68
-Create Date: 2024-10-28 00:54:22.576838
+Revision ID: ba34d6df389d
+Revises: 38aff3239c4c
+Create Date: 2024-10-30 23:11:07.569695
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy import JSON
+
 from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
-revision: str = '782a85dcb855'
-down_revision: Union[str, None] = 'd47a1f328b68'
+revision: str = 'ba34d6df389d'
+down_revision: Union[str, None] = '38aff3239c4c'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

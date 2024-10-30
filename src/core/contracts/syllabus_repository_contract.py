@@ -17,3 +17,7 @@ class SyllabusRepositoryContract(ABC):
     @abstractmethod
     async def getByDeptIDAndCourseCode(self, department_id, course_code) -> SyllabusOut:
         pass
+
+    @abstractmethod
+    async def getSyllabusByJsonFilter(self):
+        pass

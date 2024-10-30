@@ -19,3 +19,7 @@ class SyllabusServiceContract(ABC):
     @abstractmethod
     def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> SyllabusOut:
         pass
+
+    @abstractmethod
+    def getSyllabus(self):
+        pass

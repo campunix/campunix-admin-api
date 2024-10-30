@@ -31,3 +31,7 @@ class SyllabusService(SyllabusServiceContract):
 
     async def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> SyllabusOut:
         return await self.repository.getByDeptIDAndCourseCode(department_id, course_code)
+    
+    async def getSyllabus(self):
+        await self.repository.getSyllabusByJsonFilter()
+

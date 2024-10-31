@@ -39,7 +39,6 @@ async def getByDepartmentID(
 @router.get("/getByCourseCode", summary="Get course wise syllabus")
 @inject
 async def getByDeptIDAndCourseCode(
-        token: str = Depends(oauth2_scheme),
         department_id: int = None,
         course_code: str = None,
         syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])

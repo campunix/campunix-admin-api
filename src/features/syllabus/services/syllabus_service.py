@@ -7,7 +7,7 @@ from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryCo
 from src.core.entities.syllabus.syllabus import Syllabus
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_utils.xml_utils import parse_syllabus
-from src.models.syllabus.syllabus_models import SyllabusOut
+from src.models.syllabus.syllabus_models import Course
 
 
 class SyllabusService(SyllabusServiceContract):
@@ -26,10 +26,10 @@ class SyllabusService(SyllabusServiceContract):
         except ET.ParseError:
             raise HTTPException(status_code=400, detail="Invalid XML format.")
 
-    async def getByDepartmentID(self, department_id: int) -> SyllabusOut:
-        return await self.repository.getByDepartmentID(department_id)
+    async def getByDepartmentID(self, department_id: int) -> Course:
+        return await self.repository.getByDeptID(department_id)
 
-    async def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> SyllabusOut:
+    async def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> Course:
         return await self.repository.getByDeptIDAndCourseCode(department_id, course_code)
     
     async def getSyllabus(self):

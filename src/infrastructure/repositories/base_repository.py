@@ -73,7 +73,7 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         await self.db_session.refresh(obj)
         return obj
 
-    async def update(self, id: int, obj_data: dict) -> Optional[T]:
+    async def update(self, id: int, obj_data: T) -> Optional[T]:
         statement = select(self.model).where(self.model.id == id)
         result = await self.db_session.execute(statement)
         obj = result.scalars().one_or_none()
@@ -86,7 +86,7 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
 
         return obj
 
-    async def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> bool:
         statement = select(self.model).where(self.model.id == id)
         result = await self.db_session.execute(statement)
         obj = result.scalars().one_or_none()
@@ -94,3 +94,6 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         if obj:
             await self.db_session.delete(obj)
             await self.db_session.commit()
+            return True
+
+        return False

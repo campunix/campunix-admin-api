@@ -22,8 +22,8 @@ class BaseRepositoryContract(ABC):
     async def create(self, obj: T) -> T:
         pass
 
-    async def update(self, id: int, obj_data: dict) -> Optional[T]:
+    async def update(self, id: int, obj_data: T) -> Optional[T]:
         pass
 
-    async def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> bool:
         pass

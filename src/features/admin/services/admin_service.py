@@ -4,7 +4,7 @@ from src.core.contracts.admin_groups_repository_contract import (
 from src.core.contracts.organizations_repository_contract import (
     OrganizationsRepositoryContract,
 )
-from src.features.admin.admin_service_contract import AdminServiceContract
+from src.features.admin.services.admin_service_contract import AdminServiceContract
 
 
 class AdminService(AdminServiceContract):

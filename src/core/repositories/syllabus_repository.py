@@ -21,9 +21,15 @@ class SyllabusRepository(SyllabusRepositoryContract):
 
     async def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> Course:
         statement = text("""
-                    SELECT course
-                    FROM syllabuses, jsonb_array_elements(syllabus->'courses') AS course
-                    WHERE syllabuses.department_id = :department_id AND course->>'course_code' = :course_code
+                        SELECT jsonb_build_object(
+                            'departmentID', syllabus->'departmentID',
+                            'semester', syllabus->'semester',
+                            'departmentCode', syllabus->'departmentCode',
+                            'departmentName', syllabus->'departmentName',
+                            'course', course
+                        ) AS merged_data
+                        FROM syllabuses, jsonb_array_elements(syllabus->'courses') AS course
+                        WHERE syllabuses.department_id = :department_id AND course->>'course_code' = :course_code
                 """)
 
         result = await self.db_session.exec(statement, params={'department_id': department_id, 'course_code': course_code})

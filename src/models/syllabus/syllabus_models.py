@@ -28,7 +28,7 @@ class Department(SQLModel):
     departmentCode: str
     departmentName: str
 
-class Syllabus(SQLModel):
+class SyllabusOut(SQLModel):
     courses: List[Course]
     semester: int
     department: Department

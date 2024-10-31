@@ -43,15 +43,6 @@ async def getByDeptIDAndCourseCode(
         course_code: str = None,
         syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
 ):
-    course = await syllabus_service.getByDeptIDAndCourseCode(department_id, course_code)
-    return course
-
-@router.get("/getSyllabus", summary="Get syllabus")
-@inject
-async def getSyllabus(
-        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
-):
-    print("start")
-    await syllabus_service.getSyllabus()
-    return 'hello'
+    syllabus = await syllabus_service.getByDeptIDAndCourseCode(department_id, course_code)
+    return syllabus
 

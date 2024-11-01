@@ -1,7 +1,7 @@
 from typing import Generic, Type, TypeVar, Optional, List, Dict, Any
 from sqlmodel import SQLModel, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, update
 from math import ceil
 
 from src.core.contracts.base_repository_contract import BaseRepositoryContract
@@ -21,11 +21,11 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         return result.scalars().one_or_none()
 
     async def get_all(
-        self,
-        page: int = 1,
-        page_size: int = 10,
-        paginate: bool = False,
-        filters: Optional[List[Any]] = None,  # Adjusted type to Any
+            self,
+            page: int = 1,
+            page_size: int = 10,
+            paginate: bool = False,
+            filters: Optional[List[Any]] = None,  # Adjusted type to Any
     ) -> Dict[str, Any]:
         # Start with base query
         statement = select(self.model)
@@ -74,17 +74,19 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         return obj
 
     async def update(self, id: int, obj_data: T) -> Optional[T]:
-        statement = select(self.model).where(self.model.id == id)
-        result = await self.db_session.execute(statement)
-        obj = result.scalars().one_or_none()
+        stmt = (
+            update(self.model)
+            .where(self.model.id == id)
+            .values(**obj_data.model_dump(exclude_unset=True))
+            .execution_options(synchronize_session="fetch")
+            .returning(self.model)
+        )
 
-        if obj:
-            for key, value in obj_data.items():
-                setattr(obj, key, value)
-            await self.db_session.commit()
-            await self.db_session.refresh(obj)
+        result = await self.db_session.execute(stmt)
+        updated_record = result.scalar_one_or_none()
+        await self.db_session.commit()
 
-        return obj
+        return updated_record
 
     async def delete(self, id: int) -> bool:
         statement = select(self.model).where(self.model.id == id)

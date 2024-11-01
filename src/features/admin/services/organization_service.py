@@ -21,7 +21,7 @@ class OrganizationService(OrganizationServiceContract):
         return await self.organizations_repository.get_all()
 
     async def update_organization(self, id: int, organization: OrganizationIn) -> Optional[OrganizationOut]:
-        return await self.organizations_repository.update(id, Organization(name=organization.name))
+        return await self.organizations_repository.update(id, Organization(id = id, name=organization.name))
 
     async def delete_organization(self, id: int) -> bool:
         return await self.organizations_repository.delete(id)

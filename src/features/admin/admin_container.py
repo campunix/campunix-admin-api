@@ -11,7 +11,13 @@ from src.infrastructure.base_container import BaseContainer
 
 
 class AdminContainer(BaseContainer):
-    wiring_config = containers.WiringConfiguration(modules=[".routes.admin_routes", ".routes.organization_routes"])
+    wiring_config = containers.WiringConfiguration(
+        modules=[
+            ".routes.admin_routes",
+            ".routes.organization_routes",
+            ".routes.department_routes"
+        ]
+    )
 
     organizations_repository = providers.Factory(
         OrganizationsRepository, db_session=BaseContainer.db_session
@@ -22,7 +28,7 @@ class AdminContainer(BaseContainer):
     )
 
     departments_repository = providers.Factory(
-        DepartmentsRepository, db_session = BaseContainer.db_session
+        DepartmentsRepository, db_session=BaseContainer.db_session
     )
 
     admin_service = providers.Factory(

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.organization_service_contract import OrganizationServiceContract
-from src.models.organization_models import OrganizationIn
+from src.models.organization import OrganizationIn
 
 organization_router = APIRouter(prefix="/organizations")
 

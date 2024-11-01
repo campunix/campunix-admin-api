@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel
 
 from src.core.entities.base_entity import BaseEntity
-from src.models.user_models import UserOut
+from src.models.user import UserOut
 
 
 class UserBase(SQLModel):

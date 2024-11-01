@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from src.models.organization_models import OrganizationIn, OrganizationOut
+from src.models.organization import OrganizationIn, OrganizationOut
 
 
 class OrganizationServiceContract(ABC):

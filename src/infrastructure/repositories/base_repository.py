@@ -25,7 +25,7 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             page: int = 1,
             page_size: int = 10,
             paginate: bool = False,
-            filters: Optional[List[Any]] = None,  # Adjusted type to Any
+            filters: Optional[List[Any]] = None,
     ) -> Dict[str, Any]:
         # Start with base query
         statement = select(self.model)

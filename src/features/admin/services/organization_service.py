@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 from src.core.contracts.organizations_repository_contract import OrganizationsRepositoryContract
 from src.core.entities.organization import Organization, OrganizationBase
 from src.features.admin.services.organization_service_contract import OrganizationServiceContract
-from src.models.organization_models import OrganizationIn, OrganizationOut
+from src.models.organization import OrganizationIn, OrganizationOut
 
 
 class OrganizationService(OrganizationServiceContract):

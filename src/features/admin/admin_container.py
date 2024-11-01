@@ -1,7 +1,11 @@
 from dependency_injector import containers, providers
+
+from src.core.contracts.departments_repository_contract import DepartmentsRepositoryContract
 from src.core.repositories.admin_groups_repository import AdminGroupsRepository
+from src.core.repositories.departments_repository import DepartmentsRepository
 from src.core.repositories.organizations_repository import OrganizationsRepository
 from src.features.admin.services.admin_service import AdminService
+from src.features.admin.services.department_service import DepartmentService
 from src.features.admin.services.organization_service import OrganizationService
 from src.infrastructure.base_container import BaseContainer
 
@@ -17,6 +21,10 @@ class AdminContainer(BaseContainer):
         AdminGroupsRepository, db_session=BaseContainer.db_session
     )
 
+    departments_repository = providers.Factory(
+        DepartmentsRepository, db_session = BaseContainer.db_session
+    )
+
     admin_service = providers.Factory(
         AdminService,
         organizations_repository=organizations_repository,
@@ -26,4 +34,9 @@ class AdminContainer(BaseContainer):
     organization_service = providers.Factory(
         OrganizationService,
         organizations_repository=organizations_repository,
+    )
+
+    department_service = providers.Factory(
+        DepartmentService,
+        departments_repository=departments_repository,
     )

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-from src.models.user_models import Token, UserOut, UserRegister
+from src.models.user import Token, UserOut, UserRegister
 
 
 class AuthServiceContract(ABC):

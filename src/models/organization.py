@@ -7,3 +7,5 @@ class OrganizationOut(BaseModel):
     
 class OrganizationIn(BaseModel):
     name: str
+    admin_group: int
+    created_by: int

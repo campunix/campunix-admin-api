@@ -32,7 +32,8 @@ class SyllabusRepository(SyllabusRepositoryContract):
                         WHERE syllabuses.department_id = :department_id AND course->>'course_code' = :course_code
                 """)
 
-        result = await self.db_session.exec(statement, params={'department_id': department_id, 'course_code': course_code})
+        result = await self.db_session.exec(statement,
+                                            params={'department_id': department_id, 'course_code': course_code})
         syllabusOut = result.scalars().one_or_none()
         return syllabusOut
 
@@ -45,3 +46,47 @@ class SyllabusRepository(SyllabusRepositoryContract):
         await self.db_session.commit()
         await self.db_session.refresh(new_syllabus)
         return new_syllabus
+
+    async def updateSyllabus(self, department_id: int, course_code: str, course_type: str) -> SyllabusOut:
+        statement = text("""
+                            UPDATE syllabuses
+                                SET syllabus = jsonb_set(
+                                    syllabus, '{courses}', (SELECT jsonb_agg(
+                                        CASE
+                                            WHEN course->>'course_code' = (:course_code)::text THEN
+                                                course || jsonb_build_object('type', (:type)::text)
+                                            ELSE
+                                                course
+                                        END
+                                    ) FROM jsonb_array_elements(syllabus->'courses') AS course)
+                                )
+                            WHERE department_id = :department_id
+                            AND syllabus->'courses' @> jsonb_build_array(jsonb_build_object('course_code', (:course_code)::text))
+                        """)
+
+        await self.db_session.exec(statement,
+                             params={
+                                 'department_id': department_id,
+                                 'course_code': course_code,
+                                 'type': course_type
+                             })
+
+        statement = text("""
+                                SELECT jsonb_build_object(
+                                    'departmentID', syllabus->'departmentID',
+                                    'semester', syllabus->'semester',
+                                    'departmentCode', syllabus->'departmentCode',
+                                    'departmentName', syllabus->'departmentName',
+                                    'course', course
+                                ) AS merged_data
+                                FROM syllabuses, jsonb_array_elements(syllabus->'courses') AS course
+                                WHERE syllabuses.department_id = :department_id AND course->>'course_code' = :course_code
+                        """)
+
+        result = await self.db_session.exec(statement,
+                                            params={
+                                                'department_id': department_id,
+                                                'course_code': course_code
+                                            })
+        syllabusOut = result.scalars().one_or_none()
+        return syllabusOut

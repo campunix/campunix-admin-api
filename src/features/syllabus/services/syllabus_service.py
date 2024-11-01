@@ -33,3 +33,5 @@ class SyllabusService(SyllabusServiceContract):
     async def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> Optional[SyllabusOut]:
         return await self.repository.getByDeptIDAndCourseCode(department_id, course_code)
 
+    async def updateSyllabus(self, department_id: int, course_code: str, course_type: str) -> Optional[SyllabusOut]:
+        return await self.repository.updateSyllabus(department_id, course_code, course_type)

@@ -20,3 +20,7 @@ class SyllabusServiceContract(ABC):
     @abstractmethod
     def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> Optional[SyllabusOut]:
         pass
+
+    @abstractmethod
+    async def updateSyllabus(self, department_id: int, course_code: str, course_title: str) -> Optional[SyllabusOut]:
+        pass

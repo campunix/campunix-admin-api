@@ -46,3 +46,22 @@ async def getByDeptIDAndCourseCode(
     syllabus = await syllabus_service.getByDeptIDAndCourseCode(department_id, course_code)
     return syllabus
 
+
+@router.put("/updateSyllabus/{department_id}/{course_code}", summary="Update syllabus details")
+@inject
+async def updateSyllabus(
+        department_id: int,
+        course_code: str,
+        course_type: str,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    updated_syllabus = await syllabus_service.updateSyllabus(
+        department_id=department_id,
+        course_code=course_code,
+        course_type=course_type
+    )
+
+    if not updated_syllabus:
+        raise HTTPException(status_code=404, detail="Syllabus not found")
+
+    return updated_syllabus

@@ -16,9 +16,7 @@ class CourseBase(SQLModel):
         nullable=False,
     )
     course_type: CourseType = Field(
-        default=None,
-        sa_column=Column(Enum(CourseType)),
-        nullable=False,
+        sa_column=Column(Enum(CourseType, name="course_type", create_type=False))
     )
 
 

@@ -16,9 +16,7 @@ class RoomBase(SQLModel):
         nullable=False,
     )
     room_type: RoomType = Field(
-        default=None,
-        sa_column=Column(Enum(RoomType)),
-        nullable=False,
+        sa_column=Column(Enum(RoomType, name="room_type", create_type=False))
     )
 
 

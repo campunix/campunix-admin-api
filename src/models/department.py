@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class DepartmentOut(BaseModel):
@@ -8,3 +8,10 @@ class DepartmentOut(BaseModel):
 
 class DepartmentIn(BaseModel):
     name: str
+    organization_id: int
+    created_by: int
+
+
+class DepartmentCreate(BaseModel):
+    name: str
+    organization_id: int

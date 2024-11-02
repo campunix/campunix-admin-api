@@ -5,8 +5,6 @@ from src.core.repositories.departments_repository import DepartmentsRepository
 from src.core.repositories.organizations_repository import OrganizationsRepository
 from src.core.repositories.user_organizations_repository import UserOrganizationsRepository
 from src.core.repositories.users_repository import UsersRepository
-from src.features.admin.services.department_service import DepartmentService
-from src.features.admin.services.organization_service import OrganizationService
 from src.infrastructure.database2 import Database2
 
 
@@ -31,13 +29,3 @@ class BaseContainer(containers.DeclarativeContainer):
     )
 
     users_repository = providers.Factory(UsersRepository, db_session=db_session)
-
-    organization_service = providers.Factory(
-        OrganizationService,
-        organizations_repository=organizations_repository,
-    )
-
-    department_service = providers.Factory(
-        DepartmentService,
-        departments_repository=departments_repository,
-    )

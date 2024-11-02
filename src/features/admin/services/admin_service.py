@@ -38,7 +38,7 @@ class AdminService(AdminServiceContract):
             AdminGroup(name=name, organization_id=organization_id, created_by=user_id))
 
     async def initiate_organization_for_current_user(self, token: str, organization_id: int):
-        user = await  self.auth_service.get_current_user(token)
+        user = await self.auth_service.get_current_user(token)
 
         if not user:
             NotFoundException()

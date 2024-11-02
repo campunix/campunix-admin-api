@@ -24,7 +24,7 @@ class AdminService(AdminServiceContract):
         self.admin_groups_repository = admin_groups_repository
         self.auth_service = auth_service
 
-    async def _map_user_to_organization(self, organization_id: int, user_id: int, role: UserRole):
+    async def map_user_to_organization(self, organization_id: int, user_id: int, role: UserRole):
         await self.user_organizations_repository.create(
             UserOrganization(
                 user_id=user_id,
@@ -43,7 +43,7 @@ class AdminService(AdminServiceContract):
         if not user:
             NotFoundException()
 
-        await self._map_user_to_organization(
+        await self.map_user_to_organization(
             user_id=user.id,
             organization_id=organization_id,
             role=UserRole.ADMIN

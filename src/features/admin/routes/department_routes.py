@@ -13,6 +13,7 @@ async def create_department(
         department: DepartmentIn,
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
 ):
+    
     return await department_service.create_department(department)
 
 

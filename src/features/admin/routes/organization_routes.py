@@ -1,11 +1,14 @@
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 
+from src.core.contracts.user_organizations_repository_contract import UserOrganizationsRepositoryContract
+from src.core.entities.enums.user_role import UserRole
 from src.core.exceptions.validation_exception import ValidationException
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.admin_service_contract import AdminServiceContract
 from src.features.admin.services.organization_service_contract import OrganizationServiceContract
 from src.models.organization import OrganizationIn
+from src.models.user_organization import UserOrganizationIn
 from src.utils.oauth2_utils import oauth2_scheme
 
 organization_router = APIRouter(prefix="/organizations")
@@ -62,3 +65,19 @@ async def delete_organization(
 ):
     organization = await organization_service.delete_organization(id)
     return organization
+
+
+@organization_router.post("/{id}/link-user")
+async def link_user(
+        id: int,
+        user_organization: UserOrganizationIn,
+        admin_service: AdminServiceContract = Depends(Provide[AdminContainer.admin_service])
+):
+    await admin_service.map_user_to_organization(
+        organization_id=id,
+        user_id=user_organization.user_id,
+        role=UserRole.from_str(user_organization.role),
+    )
+
+    # todo: response model
+    return "linked"

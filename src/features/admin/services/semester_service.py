@@ -18,10 +18,16 @@ class SemesterService(SemesterServiceContract):
             Semester(
                 year=semester.year,
                 number=semester.number,
+                disabled=semester.disabled,
                 department_id=semester.department_id
             )
         )
-        return SemesterOut(id=new_semester.id, year=new_semester.year, number=new_semester.number)
+        return SemesterOut(
+            id=new_semester.id,
+            year=new_semester.year,
+            number=new_semester.number,
+            disabled=new_semester.disabled,
+        )
 
     async def get_semesters(self, page: int = 1, page_size: int = 10, paginate: bool = False):
         return await self.semester_repository.get_all()
@@ -32,6 +38,7 @@ class SemesterService(SemesterServiceContract):
             Semester(
                 year=semester.year,
                 number=semester.number,
+                disabled=semester.disabled,
                 department_id=semester.department_id
             )
         )

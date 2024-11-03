@@ -4,6 +4,7 @@ from src.features.admin.services.admin_service import AdminService
 from src.features.admin.services.course_service import CourseService
 from src.features.admin.services.department_service import DepartmentService
 from src.features.admin.services.organization_service import OrganizationService
+from src.features.admin.services.room_service import RoomService
 from src.features.admin.services.semester_service import SemesterService
 from src.features.auth.services.auth_service import AuthService
 from src.infrastructure.base_container import BaseContainer
@@ -42,4 +43,9 @@ class AdminContainer(BaseContainer):
     course_service = providers.Factory(
         CourseService,
         course_repository=BaseContainer.courses_repository
+    )
+
+    room_service = providers.Factory(
+        RoomService,
+        rooms_repository=BaseContainer.rooms_repository
     )

@@ -18,12 +18,13 @@ class DepartmentService(DepartmentServiceContract):
         new_department = await self.departments_repository.create(
             Department(
                 name=department.name,
+                code=department.code,
                 organization_id=department.organization_id,
                 created_by=department.created_by,
             )
         )
 
-        return DepartmentOut(id=new_department.id, name=new_department.name)
+        return DepartmentOut(id=new_department.id, name=new_department.name, code=new_department.code)
 
     async def get_departments(self, page: int = 1, page_size: int = 10, paginate: bool = False):
         return await self.departments_repository.get_all()

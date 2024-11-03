@@ -19,14 +19,16 @@ class CourseService(CourseServiceContract):
 
         new_course = await self.course_repository.create(
             Course(
-                name=course.name,
+                title=course.title,
+                code=course.code,
                 department_id=course.department_id,
                 course_type=course_type
             )
         )
 
         return CourseOut(
-            name=new_course.name,
+            title=new_course.title,
+            code=new_course.code,
             course_type=new_course.course_type
         )
 

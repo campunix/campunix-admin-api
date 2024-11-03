@@ -27,6 +27,7 @@ async def create_department(
     return await department_service.create_department(
         department=DepartmentIn(
             name=department.name,
+            code=department.code,
             organization_id=department.organization_id,
             created_by=user.id
         ),
@@ -68,6 +69,7 @@ async def update_organization(
         id=id,
         department=DepartmentIn(
             name=department.name,
+            code=department.code,
             organization_id=department.organization_id,
             created_by=user.id
         ),

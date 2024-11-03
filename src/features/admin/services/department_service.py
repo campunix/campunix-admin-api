@@ -30,7 +30,19 @@ class DepartmentService(DepartmentServiceContract):
         return await self.departments_repository.get_all()
 
     async def update_department(self, id: int, department: DepartmentIn) -> Optional[DepartmentOut]:
-        return await self.departments_repository.update(id, Department(id=id, name=department.name))
+        return await (
+            self
+            .departments_repository
+            .update(
+                id,
+                Department(
+                    id=id,
+                    code=department.code,
+                    name=department.name,
+                    created_by=department.created_by,
+                )
+            )
+        )
 
     async def delete_department(self, id: int) -> bool:
         return await self.departments_repository.delete(id=id)

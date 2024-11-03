@@ -6,7 +6,11 @@ from src.core.entities.enums.course_type import CourseType
 
 
 class CourseBase(SQLModel):
-    name: str = Field(
+    title: str = Field(
+        default=None,
+        nullable=False,
+    )
+    code: str = Field(
         default=None,
         nullable=False,
     )

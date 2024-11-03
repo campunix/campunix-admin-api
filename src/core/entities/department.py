@@ -8,6 +8,10 @@ class DepartmentBase(SQLModel):
         default=None,
         nullable=False,
     )
+    code: str = Field(
+        default=None,
+        nullable=False,
+    )
     organization_id: int = Field(
         default=None,
         foreign_key="organizations.id",

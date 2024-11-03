@@ -22,7 +22,8 @@ def upgrade() -> None:
     op.create_table(
         "departments",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("name", sa.String(length=255), nullable=False, unique=True),
+        sa.Column("name", sa.String(length=255), nullable=False),
+        sa.Column("code", sa.String(length=255), nullable=False, unique=True),
         sa.Column("organization_id", sa.BigInteger, nullable=False),
         sa.Column("created_by", sa.BigInteger, nullable=False),
         sa.ForeignKeyConstraint(["organization_id"], ["organizations.id"], ondelete="CASCADE"),

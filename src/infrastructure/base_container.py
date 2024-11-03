@@ -1,5 +1,6 @@
 from dependency_injector import containers, providers
 
+from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.repositories.admin_groups_repository import AdminGroupsRepository
 from src.core.repositories.courses_repository import CoursesRepository
 from src.core.repositories.departments_repository import DepartmentsRepository
@@ -41,3 +42,5 @@ class BaseContainer(containers.DeclarativeContainer):
     rooms_repository = providers.Factory(RoomsRepository, db_session=db_session)
 
     teachers_repository = providers.Factory(TeachersRepository, db_session=db_session)
+
+    teacher_courses_repository = providers.Factory(TeacherCoursesRepositoryContract, db_session=db_session)

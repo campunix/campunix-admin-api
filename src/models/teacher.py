@@ -3,6 +3,8 @@ from pydantic import BaseModel
 
 class TeacherOut(BaseModel):
     id: int
+    name: str
+    email: str
     designation: str
     status: str
 

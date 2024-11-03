@@ -6,6 +6,7 @@ from src.core.repositories.departments_repository import DepartmentsRepository
 from src.core.repositories.organizations_repository import OrganizationsRepository
 from src.core.repositories.rooms_repository import RoomsRepository
 from src.core.repositories.semesters_repository import SemestersRepository
+from src.core.repositories.teachers_repository import TeachersRepository
 from src.core.repositories.user_organizations_repository import UserOrganizationsRepository
 from src.core.repositories.users_repository import UsersRepository
 from src.infrastructure.database2 import Database2
@@ -38,3 +39,5 @@ class BaseContainer(containers.DeclarativeContainer):
     courses_repository = providers.Factory(CoursesRepository, db_session=db_session)
 
     rooms_repository = providers.Factory(RoomsRepository, db_session=db_session)
+
+    teachers_repository = providers.Factory(TeachersRepository, db_session=db_session)

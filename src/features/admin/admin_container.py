@@ -1,5 +1,6 @@
 from dependency_injector import containers, providers
 
+from src.features.admin.services.TeacherService import TeacherService
 from src.features.admin.services.admin_service import AdminService
 from src.features.admin.services.course_service import CourseService
 from src.features.admin.services.department_service import DepartmentService
@@ -48,4 +49,10 @@ class AdminContainer(BaseContainer):
     room_service = providers.Factory(
         RoomService,
         rooms_repository=BaseContainer.rooms_repository
+    )
+
+    teacher_service = providers.Factory(
+        TeacherService,
+        teachers_repository=BaseContainer.teachers_repository,
+        users_repository=BaseContainer.users_repository,
     )

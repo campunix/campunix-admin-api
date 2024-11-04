@@ -54,5 +54,5 @@ async def delete_room(
         id: int,
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
 ):
-    room = await room_service.delete_room(id)
-    return room
+    status = await room_service.delete_room(id)
+    return status

@@ -5,6 +5,7 @@ from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.entities.enums.teacher_designation import TeacherDesignation
 from src.core.entities.enums.teacher_status import TeacherStatus
 from src.core.entities.teacher import Teacher
+from src.core.exceptions.duplicate_exception import DuplicateException
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
 from src.models.teacher import TeacherOut, TeacherIn
@@ -34,6 +35,9 @@ class TeacherService(TeacherServiceContract):
             )
         )
 
+        if not new_teacher:
+            raise DuplicateException(detail="Teacher already exist")
+
         return TeacherOut(
             id=new_teacher.id,
             name=user.full_name,
@@ -60,6 +64,9 @@ class TeacherService(TeacherServiceContract):
                 status=TeacherStatus.from_str(teacher.status)
             )
         )
+
+        if not new_teacher:
+            raise NotFoundException
 
         return TeacherOut(
             id=new_teacher.id,

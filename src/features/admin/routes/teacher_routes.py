@@ -54,5 +54,5 @@ async def delete_teacher(
         id: int,
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
 ):
-    teacher = await teacher_service.delete_teacher(id)
-    return teacher
+    status = await teacher_service.delete_teacher(id)
+    return status

@@ -1,16 +1,19 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from src.core.config import app_configs, settings
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.routes.admin_routes import admin_router
 from src.features.admin.routes.course_routes import course_router
-from src.features.admin.routes.room_routes import room_router
 from src.features.admin.routes.department_routes import department_router
 from src.features.admin.routes.organization_routes import organization_router
+from src.features.admin.routes.room_routes import room_router
 from src.features.admin.routes.teacher_routes import teacher_router
 from src.features.auth.auth_container import AuthContainer
 from src.features.auth.auth_routes import router as auth_router
+from src.models.response import APIResponse
 
 app = FastAPI(**app_configs)
 
@@ -22,6 +25,14 @@ app.add_middleware(
     allow_methods=("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"),
     allow_headers=settings.CORS_HEADERS,
 )
+
+
+@app.exception_handler(HTTPException)
+async def exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=jsonable_encoder(APIResponse(status=False, code=exc.status_code, message=exc.detail))
+    )
 
 
 @app.get("/", include_in_schema=False)

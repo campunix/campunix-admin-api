@@ -1,10 +1,11 @@
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
+from starlette.status import HTTP_201_CREATED
 
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.room_service_contract import RoomServiceContract
+from src.models.response import APIResponse
 from src.models.room import RoomIn
-from src.utils.oauth2_utils import oauth2_scheme
 
 room_router = APIRouter(prefix="/rooms")
 
@@ -14,10 +15,12 @@ room_router = APIRouter(prefix="/rooms")
 async def create_room(
         room_in: RoomIn,
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
-        token: str = Depends(oauth2_scheme),
+        # token: str = Depends(oauth2_scheme),
 ):
+    # return await room_service.create_room(room_in)
+
     room = await room_service.create_room(room_in)
-    return room
+    return APIResponse(status=True, code=HTTP_201_CREATED, message="Room created successfully", data=room)
 
 
 @room_router.get("")

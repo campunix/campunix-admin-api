@@ -99,3 +99,8 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             return True
 
         return False
+
+    async def  bulk_insert(self, obj_list: List[T]):
+        self.db_session.add_all(obj_list)
+        await self.db_session.commit()
+        pass

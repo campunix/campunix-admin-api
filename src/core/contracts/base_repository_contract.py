@@ -11,11 +11,11 @@ class BaseRepositoryContract(ABC):
         pass
 
     async def get_all(
-        self,
-        page: int = 1,
-        page_size: int = 10,
-        paginate: bool = False,
-        filters: Optional[List[Any]] = None,
+            self,
+            page: int = 1,
+            page_size: int = 10,
+            paginate: bool = False,
+            filters: Optional[List[Any]] = None,
     ) -> Dict[str, Any]:
         pass
 
@@ -26,4 +26,7 @@ class BaseRepositoryContract(ABC):
         pass
 
     async def delete(self, id: int) -> bool:
+        pass
+
+    async def bulk_insert(self, obj_list: List[T]):
         pass

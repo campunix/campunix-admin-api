@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Optional, List
+
+from sqlmodel import select
 
 from src.core.contracts.courses_repository_contract import CoursesRepositoryContract
 from src.core.entities.course import Course
@@ -67,3 +69,15 @@ class CourseService(CourseServiceContract):
             code=course.code,
             course_type=course.course_type.value
         )
+
+    async def bulk_insert_courses(self, courses_in: List[CourseIn]):
+        courses = [
+            Course(
+                title=course.title,
+                code=course.code,
+                department_id=course.department_id,
+                course_type=CourseType.from_str(course.course_type)
+            ) for course in courses_in
+        ]
+
+        await self.course_repository.bulk_insert(courses)

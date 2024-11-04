@@ -1,3 +1,5 @@
+from typing import List
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 from starlette.authentication import UnauthenticatedUser
@@ -9,6 +11,7 @@ from src.models.course import CourseIn
 from src.utils.oauth2_utils import oauth2_scheme
 
 course_router = APIRouter(prefix="/courses")
+
 
 @course_router.post("")
 @inject
@@ -55,3 +58,10 @@ async def delete_course(
     return await course_service.delete_course(id)
 
 
+@course_router.post("/bulk")
+@inject
+async def create_courses(
+        courses: List[CourseIn],
+        course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
+):
+    return await course_service.bulk_insert_courses(courses)

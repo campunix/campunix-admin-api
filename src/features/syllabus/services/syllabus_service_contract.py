@@ -1,26 +1,30 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Any
 
 from fastapi import File
 
-from src.core.entities.syllabus.syllabus import Syllabus
-from src.models.syllabus.syllabus_models import SyllabusOut
+from src.models.syllabus.syllabus_models import SyllabusParsed
 
 
 class SyllabusServiceContract(ABC):
 
     @abstractmethod
-    async def save(self, file: File(...)) -> Syllabus:
+    async def save(self, file: File(...)) -> SyllabusParsed:
         pass
 
     @abstractmethod
-    def getByDepartmentID(self, department_id: int) -> Optional[SyllabusOut]:
+    def getByDepartmentID(self, department_id: int) -> Optional[SyllabusParsed]:
         pass
 
     @abstractmethod
-    def getByDeptIDAndCourseCode(self, department_id: int, course_code: str) -> Optional[SyllabusOut]:
+    def getByDeptIDAndSemesterCode(self, department_id: int, semester_code: int) -> Optional[SyllabusParsed]:
         pass
 
     @abstractmethod
-    async def updateSyllabus(self, department_id: int, course_code: str, course_title: str) -> Optional[SyllabusOut]:
+    async def updateSyllabus(self, department_id: int, semester_code: int, course_code: str, course_title: str) -> \
+    Optional[SyllabusParsed]:
+        pass
+
+    @abstractmethod
+    async def template(self, department_id: int) -> Optional[Any]:
         pass

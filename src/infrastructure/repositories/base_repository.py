@@ -1,4 +1,7 @@
+from sqlite3 import IntegrityError
 from typing import Generic, Type, TypeVar, Optional, List, Dict, Any
+
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import SQLModel, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, or_, update
@@ -68,10 +71,18 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         }
 
     async def create(self, obj: T) -> T:
-        self.db_session.add(obj)
-        await self.db_session.commit()
-        await self.db_session.refresh(obj)
-        return obj
+        try:
+            self.db_session.add(obj)
+            await self.db_session.commit()
+            await self.db_session.refresh(obj)
+            return obj
+
+        except IntegrityError:
+            await self.db_session.rollback()  # Roll back on integrity errors
+            print(f"IntegrityError: {obj} already exists.")
+        except SQLAlchemyError as e:
+            await self.db_session.rollback()
+            print(f"Database error: {e}")
 
     async def update(self, id: int, obj_data: T) -> Optional[T]:
         stmt = (

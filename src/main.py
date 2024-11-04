@@ -4,6 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from src.core.config import app_configs, settings
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.routes.admin_routes import admin_router
+from src.features.admin.routes.course_routes import course_router
 from src.features.admin.routes.department_routes import department_router
 from src.features.admin.routes.organization_routes import organization_router
 from src.features.auth.auth_container import AuthContainer
@@ -38,3 +39,4 @@ admin_container = AdminContainer()
 app.include_router(admin_router, tags=["admins"])
 app.include_router(organization_router, tags=["organizations"])
 app.include_router(department_router, tags=["departments"])
+app.include_router(course_router, tags=["courses"])

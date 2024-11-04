@@ -27,19 +27,43 @@ class CourseService(CourseServiceContract):
         )
 
         return CourseOut(
+            id=new_course.id,
             title=new_course.title,
             code=new_course.code,
-            course_type=new_course.course_type
+            course_type=new_course.course_type.value
         )
 
     async def get_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
         return await self.course_repository.get_all()
 
     async def update_course(self, id: int, course: CourseIn) -> Optional[CourseOut]:
-        pass
+        course_type = CourseType.from_str(course.course_type)
+
+        new_course = await self.course_repository.update(
+            id,
+            Course(
+                title=course.title,
+                code=course.code,
+                department_id=course.department_id,
+                course_type=course_type
+            )
+        )
+
+        return CourseOut(
+            id=new_course.id,
+            title=new_course.title,
+            code=new_course.code,
+            course_type=new_course.course_type.value
+        )
 
     async def delete_course(self, id: int) -> bool:
         return await self.course_repository.delete(id)
 
     async def get_course_by_id(self, id: int) -> Optional[CourseOut]:
-        return await self.course_repository.get_by_id(id)
+        course = await self.course_repository.get_by_id(id)
+        return CourseOut(
+            id=course.id,
+            title=course.title,
+            code=course.code,
+            course_type=course.course_type.value
+        )

@@ -11,5 +11,5 @@ class RoomOut(BaseModel):
 class RoomIn(BaseModel):
     name: str
     code: str
-    department_id: str
+    department_id: int
     room_type: str

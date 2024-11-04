@@ -3,6 +3,7 @@ from typing import Optional
 from src.core.contracts.rooms_repository_contract import RoomsRepositoryContract
 from src.core.entities.enums.room_type import RoomType
 from src.core.entities.room import Room
+from src.core.exceptions.duplicate_exception import DuplicateException
 from src.features.admin.services.room_service_contract import RoomServiceContract
 from src.models.room import RoomOut, RoomIn
 
@@ -24,7 +25,11 @@ class RoomService(RoomServiceContract):
             )
         )
 
+        if not new_room:
+            raise DuplicateException(detail="Room not created")
+
         return RoomOut(
+            id=new_room.id,
             name=new_room.name,
             code=new_room.code,
             room_type=new_room.room_type.value

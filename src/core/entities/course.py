@@ -6,7 +6,11 @@ from src.core.entities.enums.course_type import CourseType
 
 
 class CourseBase(SQLModel):
-    name: str = Field(
+    title: str = Field(
+        default=None,
+        nullable=False,
+    )
+    code: str = Field(
         default=None,
         nullable=False,
     )
@@ -16,9 +20,7 @@ class CourseBase(SQLModel):
         nullable=False,
     )
     course_type: CourseType = Field(
-        default=None,
-        sa_column=Column(Enum(CourseType)),
-        nullable=False,
+        sa_column=Column(Enum(CourseType, name="course_type", create_type=False))
     )
 
 

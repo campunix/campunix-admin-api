@@ -1,10 +1,10 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from typing import Optional
 
 from src.models.teacher_course import TeacherCourseIn, TeacherCourseOut
 
 
-class TeacherCourseCourseServiceContract(ABC):
+class TeacherCourseServiceContract(ABC):
     @abstractmethod
     async def create_teacher_course(self, teacher_course: TeacherCourseIn) -> Optional[TeacherCourseOut]:
         pass

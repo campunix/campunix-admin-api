@@ -30,8 +30,11 @@ def upgrade() -> None:
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
         ),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
+        # Adding a unique constraint on teacher_id and course_id
+        sa.UniqueConstraint("teacher_id", "course_id", name="uq_teacher_course")
     )
 
 
 def downgrade() -> None:
+    op.drop_constraint('uq_teacher_course', 'teacher_courses', type_='unique')
     op.drop_table("teacher_courses")

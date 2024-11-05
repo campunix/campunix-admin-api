@@ -2,14 +2,15 @@ from typing import Optional
 
 from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.entities.teacher_course import TeacherCourse
+from src.core.exceptions.duplicate_exception import DuplicateException
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
 from src.features.admin.services.course_service_contract import CourseServiceContract
-from src.features.admin.services.teacher_course_service_contract import TeacherCourseCourseServiceContract
+from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.models.teacher_course import TeacherCourseOut, TeacherCourseIn
 
 
-class TeacherCourseService(TeacherCourseCourseServiceContract):
+class TeacherCourseService(TeacherCourseServiceContract):
     def __init__(
             self,
             teacher_course_repository: TeacherCoursesRepositoryContract,
@@ -24,12 +25,19 @@ class TeacherCourseService(TeacherCourseCourseServiceContract):
         teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
         course = await self.course_service.get_course_by_id(teacher_course.course_id)
 
+        if not teacher or not course:
+            raise NotFoundException
+
         new_teacher_course = await self.teacher_course_repository.create(
             TeacherCourse(
                 teacher_id=teacher.id,
                 course_id=course.id
             )
         )
+
+        if not new_teacher_course:
+            raise DuplicateException(detail="Teacher Course not created")
+
         return TeacherCourseOut(
             id=new_teacher_course.id,
             teacher=teacher,
@@ -37,7 +45,7 @@ class TeacherCourseService(TeacherCourseCourseServiceContract):
         )
 
     async def get_teacher_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return self.teacher_course_repository.get_all()
+        return await self.teacher_course_repository.get_all()
 
     async def update_teacher_course(self, id: int, teacher_course: TeacherCourseIn) -> Optional[TeacherCourseOut]:
         teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)

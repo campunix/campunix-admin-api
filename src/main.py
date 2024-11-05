@@ -10,6 +10,7 @@ from src.features.admin.routes.course_routes import course_router
 from src.features.admin.routes.department_routes import department_router
 from src.features.admin.routes.organization_routes import organization_router
 from src.features.admin.routes.room_routes import room_router
+from src.features.admin.routes.teacher_course_routes import teacher_course_router
 from src.features.admin.routes.teacher_routes import teacher_router
 from src.features.auth.auth_container import AuthContainer
 from src.features.auth.auth_routes import router as auth_router
@@ -55,3 +56,4 @@ app.include_router(department_router, tags=["departments"])
 app.include_router(course_router, tags=["courses"])
 app.include_router(room_router, tags=["rooms"])
 app.include_router(teacher_router, tags=["teachers"])
+app.include_router(teacher_course_router, tags=["teacherCourse"])

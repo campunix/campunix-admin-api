@@ -22,7 +22,7 @@ def upgrade() -> None:
     op.create_table(
         "teachers",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("user_id", sa.BigInteger, nullable=False),
+        sa.Column("user_id", sa.BigInteger, nullable=False, unique=True),
         sa.Column("designation", postgresql.ENUM(name='teacher_designation', create_type=False), nullable=False),
         sa.Column("status", postgresql.ENUM(name='teacher_status', create_type=False), nullable=False),
         sa.Column("department_id", sa.BigInteger, nullable=False),

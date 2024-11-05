@@ -1,4 +1,5 @@
-from sqlalchemy import Enum
+from enum import Enum
+
 
 class StaffStatus(str, Enum):
     ACTIVE = "ACTIVE"

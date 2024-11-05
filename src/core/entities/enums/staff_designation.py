@@ -1,4 +1,5 @@
-from sqlalchemy import Enum
+from enum import Enum
+
 
 class StaffDesignation(str, Enum):
     OFFICER = "OFFICER"

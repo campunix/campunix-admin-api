@@ -2,8 +2,7 @@ from datetime import timedelta
 from typing import Any, Dict
 from fastapi import HTTPException, status
 from src.features.auth.services.auth_service_contract import AuthServiceContract
-from src.features.auth.utils.oauth2_utils import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
+from src.features.auth.utils.auth_utils import (
     create_access_token,
     get_password_hash,
     get_token_user,
@@ -11,7 +10,8 @@ from src.features.auth.utils.oauth2_utils import (
 )
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.entities.user import UserBase, user_entity_to_model
-from src.models.user_models import Token, UserOut, UserRegister
+from src.models.user import Token, UserOut, UserRegister
+from src.utils.oauth2_utils import ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 class AuthService(AuthServiceContract):

@@ -22,7 +22,7 @@ def upgrade() -> None:
     op.create_table(
         "organizations",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("name", sa.String(length=255), nullable=False, unique=True),
+        sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
         ),

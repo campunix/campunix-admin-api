@@ -12,6 +12,10 @@ class SemesterBase(SQLModel):
         default=None,
         nullable=False,
     )
+    disabled: bool = Field(
+        default=False,
+        nullable=False,
+    )
     department_id: int = Field(
         default=None,
         foreign_key="departments.id",

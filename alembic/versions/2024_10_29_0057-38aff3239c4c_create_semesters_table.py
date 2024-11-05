@@ -9,7 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from pygments.lexer import default
 
 # revision identifiers, used by Alembic.
 revision: str = '38aff3239c4c'
@@ -24,6 +24,7 @@ def upgrade() -> None:
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column("year", sa.Integer, nullable=False),
         sa.Column("number", sa.Integer, nullable=False),
+        sa.Column("disabled", sa.Boolean, default=False, nullable=False),
         sa.Column("department_id", sa.BigInteger, nullable=True),
         sa.ForeignKeyConstraint(
             ["department_id"], ["departments.id"], ondelete="CASCADE"
@@ -37,4 +38,3 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("semesters")
-

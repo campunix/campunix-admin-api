@@ -23,4 +23,9 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+class UserPublic(BaseModel):
+    id: int
+    username: str
+    full_name: str
+
 

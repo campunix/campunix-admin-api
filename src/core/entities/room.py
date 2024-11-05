@@ -8,17 +8,19 @@ from src.core.entities.enums.room_type import RoomType
 class RoomBase(SQLModel):
     name: str = Field(
         default=None,
+        nullable=True,
+    )
+    code: str = Field(
+        default=None,
         nullable=False,
     )
     department_id: int = Field(
         default=None,
         foreign_key="departments.id",
-        nullable=False,
+        nullable=True,
     )
     room_type: RoomType = Field(
-        default=None,
-        sa_column=Column(Enum(RoomType)),
-        nullable=False,
+        sa_column=Column(Enum(RoomType, name="room_type", create_type=False))
     )
 
 

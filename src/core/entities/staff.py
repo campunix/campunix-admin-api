@@ -18,14 +18,10 @@ class StaffBase(SQLModel):
         nullable=True,
     )
     designation: StaffDesignation = Field(
-        default=None,
-        sa_column=Column(Enum(StaffDesignation)),
-        nullable=False,
+        sa_column=Column(Enum(StaffDesignation, name="staff_designation", create_type=False))
     )
     status: StaffStatus = Field(
-        default=None,
-        sa_column=Column(Enum(StaffStatus)),
-        nullable=False,
+        sa_column=Column(Enum(StaffStatus, name="staff_status", create_type=False))
     )
 
 

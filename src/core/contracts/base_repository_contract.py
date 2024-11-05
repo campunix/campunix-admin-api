@@ -7,7 +7,11 @@ T = TypeVar("T", bound=SQLModel)
 
 
 class BaseRepositoryContract(ABC):
-    async def get_by_id(self, id: int) -> Optional[T]:
+    async def get_by_id(
+            self,
+            id: int,
+            joins: Optional[List[Any]] = None
+    ) -> Optional[T]:
         pass
 
     async def get_all(
@@ -16,6 +20,7 @@ class BaseRepositoryContract(ABC):
             page_size: int = 10,
             paginate: bool = False,
             filters: Optional[List[Any]] = None,
+            joins: Optional[List[Any]] = None
     ) -> Dict[str, Any]:
         pass
 

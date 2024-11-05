@@ -1,11 +1,11 @@
+from math import ceil
 from sqlite3 import IntegrityError
 from typing import Generic, Type, TypeVar, Optional, List, Dict, Any
 
+from sqlalchemy import update
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import SQLModel, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import and_, or_, update
-from math import ceil
+from sqlmodel import SQLModel, select, func
 
 from src.core.contracts.base_repository_contract import BaseRepositoryContract
 
@@ -18,8 +18,19 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         self.db_session = db_session
         self.model = model
 
-    async def get_by_id(self, id: int) -> Optional[T]:
+    async def get_by_id(
+            self,
+            id: int,
+            joins: Optional[List[Any]] = None
+    ) -> Optional[T]:
         statement = select(self.model).where(self.model.id == id)
+
+        # Apply joins if provided
+        if joins:
+            for related_model, condition in joins:
+                # statement = statement.join(related_model, condition)
+                statement = statement.join(related_model, condition).add_columns(related_model)
+
         result = await self.db_session.execute(statement)
         return result.scalars().one_or_none()
 
@@ -29,9 +40,16 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             page_size: int = 10,
             paginate: bool = False,
             filters: Optional[List[Any]] = None,
+            joins: Optional[List[Any]] = None
     ) -> Dict[str, Any]:
         # Start with base query
         statement = select(self.model)
+
+        # Apply joins if provided
+        if joins:
+            for related_model, condition in joins:
+                # statement = statement.join(related_model, condition)
+                statement = statement.join(related_model, condition).add_columns(related_model)
 
         # Apply filters if provided
         if filters:
@@ -44,6 +62,12 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             if filters
             else select(func.count()).select_from(self.model)
         )
+
+        # Apply joins to total_items_stmt for accurate counts in joined queries
+        if joins:
+            for related_model, condition in joins:
+                total_items_stmt = total_items_stmt.join(related_model, condition)
+
         total_items_result = await self.db_session.execute(total_items_stmt)
         total_items = total_items_result.scalar_one()
 
@@ -111,7 +135,7 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
 
         return False
 
-    async def  bulk_insert(self, obj_list: List[T]):
+    async def bulk_insert(self, obj_list: List[T]):
         self.db_session.add_all(obj_list)
         await self.db_session.commit()
         pass

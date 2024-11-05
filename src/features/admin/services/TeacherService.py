@@ -5,6 +5,7 @@ from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.entities.enums.teacher_designation import TeacherDesignation
 from src.core.entities.enums.teacher_status import TeacherStatus
 from src.core.entities.teacher import Teacher
+from src.core.entities.user import User
 from src.core.exceptions.duplicate_exception import DuplicateException
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
@@ -47,7 +48,9 @@ class TeacherService(TeacherServiceContract):
         )
 
     async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.teachers_repository.get_all()
+        return await self.teachers_repository.get_all(
+            joins=[(User, Teacher.user_id == User.id)]
+        )
 
     async def update_teacher(self, id: int, teacher: TeacherIn) -> Optional[TeacherOut]:
         user = await self.users_repository.get_user_by_id(user_id=teacher.user_id)
@@ -80,7 +83,10 @@ class TeacherService(TeacherServiceContract):
         return await self.teachers_repository.delete(id)
 
     async def get_teacher_by_id(self, id: int) -> Optional[TeacherOut]:
-        teacher = await self.teachers_repository.get_by_id(id)
+        teacher = await self.teachers_repository.get_by_id(
+            id,
+            joins=[(User, Teacher.user_id == User.id)]
+        )
         if not teacher:
             raise NotFoundException(detail="Teacher not found")
 

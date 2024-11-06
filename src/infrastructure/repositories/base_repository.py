@@ -28,7 +28,6 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         # Apply joins if provided
         if joins:
             for related_model, condition in joins:
-                # statement = statement.join(related_model, condition)
                 statement = statement.join(related_model, condition).add_columns(related_model)
 
         result = await self.db_session.execute(statement)

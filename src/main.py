@@ -46,17 +46,42 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(Exception)
 async def exception_handler(request: Request, exc: Exception):
     status_code = exc.args[0] if exc.args else status.HTTP_500_INTERNAL_SERVER_ERROR
-    return JSONResponse(
-        status_code=status_code,
-        content=jsonable_encoder(
-            APIResponse(
-                status=False,
-                code=exc.args[0] if exc.args else status.HTTP_500_INTERNAL_SERVER_ERROR,
-                message="Error Occurred",
-                errors=exc.args[1] if exc.args else "Unhandled Exception"
+    if isinstance(exc, ValueError):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=jsonable_encoder(
+                APIResponse(
+                    status=False,
+                    code=status.HTTP_400_BAD_REQUEST,
+                    message="Value Error Occurred",
+                    errors=exc.args[0] if exc.args else "Invalid value provided"
+                )
             )
         )
-    )
+    elif isinstance(exc, KeyError):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=jsonable_encoder(
+                APIResponse(
+                    status=False,
+                    code=status.HTTP_404_NOT_FOUND,
+                    message="Key Error Occurred",
+                    errors=exc.args[0] if exc.args else "Key not found"
+                )
+            )
+        )
+    else:
+        return JSONResponse(
+            status_code=status_code,
+            content=jsonable_encoder(
+                APIResponse(
+                    status=False,
+                    code=exc.args[0] if exc.args else status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    message="Error Occurred",
+                    errors=exc.args[1] if exc.args else "Unhandled Exception"
+                )
+            )
+        )
 
 
 @app.get("/", include_in_schema=False)

@@ -26,3 +26,11 @@ class RoomBase(SQLModel):
 
 class Room(BaseEntity, RoomBase, table=True):
     __tablename__ = "rooms"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "code": self.code,
+            "room_type": str(self.room_type)  # Adjust for enums or complex types
+        }

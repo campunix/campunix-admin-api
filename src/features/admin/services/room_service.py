@@ -24,18 +24,28 @@ class RoomService(RoomServiceContract):
             )
         )
 
-        return RoomOut(
-            id=new_room.id,
-            name=new_room.name,
-            code=new_room.code,
-            room_type=new_room.room_type.value
-        )
+        return RoomOut(**new_room.__dict__)
 
     async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.rooms_repository.get_all()
+        room_dict = await self.rooms_repository.get_all()
+        rooms = room_dict.get("items", [])
+        room_out_list = [RoomOut(**room.__dict__) for room in rooms]
+
+        if paginate:
+            return {
+                "items": room_out_list,
+                "current_page": room_dict.get("current_page"),
+                "total_pages": room_dict.get("total_pages"),
+                "page_size": room_dict.get("page_size"),
+                "total_items": room_dict.get("total_items"),
+            }
+        else:
+            return {
+                "items": room_out_list,
+            }
 
     async def update_room(self, id: int, room: RoomIn) -> Optional[RoomOut]:
-        return await self.rooms_repository.update(
+        room = await self.rooms_repository.update(
             id=id,
             obj_data=Room(
                 name=room.name,
@@ -44,9 +54,11 @@ class RoomService(RoomServiceContract):
                 room_type=RoomType.from_str(room.room_type)
             )
         )
+        return RoomOut(**room.__dict__)
 
     async def delete_room(self, id: int) -> bool:
         return await self.rooms_repository.delete(id)
 
     async def get_room_by_id(self, id: int) -> Optional[RoomOut]:
-        return await self.rooms_repository.get_by_id(id)
+        room = await self.rooms_repository.get_by_id(id)
+        return RoomOut(**room.__dict__)

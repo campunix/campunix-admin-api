@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from src.models.room import RoomIn, RoomOut
 
@@ -10,7 +10,7 @@ class RoomServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False):
+    async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False) -> Dict[str, Any]:
         pass
 
     @abstractmethod

@@ -1,13 +1,13 @@
 from math import ceil
-from sqlite3 import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from typing import Generic, Type, TypeVar, Optional, List, Dict, Any
 
 from sqlalchemy import update
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel, select, func
 
 from src.core.contracts.base_repository_contract import BaseRepositoryContract
+from src.core.exceptions.db_exceptions import DatabaseIntegrityError, DatabaseError
 
 # Define a type variable for generic use in BaseRepository
 T = TypeVar("T", bound=SQLModel)
@@ -102,11 +102,11 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             return obj
 
         except IntegrityError:
-            await self.db_session.rollback()  # Roll back on integrity errors
-            print(f"IntegrityError: {obj} already exists.")
+            await self.db_session.rollback()
+            raise DatabaseIntegrityError(detail=f"Integrity error: {obj} already exists.")
         except SQLAlchemyError as e:
             await self.db_session.rollback()
-            print(f"Database error: {e}")
+            raise DatabaseError(detail=f"Database error: {e}")
 
     async def update(self, id: int, obj_data: T) -> Optional[T]:
         stmt = (

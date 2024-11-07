@@ -18,11 +18,6 @@ SessionLocal = async_sessionmaker(
     expire_on_commit=False,
 )
 
-# Load the JSON data
-def load_seed_data(file_path: str):
-    with open(file_path, 'r') as f:
-        return json.load(f)
-
 # Insert data asynchronously into each table
 async def insert_data(table_name, records):
     async with engine.connect() as conn:
@@ -43,29 +38,17 @@ async def insert_data(table_name, records):
         print(f"Inserted data into {table_name}.")
         await conn.commit()
 
-
 # Seed the database with data
-async def seed_database(data: dict):
+async def seed_database(seed_data: dict):
     async with SessionLocal() as session:
-        for table_name, records in data.items():
+        for table_name, records in seed_data.items():
             await insert_data(table_name, records)
 
         await session.commit()
 
 
 async def main():
-    #seed_data = json.load(data)
-    #print(seed_data)
     await seed_database(data)
-
-    # file_path = "db_seed/seed.py"
-    # if not Path(file_path).exists():
-    #     print(f"Seed file {file_path} does not exist.")
-    # else:
-    #     seed_data = load_seed_data(file_path)
-    #     seed_data = json.load(data)
-    #     await seed_database(seed_data)
-
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Dict, Any
+from typing import TypeVar, Type, Dict, Any, List
 
 from pydantic import BaseModel
 
@@ -10,6 +10,18 @@ def entity_to_model(entity: object, model: Type[T]) -> T:
         return None
     else:
         return model(**entity.__dict__)
+
+
+def entities_to_model(entities: List[object], model: Type[T]) -> List[T]:
+    if not entities:
+        return None
+    else:
+        merged_entities: Dict[str, Any] = {}
+        for entity in entities:
+            merged_entities.update(entity)
+
+        print(merged_entities)
+        return [model(**merged_entities)]
 
 
 def entity_to_model_list(

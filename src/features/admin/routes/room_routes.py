@@ -48,7 +48,7 @@ async def update_room(
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
 ):
     room = await room_service.update_room(id, room_in)
-    return APIResponse(messages="Updated successfully", data=room)
+    return APIResponse(message="Updated successfully", data=room)
 
 
 @room_router.delete("/{id}")
@@ -58,7 +58,4 @@ async def delete_room(
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
 ):
     res = await room_service.delete_room(id)
-    if res is True:
-        return APIResponse(messages="Deleted successfully")
-    else:
-        return APIResponse(status=res, code=status.HTTP_204_NO_CONTENT, messages="Deletion unsuccessful")
+    return APIResponse(status=res, message="Deleted successfully")

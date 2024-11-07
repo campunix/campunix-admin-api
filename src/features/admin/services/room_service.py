@@ -49,7 +49,12 @@ class RoomService(RoomServiceContract):
         return entity_to_model(entity=room, model=RoomOut)
 
     async def delete_room(self, id: int) -> bool:
-        return await self.rooms_repository.delete(id)
+        res = await self.rooms_repository.delete(id)
+
+        if res is False:
+            raise NotFoundException(detail="Deletion unsuccessful")
+
+        return res
 
     async def get_room_by_id(self, id: int) -> Optional[RoomOut]:
         room = await self.rooms_repository.get_by_id(id)

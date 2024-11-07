@@ -30,7 +30,8 @@ def entity_to_model_list(
         paginate: bool = False
 ) -> Dict[str, Any]:
     items = entity_dict.get("items", [])
-    model_list = [model(**item.__dict__) for item in items]
+
+    model_list = [model(**item) for item in items]
 
     if paginate:
         return {

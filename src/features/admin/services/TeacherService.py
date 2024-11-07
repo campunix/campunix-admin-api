@@ -51,8 +51,19 @@ class TeacherService(TeacherServiceContract):
         return entity_to_model(entity=teacher_out, model=TeacherOut)
 
     async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False):
+
+        columns = [
+            Teacher.id,
+            User.full_name,
+            User.email,
+            User.designation,
+            Teacher.status,
+            Teacher.status
+        ]
+
         teacher_dict = await self.teachers_repository.get_all(
-            joins=[(User, Teacher.user_id == User.id)]
+            joins=[(User, Teacher.user_id == User.id)],
+            columns=columns
         )
         return entity_to_model_list(entity_dict=teacher_dict, model=TeacherOut, paginate=paginate)
 

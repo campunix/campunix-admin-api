@@ -88,7 +88,7 @@ class TeacherService(TeacherServiceContract):
 
         return TeacherOut(
             id=new_teacher.id,
-            name=user.full_name,
+            full_name=user.full_name,
             email=user.email,
             designation=new_teacher.designation,
             status=new_teacher.status
@@ -116,7 +116,7 @@ class TeacherService(TeacherServiceContract):
 
         return TeacherOut(
             id=teacher.id,
-            name=user.full_name,
+            full_name=user.full_name,
             email=user.email,
             designation=teacher.designation,
             status=teacher.status

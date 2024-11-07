@@ -7,5 +7,13 @@ from src.infrastructure.base_container import BaseContainer
 
 class SyllabusContainer(BaseContainer):
     wiring_config = containers.WiringConfiguration(modules=[".syllabus_routes"])
+
     syllabus_repository = providers.Factory(SyllabusRepository, db_session=BaseContainer.db_session)
-    syllabus_service = providers.Factory(SyllabusService, syllabus_repository=syllabus_repository)
+
+    syllabus_service = providers.Factory(
+        SyllabusService,
+        syllabus_repository=syllabus_repository,
+        departments_repository=BaseContainer.departments_repository,
+        courses_repository=BaseContainer.courses_repository,
+        semesters_repository=BaseContainer.semesters_repository,
+    )

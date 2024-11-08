@@ -56,7 +56,7 @@ class TeacherService(TeacherServiceContract):
             Teacher.id,
             User.full_name,
             User.email,
-            User.designation,
+            Teacher.designation,
             Teacher.status,
             Teacher.status
         ]

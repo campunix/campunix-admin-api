@@ -6,8 +6,9 @@ from fastapi import HTTPException
 
 from src.core.contracts.courses_repository_contract import CoursesRepositoryContract
 from src.core.contracts.departments_repository_contract import DepartmentsRepositoryContract
+from src.core.contracts.semesters_repository_contract import SemestersRepositoryContract
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
-from src.features.admin.services.semester_service_contract import SemesterServiceContract
+from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_utils.xml_utils import parse_syllabus, create_template
 from src.models.syllabus.syllabus_models import SyllabusParsed
@@ -19,18 +20,36 @@ class SyllabusService(SyllabusServiceContract):
             syllabus_repository: SyllabusRepositoryContract,
             departments_repository: DepartmentsRepositoryContract,
             courses_repository: CoursesRepositoryContract,
-            semesters_repository: SemesterServiceContract
+            semesters_repository: SemestersRepositoryContract
     ):
         self.repository = syllabus_repository
-        self.departments_repository = departments_repository,
-        self.courses_repository = courses_repository,
-        self.semesters_repository = semesters_repository,
+        self.departments_repository = departments_repository
+        self.courses_repository = courses_repository
+        self.semesters_repository = semesters_repository
 
     async def save(self, file: File(...)) -> SyllabusParsed:
         try:
             contents = await file.read()
             root = ET.fromstring(contents)
             syllabus = parse_syllabus(root)
+
+            department = await self.departments_repository.get_department_by_code(department_code=syllabus.DepartmentCode)
+            if not department:
+                raise NotFoundException(detail="Department not found!")
+
+            for semester in syllabus.Semesters:
+                semester_in_db = await self.semesters_repository.get_semester_by_year_and_number(year=1, number=1)
+                if not semester_in_db:
+                    raise NotFoundException(detail="Semester not found!")
+
+                for course in semester.Courses:
+                    course_in_db = await self.courses_repository.get_course_by_code(
+                        course_code=course.CourseCode,
+                        department_id=department.id
+                    )
+
+                    if not course_in_db:
+                        raise NotFoundException(detail="Course not found!")
 
             return await self.repository.save(syllabus=syllabus)
 

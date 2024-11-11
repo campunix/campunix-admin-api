@@ -5,10 +5,10 @@ from pydantic import BaseModel, Field
 
 # Define Pydantic models
 class Book(BaseModel):
-    Title: Optional[str]
-    Author: Optional[str]
-    Publisher: Optional[str]
-    Year: Optional[str]
+    title: Optional[str]
+    author: Optional[str]
+    publisher: Optional[str]
+    year: Optional[str]
 
     class Config:
         arbitrary_types_allowed = True
@@ -16,8 +16,8 @@ class Book(BaseModel):
 
 
 class CourseDescription(BaseModel):
-    Module: Optional[str]
-    Content: Optional[str]
+    module: Optional[str]
+    content: Optional[str]
 
     class Config:
         arbitrary_types_allowed = True
@@ -25,18 +25,18 @@ class CourseDescription(BaseModel):
 
 
 class Course(BaseModel):
-    CourseCode: Optional[str]
-    Title: Optional[str]
-    Credit: Optional[float]
-    Prerequisite: Optional[str]
-    Type: Optional[str]
-    ContactHours: Optional[int]
-    Rationale: Optional[str]
-    CourseObjectives: List[str] = []
-    Outcomes: List[str] = []
-    CourseDescription: List[CourseDescription] = []
-    RecommendedBooks: List[Book] = []
-    HardwareSoftwareRequirements: Optional[dict] = Field(default_factory=lambda: {"HW": None, "SW": None})
+    course_code: Optional[str]
+    title: Optional[str]
+    credit: Optional[float]
+    prerequisite: Optional[str]
+    type: Optional[str]
+    contact_hours: Optional[int]
+    rationale: Optional[str]
+    course_objectives: List[str] = []
+    outcomes: List[str] = []
+    course_description: List[CourseDescription] = []
+    recommended_books: List[Book] = []
+    hardware_software_requirements: Optional[dict] = Field(default_factory=lambda: {"HW": None, "SW": None})
 
     class Config:
         arbitrary_types_allowed = True
@@ -44,8 +44,9 @@ class Course(BaseModel):
 
 
 class Semester(BaseModel):
-    SemesterCode: int
-    Courses: List[Course] = []
+    year: int
+    number: int
+    courses: List[Course] = []
 
     class Config:
         arbitrary_types_allowed = True
@@ -53,10 +54,9 @@ class Semester(BaseModel):
 
 
 class SyllabusParsed(BaseModel):
-    DepartmentID: int
-    DepartmentCode: str
-    DepartmentName: str
-    Semesters: List[Semester] = []
+    department_code: str
+    department_name: str
+    semesters: List[Semester] = []
 
     class Config:
         arbitrary_types_allowed = True

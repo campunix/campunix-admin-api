@@ -33,18 +33,18 @@ class SyllabusService(SyllabusServiceContract):
             root = ET.fromstring(contents)
             syllabus = parse_syllabus(root)
 
-            department = await self.departments_repository.get_department_by_code(department_code=syllabus.DepartmentCode)
+            department = await self.departments_repository.get_department_by_code(department_code=syllabus.department_code)
             if not department:
                 raise NotFoundException(detail="Department not found!")
 
-            for semester in syllabus.Semesters:
+            for semester in syllabus.semesters:
                 semester_in_db = await self.semesters_repository.get_semester_by_year_and_number(year=1, number=1)
                 if not semester_in_db:
                     raise NotFoundException(detail="Semester not found!")
 
-                for course in semester.Courses:
+                for course in semester.courses:
                     course_in_db = await self.courses_repository.get_course_by_code(
-                        course_code=course.CourseCode,
+                        course_code=course.course_code,
                         department_id=department.id
                     )
 

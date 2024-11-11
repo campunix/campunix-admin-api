@@ -6,42 +6,42 @@ from src.models.syllabus.syllabus_models import SyllabusParsed, Semester, Course
 
 def parse_syllabus(root: ET.Element) -> SyllabusParsed:
     syllabus = SyllabusParsed(
-        DepartmentID=root.findtext("DepartmentID"),
-        DepartmentCode=root.findtext("DepartmentCode"),
-        DepartmentName=root.findtext("DepartmentName"),
-        Semesters=[
+        department_code=root.findtext("DepartmentCode"),
+        department_name=root.findtext("DepartmentName"),
+        semesters=[
             Semester(
-                SemesterCode=semester.findtext("SemesterCode"),
-                Courses=[
+                year=semester.get("year"),
+                number = semester.get("number"),
+                courses=[
                     Course(
-                        CourseCode=course.findtext("CourseCode"),
-                        Title=course.findtext("Title"),
-                        Credit=course.findtext("Credit"),
-                        Prerequisite=course.findtext("Prerequisite"),
-                        Type=course.findtext("Type"),
-                        ContactHours=course.findtext("ContactHours"),
-                        Rationale=course.findtext("Rationale"),
-                        CourseObjectives=[
+                        course_code=course.findtext("CourseCode"),
+                        title=course.findtext("Title"),
+                        credit=course.findtext("Credit"),
+                        prerequisite=course.findtext("Prerequisite"),
+                        type=course.findtext("Type"),
+                        contact_hours=course.findtext("ContactHours"),
+                        rationale=course.findtext("Rationale"),
+                        course_objectives=[
                             obj.text for obj in course.findall("CourseObjectives/Objective")
                         ],
-                        Outcomes=[
+                        outcomes=[
                             outcome.text for outcome in course.findall("StudentLearningOutcomes/Outcome")
                         ],
-                        CourseDescription=[
+                        course_description=[
                             CourseDescription(
                                 Module=desc.findtext("Module"),
                                 Content=desc.findtext("Content")
                             ) for desc in course.findall("CourseDescription")
                         ],
-                        RecommendedBooks=[
+                        recommended_books=[
                             Book(
-                                Title=book.findtext("Title"),
-                                Author=book.findtext("Author"),
-                                Publisher=book.findtext("Publisher"),
-                                Year=book.findtext("Year")
+                                title=book.findtext("Title"),
+                                author=book.findtext("Author"),
+                                publisher=book.findtext("Publisher"),
+                                year=book.findtext("Year")
                             ) for book in course.findall("RecommendedBooks/Book")
                         ],
-                        HardwareSoftwareRequirements={
+                        hardware_software_requirements={
                             "HW": course.findtext("HardwareSoftwareRequirements/HW"),
                             "SW": course.findtext("HardwareSoftwareRequirements/SW")
                         }

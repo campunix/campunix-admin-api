@@ -16,8 +16,7 @@ class SyllabusRepository(SyllabusRepositoryContract):
     async def getByDeptID(self, department_id: int) -> Optional[SyllabusParsed]:
         statement = select(Syllabus).where(Syllabus.department_id == department_id)
         result = await self.db_session.exec(statement)
-        syllabusOut = result.one_or_none()
-        return syllabusOut
+        return result.one_or_none()
 
     async def getByDeptIDAndSemesterCode(self, department_id: int, semester_code: int) -> Optional[SyllabusParsed]:
         statement = text("""
@@ -38,7 +37,7 @@ class SyllabusRepository(SyllabusRepositoryContract):
 
     async def save(self, syllabus: SyllabusParsed) -> SyllabusParsed:
         syllabus_dict = Syllabus(
-            department_id=syllabus.DepartmentID,
+            department_id=syllabus.department_id,
             syllabus=syllabus.model_dump()
         )
 

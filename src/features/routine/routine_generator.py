@@ -1,9 +1,6 @@
 import random
 from typing import List
 
-from fastapi import HTTPException
-
-from src.core.exceptions.duplicate_exception import DuplicateException
 from src.features.routine.chromosome import Chromosome
 from src.features.routine.gene import Gene
 
@@ -28,14 +25,15 @@ class RoutineGenerator:
         self.total_population = 10
         self._random = random.Random()
 
-    def generate(self):
+    def generate(self, total_slots: int):
+        self.total_slots = total_slots
         chromosomes = self.initialize_population()
 
         generation = 0
         while generation < 1500:  # max generations
             # Evaluate fitness
             for chromosome in chromosomes:
-                chromosome.calculate_fitness(False)
+                chromosome.calculate_fitness()
 
             # Sort population by fitness
             chromosomes = sorted(chromosomes, key=lambda x: x.fitness, reverse=True)
@@ -44,7 +42,7 @@ class RoutineGenerator:
             if chromosomes[0].fitness == 1.0:
                 print("Optimal schedule found:")
                 self.print_schedule(chromosomes[0])
-                chromosomes[0].calculate_fitness(True)
+                chromosomes[0].calculate_fitness()
                 return chromosomes[0]
 
             # Selection
@@ -62,7 +60,9 @@ class RoutineGenerator:
     def initialize_population(self) -> List[Chromosome]:
         chromosomes = []
         for _ in range(self.total_population):
-            chromosomes.append(Chromosome(self.available_genes))
+            chromosomes.append(Chromosome(
+                total_slots = self.total_slots,
+                  available_genes=self.available_genes))
         return chromosomes
     
     @staticmethod

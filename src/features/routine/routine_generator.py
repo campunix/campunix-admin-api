@@ -29,14 +29,6 @@ class RoutineGenerator:
         self._random = random.Random()
 
     def generate(self):
-        raise DuplicateException("Item not found")
-        testGene = self.available_genes[5000]
-
-        # try:
-        # except:
-        #     raise IndexError
-        #     print("Something else went wrong")
-
         chromosomes = self.initialize_population()
 
         generation = 0

@@ -18,14 +18,10 @@ class TeacherBase(SQLModel):
         nullable=False,
     )
     designation: TeacherDesignation = Field(
-        default=None,
-        sa_column=Column(Enum(TeacherDesignation)),
-        nullable=False,
+        sa_column=Column(Enum(TeacherDesignation, name="teacher_designation", create_type=False))
     )
     status: TeacherStatus = Field(
-        default=None,
-        sa_column=Column(Enum(TeacherStatus)),
-        nullable=False,
+        sa_column=Column(Enum(TeacherStatus, name="teacher_status", create_type=False))
     )
 
 

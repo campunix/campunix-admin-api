@@ -22,10 +22,11 @@ def upgrade() -> None:
     op.create_table(
         "departments",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("name", sa.String(length=255), nullable=False, unique=True),
-        sa.Column("admin_group", sa.BigInteger, nullable=False),
+        sa.Column("name", sa.String(length=255), nullable=False),
+        sa.Column("code", sa.String(length=255), nullable=False, unique=True),
+        sa.Column("organization_id", sa.BigInteger, nullable=False),
         sa.Column("created_by", sa.BigInteger, nullable=False),
-        sa.ForeignKeyConstraint(["admin_group"], ["admin_groups.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(["organization_id"], ["organizations.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["created_by"], ["users.id"], ondelete="CASCADE"),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False

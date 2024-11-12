@@ -8,9 +8,13 @@ class DepartmentBase(SQLModel):
         default=None,
         nullable=False,
     )
-    admin_group: int = Field(
+    code: str = Field(
         default=None,
-        foreign_key="admin_groups.id",
+        nullable=False,
+    )
+    organization_id: int = Field(
+        default=None,
+        foreign_key="organizations.id",
         nullable=False,
     )
     created_by: int = Field(

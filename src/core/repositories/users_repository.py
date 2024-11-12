@@ -11,6 +11,11 @@ class UsersRepository(BaseRepository[User], UsersRepositoryContract):
     def __init__(self, db_session: AsyncSession):
         super().__init__(db_session, User)
 
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        statement = select(User).where(User.id == user_id)
+        result = await self.db_session.execute(statement)
+        return result.scalars().one_or_none()
+
     async def get_user_by_username(self, username: str) -> Optional[User]:
         statement = select(User).where(User.username == username)
         result = await self.db_session.execute(statement)

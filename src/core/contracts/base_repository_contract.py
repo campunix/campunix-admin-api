@@ -7,23 +7,31 @@ T = TypeVar("T", bound=SQLModel)
 
 
 class BaseRepositoryContract(ABC):
-    async def get_by_id(self, id: int) -> Optional[T]:
+    async def get_by_id(
+            self,
+            id: int,
+            joins: Optional[List[Any]] = None
+    ) -> Optional[T]:
         pass
 
     async def get_all(
-        self,
-        page: int = 1,
-        page_size: int = 10,
-        paginate: bool = False,
-        filters: Optional[List[Any]] = None,
+            self,
+            page: int = 1,
+            page_size: int = 10,
+            paginate: bool = False,
+            filters: Optional[List[Any]] = None,
+            joins: Optional[List[Any]] = None
     ) -> Dict[str, Any]:
         pass
 
     async def create(self, obj: T) -> T:
         pass
 
-    async def update(self, id: int, obj_data: dict) -> Optional[T]:
+    async def update(self, id: int, obj_data: T) -> Optional[T]:
         pass
 
-    async def delete(self, id: int) -> None:
+    async def delete(self, id: int) -> bool:
+        pass
+
+    async def bulk_insert(self, obj_list: List[T]):
         pass

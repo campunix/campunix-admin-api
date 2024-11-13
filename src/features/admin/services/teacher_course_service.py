@@ -53,13 +53,13 @@ class TeacherCourseService(TeacherCourseServiceContract):
 
     async def get_teacher_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
         columns = [
-            TeacherCourse.id.label("id"),
-            Teacher.id.label("id"),
+            TeacherCourse.id,
+            Teacher.id.label("teacherId"),
             User.full_name,
             User.email,
             Teacher.designation,
             Teacher.status,
-            Course.id.label("id"),
+            Course.id.label("courseId"),
             Course.title,
             Course.code,
             Course.course_type

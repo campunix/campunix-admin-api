@@ -1,8 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TeacherOut(BaseModel):
-    id: int
+    # id: int
+    id: int = Field(..., alias='teacherId')
     full_name: str
     email: str
     designation: str

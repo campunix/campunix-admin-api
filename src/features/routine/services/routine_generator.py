@@ -1,8 +1,8 @@
 import random
 from typing import List
 
-from src.features.routine.chromosome import Chromosome
-from src.features.routine.gene import Gene
+from src.features.routine.models.chromosome import Chromosome
+from src.features.routine.models.gene import Gene
 
 class RoutineGenerator:
     def __init__(self):

@@ -1,7 +1,7 @@
 import random
 from typing import List
 
-from src.features.routine.gene import Gene
+from src.features.routine.models.gene import Gene
 
 class Chromosome:
     total_slots = 5

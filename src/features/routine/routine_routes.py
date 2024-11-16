@@ -1,9 +1,8 @@
 from dependency_injector.wiring import inject
 
-from fastapi import APIRouter, HTTPException
-from src.core.exceptions.duplicate_exception import DuplicateException
+from fastapi import APIRouter
 from src.features.routine.models.routine_in import RoutineIn
-from src.features.routine.routine_generator import RoutineGenerator
+from src.features.routine.services.routine_generator import RoutineGenerator
 
 router = APIRouter()
 

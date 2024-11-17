@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from src.models.teacher import TeacherIn, TeacherOut
 
@@ -10,7 +10,7 @@ class TeacherServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False):
+    async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False)  -> Dict[str, Any]:
         pass
 
     @abstractmethod

@@ -1,8 +1,10 @@
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
+from fastapi import status
 
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
+from src.models.response import APIResponse
 from src.models.teacher import TeacherIn
 from src.utils.oauth2_utils import oauth2_scheme
 
@@ -17,7 +19,7 @@ async def create_teacher(
         token: str = Depends(oauth2_scheme),
 ):
     teacher = await teacher_service.create_teacher(teacher_in)
-    return teacher
+    return APIResponse(code=status.HTTP_201_CREATED, message="Created successfully", data=teacher)
 
 
 @teacher_router.get("")
@@ -25,7 +27,8 @@ async def create_teacher(
 async def get_all_teacher(
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
 ):
-    return await teacher_service.get_teachers()
+    teachers = await teacher_service.get_teachers()
+    return APIResponse(data=teachers)
 
 
 @teacher_router.get("/{id}")
@@ -34,7 +37,8 @@ async def get_teacher(
         id: int,
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
 ):
-    return await teacher_service.get_teacher_by_id(id)
+    teacher = await teacher_service.get_teacher_by_id(id)
+    return APIResponse(data=teacher)
 
 
 @teacher_router.put("/{id}")
@@ -45,7 +49,7 @@ async def update_teacher(
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
 ):
     teacher = await teacher_service.update_teacher(id, teacher_in)
-    return teacher
+    return APIResponse(message="Updated successfully", data=teacher)
 
 
 @teacher_router.delete("/{id}")
@@ -54,5 +58,5 @@ async def delete_teacher(
         id: int,
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
 ):
-    status = await teacher_service.delete_teacher(id)
-    return status
+    res = await teacher_service.delete_teacher(id)
+    return APIResponse(status=res, message="Deleted successfully")

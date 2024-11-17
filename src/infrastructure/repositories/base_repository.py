@@ -1,13 +1,13 @@
 from math import ceil
-from sqlite3 import IntegrityError
 from typing import Generic, Type, TypeVar, Optional, List, Dict, Any
 
 from sqlalchemy import update
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel, select, func
 
 from src.core.contracts.base_repository_contract import BaseRepositoryContract
+from src.core.exceptions.db_exceptions import DatabaseIntegrityError, DatabaseError
 
 # Define a type variable for generic use in BaseRepository
 T = TypeVar("T", bound=SQLModel)
@@ -28,7 +28,6 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         # Apply joins if provided
         if joins:
             for related_model, condition in joins:
-                # statement = statement.join(related_model, condition)
                 statement = statement.join(related_model, condition).add_columns(related_model)
 
         result = await self.db_session.execute(statement)
@@ -40,16 +39,19 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             page_size: int = 10,
             paginate: bool = False,
             filters: Optional[List[Any]] = None,
-            joins: Optional[List[Any]] = None
+            joins: Optional[List[Any]] = None,
+            columns: Optional[List[Any]] = None
     ) -> Dict[str, Any]:
-        # Start with base query
-        statement = select(self.model)
+        # If no specific columns are passed, default to selecting all columns of the model
+        if columns is None:
+            statement = select(*self.model.__table__.columns)
+        else:
+            statement = select(*columns)
 
         # Apply joins if provided
         if joins:
             for related_model, condition in joins:
-                # statement = statement.join(related_model, condition)
-                statement = statement.join(related_model, condition).add_columns(related_model)
+                statement = statement.join(related_model, condition)
 
         # Apply filters if provided
         if filters:
@@ -79,7 +81,7 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             statement = statement.offset((page - 1) * page_size).limit(page_size)
 
         result = await self.db_session.execute(statement)
-        items = result.scalars().all()
+        items = result.mappings().all()
 
         if paginate:
             return {
@@ -102,11 +104,11 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             return obj
 
         except IntegrityError:
-            await self.db_session.rollback()  # Roll back on integrity errors
-            print(f"IntegrityError: {obj} already exists.")
+            await self.db_session.rollback()
+            raise DatabaseIntegrityError(detail=f"Integrity error: {obj} already exists.")
         except SQLAlchemyError as e:
             await self.db_session.rollback()
-            print(f"Database error: {e}")
+            raise DatabaseError(detail=f"Database error: {e}")
 
     async def update(self, id: int, obj_data: T) -> Optional[T]:
         stmt = (

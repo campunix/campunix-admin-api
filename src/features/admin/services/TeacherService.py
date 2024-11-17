@@ -2,6 +2,7 @@ from typing import Optional
 
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
+from src.core.converters import entity_to_model, entity_to_model_list
 from src.core.entities.enums.teacher_designation import TeacherDesignation
 from src.core.entities.enums.teacher_status import TeacherStatus
 from src.core.entities.teacher import Teacher
@@ -39,7 +40,7 @@ class TeacherService(TeacherServiceContract):
         if not new_teacher:
             raise DuplicateException(detail="Teacher already exist")
 
-        return TeacherOut(
+        teacher_out = TeacherOut(
             id=new_teacher.id,
             name=user.full_name,
             email=user.email,
@@ -47,16 +48,30 @@ class TeacherService(TeacherServiceContract):
             status=new_teacher.status
         )
 
+        return entity_to_model(entity=teacher_out, model=TeacherOut)
+
     async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.teachers_repository.get_all(
-            joins=[(User, Teacher.user_id == User.id)]
+
+        columns = [
+            Teacher.id,
+            User.full_name,
+            User.email,
+            Teacher.designation,
+            Teacher.status,
+            Teacher.status
+        ]
+
+        teacher_dict = await self.teachers_repository.get_all(
+            joins=[(User, Teacher.user_id == User.id)],
+            columns=columns
         )
+        return entity_to_model_list(entity_dict=teacher_dict, model=TeacherOut, paginate=paginate)
 
     async def update_teacher(self, id: int, teacher: TeacherIn) -> Optional[TeacherOut]:
         user = await self.users_repository.get_user_by_id(user_id=teacher.user_id)
 
         if not user:
-            raise NotFoundException
+            raise NotFoundException(detail='User not found')
 
         new_teacher = await self.teachers_repository.update(
             id,
@@ -69,18 +84,23 @@ class TeacherService(TeacherServiceContract):
         )
 
         if not new_teacher:
-            raise NotFoundException
+            raise NotFoundException(detail='Teacher not found')
 
         return TeacherOut(
             id=new_teacher.id,
-            name=user.full_name,
+            full_name=user.full_name,
             email=user.email,
             designation=new_teacher.designation,
             status=new_teacher.status
         )
 
     async def delete_teacher(self, id: int) -> bool:
-        return await self.teachers_repository.delete(id)
+        res = await self.teachers_repository.delete(id)
+
+        if res is False:
+            raise NotFoundException(detail="Deletion unsuccessful")
+
+        return res
 
     async def get_teacher_by_id(self, id: int) -> Optional[TeacherOut]:
         teacher = await self.teachers_repository.get_by_id(
@@ -96,7 +116,7 @@ class TeacherService(TeacherServiceContract):
 
         return TeacherOut(
             id=teacher.id,
-            name=user.full_name,
+            full_name=user.full_name,
             email=user.email,
             designation=teacher.designation,
             status=teacher.status

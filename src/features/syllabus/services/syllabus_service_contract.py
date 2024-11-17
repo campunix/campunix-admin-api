@@ -13,7 +13,11 @@ class SyllabusServiceContract(ABC):
         pass
 
     @abstractmethod
-    def getByDepartmentID(self, department_id: int) -> Optional[SyllabusParsed]:
+    def get_by_department_id(self, department_id: int) -> Optional[SyllabusParsed]:
+        pass
+
+    @abstractmethod
+    async def get_course_list(self, department_id: int) -> list[dict[str, Any]]:
         pass
 
     @abstractmethod

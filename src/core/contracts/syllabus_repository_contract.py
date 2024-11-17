@@ -11,7 +11,7 @@ class SyllabusRepositoryContract(ABC):
         pass
 
     @abstractmethod
-    async def getByDeptID(self, department_id) -> Optional[SyllabusParsed]:
+    async def get_by_department(self, department_id) -> Optional[SyllabusParsed]:
         pass
 
     @abstractmethod

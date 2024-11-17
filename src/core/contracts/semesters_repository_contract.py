@@ -7,5 +7,5 @@ from src.core.entities.semester import Semester
 
 class SemestersRepositoryContract(BaseRepositoryContract):
     @abstractmethod
-    async def get_semester_by_year_and_number(self, year: int, number: int) -> Optional[Semester]:
+    async def get_semester_by_year_and_number(self, department: int, year: int, number: int) -> Optional[Semester]:
         pass

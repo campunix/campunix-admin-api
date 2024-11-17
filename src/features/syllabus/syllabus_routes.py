@@ -9,7 +9,7 @@ from src.features.syllabus.syllabus_container import SyllabusContainer
 router = APIRouter(prefix="/syllabus")
 
 
-@router.post("/save", status_code=status.HTTP_201_CREATED, summary="Save Syllabus")
+@router.post("/upload", status_code=status.HTTP_201_CREATED, summary="Save Syllabus")
 @inject
 async def save(
         file: UploadFile = File(...),
@@ -22,13 +22,13 @@ async def save(
     return syllabus_parsed
 
 
-@router.get("/getByDeptID", summary="Get department wise syllabus")
+@router.get("", summary="Get department wise syllabus")
 @inject
-async def getByDepartmentID(
+async def get_by_department(
         department_id: int = None,
         syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
 ):
-    course = await syllabus_service.getByDepartmentID(department_id)
+    course = await syllabus_service.get_course_list(department_id)
     return course
 
 

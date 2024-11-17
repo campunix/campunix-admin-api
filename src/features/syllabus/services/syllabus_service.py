@@ -9,6 +9,7 @@ from src.core.contracts.departments_repository_contract import DepartmentsReposi
 from src.core.contracts.semesters_repository_contract import SemestersRepositoryContract
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
 from src.core.exceptions.not_found_exception import NotFoundException
+from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_utils.xml_utils import parse_syllabus, create_template
 from src.models.syllabus.syllabus_models import SyllabusParsed
@@ -20,12 +21,14 @@ class SyllabusService(SyllabusServiceContract):
             syllabus_repository: SyllabusRepositoryContract,
             departments_repository: DepartmentsRepositoryContract,
             courses_repository: CoursesRepositoryContract,
-            semesters_repository: SemestersRepositoryContract
+            semesters_repository: SemestersRepositoryContract,
+            teachers_course_service: TeacherCourseServiceContract
     ):
         self.repository = syllabus_repository
         self.departments_repository = departments_repository
         self.courses_repository = courses_repository
         self.semesters_repository = semesters_repository
+        self.teachers_course_service = teachers_course_service
 
     async def save(self, file: File(...)) -> SyllabusParsed:
         try:
@@ -57,8 +60,32 @@ class SyllabusService(SyllabusServiceContract):
         except ET.ParseError:
             raise HTTPException(status_code=400, detail="Invalid XML format.")
 
-    async def getByDepartmentID(self, department_id) -> Optional[SyllabusParsed]:
-        return await self.repository.getByDeptID(department_id)
+    async def get_course_list(self, department_id: int) -> list[dict[str, Any]]:
+        syllabus = await self.repository.get_by_department(department_id)
+        print(syllabus.sylla)
+        result = []
+        for semester in syllabus.semesters:
+            semester_data = await self.semesters_repository.get_semester_by_year_and_number(
+                department=department_id,
+                year=semester.year,
+                number=semester.number,
+            )
+            for course in semester.courses:
+                course_data = await self.teachers_course_service.get_teacher_course_by_course_code(
+                    department_id=department_id, course_code=course.course_code)
+
+                result.append(
+                    {
+                        "semester": semester_data,
+                        "course": course_data.course,
+                        "teacher": course_data.teacher
+                    }
+                )
+
+        return result
+
+    async def get_by_department_id(self, department_id) -> Optional[SyllabusParsed]:
+        return await self.repository.get_by_department(department_id)
 
     async def getByDeptIDAndSemesterCode(self, department_id: int, semester_code: int) -> Optional[SyllabusParsed]:
         return await self.repository.getByDeptIDAndSemesterCode(department_id, semester_code)

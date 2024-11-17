@@ -14,8 +14,8 @@ class SemestersRepository(
     def __init__(self, db_session: AsyncSession):
         super().__init__(db_session, Semester)
 
-    async def get_semester_by_year_and_number(self, year: int, number: int) -> Optional[Semester]:
+    async def get_semester_by_year_and_number(self, department: int, year: int, number: int) -> Optional[Semester]:
         result = await self.db_session.execute(
-            select(Semester).where(Semester.year == year and Semester.number == number))
+            select(Semester).where(Semester.department_id == department and Semester.year == year and Semester.number == number))
 
         return result.scalars().one_or_none()

@@ -1,8 +1,8 @@
 from typing import Any, Optional, List
 
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
-from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
 from src.core.entities.syllabus.syllabus import Syllabus
@@ -13,10 +13,10 @@ class SyllabusRepository(SyllabusRepositoryContract):
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def getByDeptID(self, department_id: int) -> Optional[SyllabusParsed]:
+    async def get_by_department(self, department_id: int) -> Optional[SyllabusParsed]:
         statement = select(Syllabus).where(Syllabus.department_id == department_id)
-        result = await self.db_session.exec(statement)
-        return result.one_or_none()
+        result = await self.db_session.execute(statement)
+        return result.scalars().one_or_none()
 
     async def getByDeptIDAndSemesterCode(self, department_id: int, semester_code: int) -> Optional[SyllabusParsed]:
         statement = text("""

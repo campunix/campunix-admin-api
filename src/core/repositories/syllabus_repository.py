@@ -35,9 +35,9 @@ class SyllabusRepository(SyllabusRepositoryContract):
         syllabusOut = result.scalars().one_or_none()
         return syllabusOut
 
-    async def save(self, syllabus: SyllabusParsed) -> SyllabusParsed:
+    async def save(self, department_id: int, syllabus: SyllabusParsed) -> SyllabusParsed:
         syllabus_dict = Syllabus(
-            department_id=syllabus.department_id,
+            department_id=department_id,
             syllabus=syllabus.model_dump()
         )
 

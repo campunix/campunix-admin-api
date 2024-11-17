@@ -33,7 +33,8 @@ class SyllabusService(SyllabusServiceContract):
             root = ET.fromstring(contents)
             syllabus = parse_syllabus(root)
 
-            department = await self.departments_repository.get_department_by_code(department_code=syllabus.department_code)
+            department = await self.departments_repository.get_department_by_code(
+                department_code=syllabus.department_code)
             if not department:
                 raise NotFoundException(detail="Department not found!")
 
@@ -51,7 +52,7 @@ class SyllabusService(SyllabusServiceContract):
                     if not course_in_db:
                         raise NotFoundException(detail="Course not found!")
 
-            return await self.repository.save(syllabus=syllabus)
+            return await self.repository.save(department_id=department.id, syllabus=syllabus)
 
         except ET.ParseError:
             raise HTTPException(status_code=400, detail="Invalid XML format.")

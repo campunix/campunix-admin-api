@@ -7,7 +7,7 @@ from src.models.syllabus.syllabus_models import SyllabusParsed
 class SyllabusRepositoryContract(ABC):
 
     @abstractmethod
-    async def save(self, syllabus: SyllabusParsed):
+    async def save(self, department_id: int, syllabus: SyllabusParsed):
         pass
 
     @abstractmethod

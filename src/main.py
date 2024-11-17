@@ -14,6 +14,8 @@ from src.features.admin.routes.teacher_course_routes import teacher_course_route
 from src.features.admin.routes.teacher_routes import teacher_router
 from src.features.auth.auth_container import AuthContainer
 from src.features.auth.auth_routes import router as auth_router
+from src.features.syllabus.syllabus_container import SyllabusContainer
+from src.features.syllabus.syllabus_routes import router as syllabus_router
 from src.models.response import APIResponse
 
 app = FastAPI(**app_configs)
@@ -93,9 +95,11 @@ async def index() -> dict[str, str]:
 async def healthcheck() -> dict[str, str]:
     return {"status": "ok"}
 
-
 auth_container = AuthContainer()
+syllabus_container = SyllabusContainer()
+
 app.include_router(auth_router, tags=["auth"])
+app.include_router(syllabus_router, tags=["syllabus"])
 
 admin_container = AdminContainer()
 app.include_router(admin_router, tags=["admins"])

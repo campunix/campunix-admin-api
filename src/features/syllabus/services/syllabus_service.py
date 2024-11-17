@@ -12,6 +12,7 @@ from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_utils.xml_utils import parse_syllabus, create_template
+from src.models.semester import SemesterOut
 from src.models.syllabus.syllabus_models import SyllabusParsed
 
 
@@ -42,7 +43,8 @@ class SyllabusService(SyllabusServiceContract):
                 raise NotFoundException(detail="Department not found!")
 
             for semester in syllabus.semesters:
-                semester_in_db = await self.semesters_repository.get_semester_by_year_and_number(year=1, number=1)
+                semester_in_db = await self.semesters_repository.get_semester_by_year_and_number(
+                    department=department.id, year=1, number=1)
                 if not semester_in_db:
                     raise NotFoundException(detail="Semester not found!")
 
@@ -62,7 +64,7 @@ class SyllabusService(SyllabusServiceContract):
 
     async def get_course_list(self, department_id: int) -> list[dict[str, Any]]:
         syllabus = await self.repository.get_by_department(department_id)
-        print(syllabus.sylla)
+
         result = []
         for semester in syllabus.semesters:
             semester_data = await self.semesters_repository.get_semester_by_year_and_number(
@@ -76,7 +78,7 @@ class SyllabusService(SyllabusServiceContract):
 
                 result.append(
                     {
-                        "semester": semester_data,
+                        "semester": SemesterOut(**semester_data.model_dump()),
                         "course": course_data.course,
                         "teacher": course_data.teacher
                     }

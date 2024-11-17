@@ -29,8 +29,8 @@ def parse_syllabus(root: ET.Element) -> SyllabusParsed:
                         ],
                         course_description=[
                             CourseDescription(
-                                Module=desc.findtext("Module"),
-                                Content=desc.findtext("Content")
+                                module=desc.findtext("Module"),
+                                content=desc.findtext("Content")
                             ) for desc in course.findall("CourseDescription")
                         ],
                         recommended_books=[

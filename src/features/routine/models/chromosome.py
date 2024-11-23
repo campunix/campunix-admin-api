@@ -5,7 +5,7 @@ from src.features.routine.models.gene import Gene
 
 class Chromosome:
     total_slots = 5
-    total_semesters = 2
+    total_semesters = 4
     
     def __init__(self, total_slots: int, available_genes: List[Gene] = None):
         self.genes = []

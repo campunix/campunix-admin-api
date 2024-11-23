@@ -7,20 +7,20 @@ from src.features.routine.models.gene import Gene
 class RoutineGenerator:
     def __init__(self):
         self.available_genes = [
-            Gene("CSE-203", "EI", "2-1", 1, True),
-            Gene("CSE-205", "NAR", "2-1", 1, False),
-            Gene("CSE-206", "GM", "2-1", 1, False),
-            Gene("CSE-207", "MMB", "2-1", 1, False),
-            Gene("CSE-208", "MZR", "2-1", 1, False),
-            Gene("CSE-209", "MAI", "2-1", 1, False),
-            Gene("CSE-210", "MAI", "2-1", 1, True),
-            Gene("CSE-212", "EI", "2-1", 1, True),
-            Gene("CSE-303", "SKS", "3-1", 2, False),
-            Gene("CSE-304", "SKS", "3-1", 2, True),
-            Gene("CSE-305", "BA", "3-1", 2, False),
-            Gene("CSE-307", "JKD", "3-1", 2, False),
-            Gene("CSE-309", "AKA", "3-1", 2, False),
-            Gene("CSE-314", "SB", "3-1", 2, True),
+            Gene("CSE-203", "EI", "2-1", 2, True),
+            Gene("CSE-205", "NAR", "2-1", 2, False),
+            Gene("CSE-206", "GM", "2-1", 2, False),
+            Gene("CSE-207", "MMB", "2-1", 2, False),
+            Gene("CSE-208", "MZR", "2-1", 2, False),
+            Gene("CSE-209", "MAI", "2-1", 2, False),
+            Gene("CSE-210", "MAI", "2-1", 2, True),
+            Gene("CSE-212", "EI", "2-1", 2, True),
+            Gene("CSE-303", "SKS", "3-1", 3, False),
+            Gene("CSE-304", "SKS", "3-1", 3, True),
+            Gene("CSE-305", "BA", "3-1", 3, False),
+            Gene("CSE-307", "JKD", "3-1", 3, False),
+            Gene("CSE-309", "AKA", "3-1", 3, False),
+            Gene("CSE-314", "SB", "3-1", 3, True),
         ]
         self.total_population = 10
         self._random = random.Random()

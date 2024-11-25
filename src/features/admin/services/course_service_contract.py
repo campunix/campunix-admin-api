@@ -26,5 +26,9 @@ class CourseServiceContract(ABC):
         pass
 
     @abstractmethod
+    async def get_course_by_course_code(self, department_id: int, course_code: str) -> Optional[CourseOut]:
+        pass
+
+    @abstractmethod
     async def bulk_insert_courses(self, courses_in: List[CourseIn]):
         pass

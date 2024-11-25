@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from src.models.teacher_course import TeacherCourseIn, TeacherCourseOut
 
@@ -10,7 +10,7 @@ class TeacherCourseServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def get_teacher_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
+    async def get_teacher_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -23,4 +23,9 @@ class TeacherCourseServiceContract(ABC):
 
     @abstractmethod
     async def get_teacher_course_by_id(self, id: int) -> Optional[TeacherCourseOut]:
+        pass
+
+    @abstractmethod
+    async def get_teacher_course_by_course_code(self, department_id: int, course_code: str) -> Optional[
+        TeacherCourseOut]:
         pass

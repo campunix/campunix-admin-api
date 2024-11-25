@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class TeacherOut(BaseModel):
     id: int
-    name: str
+    full_name: str
     email: str
     designation: str
     status: str

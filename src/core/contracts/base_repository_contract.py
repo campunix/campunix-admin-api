@@ -20,7 +20,8 @@ class BaseRepositoryContract(ABC):
             page_size: int = 10,
             paginate: bool = False,
             filters: Optional[List[Any]] = None,
-            joins: Optional[List[Any]] = None
+            joins: Optional[List[Any]] = None,
+            columns: Optional[List[Any]] = None
     ) -> Dict[str, Any]:
         pass
 

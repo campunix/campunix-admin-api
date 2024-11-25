@@ -1,7 +1,11 @@
 from typing import Optional
 
 from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
+from src.core.converters import entity_to_model_list
+from src.core.entities.course import Course
+from src.core.entities.teacher import Teacher
 from src.core.entities.teacher_course import TeacherCourse
+from src.core.entities.user import User
 from src.core.exceptions.duplicate_exception import DuplicateException
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
@@ -25,8 +29,11 @@ class TeacherCourseService(TeacherCourseServiceContract):
         teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
         course = await self.course_service.get_course_by_id(teacher_course.course_id)
 
-        if not teacher or not course:
-            raise NotFoundException
+        if not teacher:
+            raise NotFoundException(detail="Teacher not found")
+
+        if not course:
+            raise NotFoundException(detail="Course not found")
 
         new_teacher_course = await self.teacher_course_repository.create(
             TeacherCourse(
@@ -36,7 +43,7 @@ class TeacherCourseService(TeacherCourseServiceContract):
         )
 
         if not new_teacher_course:
-            raise DuplicateException(detail="Teacher Course not created")
+            raise DuplicateException(detail="Teacher Course already exist")
 
         return TeacherCourseOut(
             id=new_teacher_course.id,
@@ -45,11 +52,37 @@ class TeacherCourseService(TeacherCourseServiceContract):
         )
 
     async def get_teacher_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.teacher_course_repository.get_all()
+        columns = [
+            TeacherCourse.id.label("id"),
+            Teacher.id.label("id"),
+            User.full_name,
+            User.email,
+            Teacher.designation,
+            Teacher.status,
+            Course.id.label("id"),
+            Course.title,
+            Course.code,
+            Course.course_type
+        ]
+
+        teacher_course_dict = await self.teacher_course_repository.get_all(
+            joins=[
+                (Teacher, TeacherCourse.teacher_id == Teacher.id),
+                (User, Teacher.user_id == User.id),
+                (Course, TeacherCourse.course_id == Course.id)],
+            columns=columns
+        )
+        return entity_to_model_list(entity_dict=teacher_course_dict, model=TeacherCourseOut, paginate=paginate)
 
     async def update_teacher_course(self, id: int, teacher_course: TeacherCourseIn) -> Optional[TeacherCourseOut]:
         teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
         course = await self.course_service.get_course_by_id(teacher_course.course_id)
+
+        if not teacher:
+            raise NotFoundException(detail='Teacher not found')
+
+        if not course:
+            raise NotFoundException(detail='Course not found')
 
         new_teacher_course = await self.teacher_course_repository.update(
             id,
@@ -59,6 +92,9 @@ class TeacherCourseService(TeacherCourseServiceContract):
             )
         )
 
+        if not new_teacher_course:
+            raise NotFoundException(detail='Teacher Course not found')
+
         return TeacherCourseOut(
             id=new_teacher_course.id,
             teacher=teacher,
@@ -66,7 +102,10 @@ class TeacherCourseService(TeacherCourseServiceContract):
         )
 
     async def delete_teacher_course(self, id: int) -> bool:
-        return await self.teacher_course_repository.delete(id)
+        res = await self.teacher_course_repository.delete(id)
+        if res is False:
+            raise NotFoundException(detail="Deletion unsuccessful")
+        return res
 
     async def get_teacher_course_by_id(self, id: int) -> Optional[TeacherCourseOut]:
         teacher_course = await self.teacher_course_repository.get_by_id(id)
@@ -76,6 +115,32 @@ class TeacherCourseService(TeacherCourseServiceContract):
 
         teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
         course = await self.course_service.get_course_by_id(teacher_course.course_id)
+
+        if not teacher:
+            raise NotFoundException(detail="Teacher not found!")
+
+        if not course:
+            raise NotFoundException(detail="Course not found!")
+
+        return TeacherCourseOut(
+            id=teacher_course.id,
+            teacher=teacher,
+            course=course
+        )
+
+    async def get_teacher_course_by_course_code(self, department_id: int, course_code: str) -> Optional[
+        TeacherCourseOut]:
+        course = await self.course_service.get_course_by_course_code(
+            department_id=department_id,
+            course_code=course_code
+        )
+
+        teacher_course = await self.teacher_course_repository.get_teacher_courses_by_course_id(course_id=course.id)
+
+        if not teacher_course:
+            raise NotFoundException(detail="Course teacher not found!")
+
+        teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
 
         return TeacherCourseOut(
             id=teacher_course.id,

@@ -24,3 +24,8 @@ class TeacherCourseServiceContract(ABC):
     @abstractmethod
     async def get_teacher_course_by_id(self, id: int) -> Optional[TeacherCourseOut]:
         pass
+
+    @abstractmethod
+    async def get_teacher_course_by_course_code(self, department_id: int, course_code: str) -> Optional[
+        TeacherCourseOut]:
+        pass

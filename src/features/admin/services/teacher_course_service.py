@@ -127,3 +127,23 @@ class TeacherCourseService(TeacherCourseServiceContract):
             teacher=teacher,
             course=course
         )
+
+    async def get_teacher_course_by_course_code(self, department_id: int, course_code: str) -> Optional[
+        TeacherCourseOut]:
+        course = await self.course_service.get_course_by_course_code(
+            department_id=department_id,
+            course_code=course_code
+        )
+
+        teacher_course = await self.teacher_course_repository.get_teacher_courses_by_course_id(course_id=course.id)
+
+        if not teacher_course:
+            raise NotFoundException(detail="Course teacher not found!")
+
+        teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
+
+        return TeacherCourseOut(
+            id=teacher_course.id,
+            teacher=teacher,
+            course=course
+        )

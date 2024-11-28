@@ -5,6 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 from src.core.config import app_configs, settings
 from src.features.admin.admin_container import AdminContainer
 from src.features.auth.auth_container import AuthContainer
+from src.features.routine.routine_container import RoutineContainer
 from src.features.syllabus.syllabus_container import SyllabusContainer
 from src.features.admin.routes.admin_routes import admin_router
 from src.features.admin.routes.course_routes import course_router
@@ -99,6 +100,7 @@ async def healthcheck() -> dict[str, str]:
 auth_container = AuthContainer()
 admin_container = AdminContainer()
 syllabus_container = SyllabusContainer()
+routine_container = RoutineContainer()
 
 app.include_router(auth_router, tags=["auth"])
 app.include_router(syllabus_router, tags=["syllabus"])

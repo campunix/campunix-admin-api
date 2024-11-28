@@ -4,14 +4,12 @@ from typing import List
 from src.features.routine.models.gene import Gene
 
 class Chromosome:
-    total_slots = 5
-    total_semesters = 4
-    
-    def __init__(self, total_slots: int, available_genes: List[Gene] = None):
+    def __init__(self, total_slots: int, total_semesters: int, available_genes: List[Gene] = None):
         self.genes = []
         self.conflicts = 0
         self.fitness = 0.0
         self.total_slots = total_slots
+        self.total_semesters = total_semesters
         
         if available_genes:
             for gene in available_genes:
@@ -51,7 +49,7 @@ class Chromosome:
         self.fitness = 1.0 / (1 + conflicts)
 
     def crossover(self, other: 'Chromosome') -> 'Chromosome':
-        child = Chromosome(self.total_slots)
+        child = Chromosome(self.total_slots, self.total_semesters)
 
         for i in range(len(self.genes)):
             gene = self.genes[i] if random.random() < 0.5 else other.genes[i]

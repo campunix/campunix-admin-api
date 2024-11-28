@@ -3,30 +3,41 @@ from typing import List
 
 from src.features.routine.models.chromosome import Chromosome
 from src.features.routine.models.gene import Gene
+from src.features.routine.services.routine_generator_contract import RoutineGeneratorContract
+from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 
-class RoutineGenerator:
+class RoutineGenerator(RoutineGeneratorContract):
+    total_semesters: int
+    total_slots: int = 2
+    total_population: int = 10
+    available_genes: list[Gene] = []
+
     def __init__(self):
-        self.available_genes = [
-            Gene("CSE-203", "EI", "2-1", 2, True),
-            Gene("CSE-205", "NAR", "2-1", 2, False),
-            Gene("CSE-206", "GM", "2-1", 2, False),
-            Gene("CSE-207", "MMB", "2-1", 2, False),
-            Gene("CSE-208", "MZR", "2-1", 2, False),
-            Gene("CSE-209", "MAI", "2-1", 2, False),
-            Gene("CSE-210", "MAI", "2-1", 2, True),
-            Gene("CSE-212", "EI", "2-1", 2, True),
-            Gene("CSE-303", "SKS", "3-1", 3, False),
-            Gene("CSE-304", "SKS", "3-1", 3, True),
-            Gene("CSE-305", "BA", "3-1", 3, False),
-            Gene("CSE-307", "JKD", "3-1", 3, False),
-            Gene("CSE-309", "AKA", "3-1", 3, False),
-            Gene("CSE-314", "SB", "3-1", 3, True),
-        ]
-        self.total_population = 10
+
+        # self.available_genes = [
+        #     Gene("CSE-203", "EI", "2-1", 2, True),
+        #     Gene("CSE-205", "NAR", "2-1", 2, False),
+        #     Gene("CSE-206", "GM", "2-1", 2, False),
+        #     Gene("CSE-207", "MMB", "2-1", 2, False),
+        #     Gene("CSE-208", "MZR", "2-1", 2, False),
+        #     Gene("CSE-209", "MAI", "2-1", 2, False),
+        #     Gene("CSE-210", "MAI", "2-1", 2, True),
+        #     Gene("CSE-212", "EI", "2-1", 2, True),
+        #     Gene("CSE-303", "SKS", "3-1", 3, False),
+        #     Gene("CSE-304", "SKS", "3-1", 3, True),
+        #     Gene("CSE-305", "BA", "3-1", 3, False),
+        #     Gene("CSE-307", "JKD", "3-1", 3, False),
+        #     Gene("CSE-309", "AKA", "3-1", 3, False),
+        #     Gene("CSE-314", "SB", "3-1", 3, True),
+        # ]
         self._random = random.Random()
 
-    def generate(self, total_slots: int):
+    async def generate_async(self, total_slots: int, total_semesters: int, available_genes: list[Gene]):
+
         self.total_slots = total_slots
+        self.total_semesters = total_semesters
+        self.available_genes = available_genes or []
+
         chromosomes = self.initialize_population()
 
         generation = 0
@@ -61,8 +72,9 @@ class RoutineGenerator:
         chromosomes = []
         for _ in range(self.total_population):
             chromosomes.append(Chromosome(
-                total_slots = self.total_slots,
-                  available_genes=self.available_genes))
+                total_slots=self.total_slots,
+                total_semesters=self.total_semesters,
+                available_genes=self.available_genes))
         return chromosomes
     
     @staticmethod

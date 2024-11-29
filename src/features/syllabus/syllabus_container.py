@@ -2,9 +2,6 @@ from dependency_injector import containers, providers
 
 from src.core.repositories.syllabus_repository import SyllabusRepository
 from src.features.admin.admin_container import AdminContainer
-from src.features.admin.services.TeacherService import TeacherService
-from src.features.admin.services.course_service import CourseService
-from src.features.admin.services.teacher_course_service import TeacherCourseService
 from src.features.syllabus.services.syllabus_service import SyllabusService
 from src.infrastructure.base_container import BaseContainer
 

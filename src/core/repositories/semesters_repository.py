@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
@@ -23,3 +23,9 @@ class SemestersRepository(
         result = await self.db_session.execute(query)
 
         return result.scalar_one_or_none()
+
+    async def get_semesters_by_department_id(self, department: int) -> Optional[List[Semester]]:
+        query = select(Semester).where(Semester.department_id == department)
+        result = await self.db_session.execute(query)
+
+        return list(result.scalars())

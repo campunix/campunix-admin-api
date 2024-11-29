@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from datetime import datetime
 from typing import Dict, Any, List
 
 from src.models.syllabus.syllabus_models import SyllabusParsed, Semester, Course, CourseDescription, Book
@@ -11,7 +12,7 @@ def parse_syllabus(root: ET.Element) -> SyllabusParsed:
         semesters=[
             Semester(
                 year=semester.get("year"),
-                number = semester.get("number"),
+                number=semester.get("number"),
                 courses=[
                     Course(
                         course_code=course.findtext("CourseCode"),
@@ -55,55 +56,58 @@ def parse_syllabus(root: ET.Element) -> SyllabusParsed:
     return syllabus
 
 
-def create_template(department_id: int, semesters: List[Any], courses: List[Any],
-                    filename="syllabus_template.xml") -> str:
-    # Create the root element
-    syllabus = ET.Element("Syllabus")
+def create_template(
+        department_code: str,
+        department_name: str,
+        semesters_list: List[Any],
+) -> Any:
+    version = datetime.now().strftime("%d/%m/%Y")
 
-    # Department information
-    department_id = ET.SubElement(syllabus, "DepartmentID")
-    department_id.text = "1"  # Placeholder for Department ID
+    syllabus = ET.Element("Syllabus", version=version)
 
-    department_code = ET.SubElement(syllabus, "DepartmentCode")
-    department_code.text = "CSE"  # Placeholder for Department Code
+    department_code_element = ET.SubElement(syllabus, "DepartmentCode")
+    department_code_element.text = department_code
 
-    department_name = ET.SubElement(syllabus, "DepartmentName")
-    department_name.text = "Computer Science and Engineering"
-    semester = ET.SubElement(syllabus, "Semester")
-    semester.text = "1"
-    courses = ET.SubElement(syllabus, "Courses")
+    department_name_element = ET.SubElement(syllabus, "DepartmentName")
+    department_name_element.text = department_name
+    semesters_element = ET.SubElement(syllabus, "Semesters")
 
-    add_course(
-        courses,
-        course_code=" ",
-        title=" ",
-        credit=" ",
-        prerequisite=" ",
-        course_type=" ",
-        contact_hours=" ",
-        rationale=" ",
-        objectives=[
-            # "Understand basic software design principles"
-        ],
-        outcomes=[
-            # "Familiarize with algorithms and programming structure"
-        ],
-        modules={
-            # "Structured Programming Language fundamentals": "C, Keywords, History and Features, Basic Structure",
-        },
-        books=[
-            # {"title": "Teach Yourself C", "author": "Herbert Schildt", "publisher": "McGraw-Hill", "year": "1997"}
-        ]
-    )
+    for semester in semesters_list:
+        if not semester.disabled:
+            semester_element = ET.SubElement(
+                semesters_element,
+                "Semester",
+                year=str(semester.year),
+                number=str(semester.number),
+            )
 
-    # Generate the XML tree and save to file
-    # tree = ET.ElementTree(syllabus)
-    # with open(filename, "wb") as file:
-    # tree.write(file, encoding="utf-8", xml_declaration=True)
+            courses_element = ET.SubElement(semester_element, "Courses")
 
-    # Generate the XML tree and return as string
-    xml_string = ET.tostring(syllabus, encoding="utf-8", xml_declaration=True).decode("utf-8")
-    return xml_string  # Return the XML string
+            add_course(
+                courses_element,
+                course_code="Add Course Code",
+                title="Add Course title here",
+                credit="Add total credits here",
+                prerequisite="Add prerequisite here",
+                course_type="THEORY/LAB/VIVA (👈 Add one of these)",
+                contact_hours="Add contact hours here",
+                rationale="Add rationales here",
+                objectives=["Example objective 1", "Example objective 2"],
+                outcomes=["Add outcome here"],
+                modules={
+                    "Example module title": "Example module details",
+                },
+                books=[
+                    {
+                        "title": "Example title",
+                        "author": "Example Author",
+                        "publisher": "Example Publisher",
+                        "year": "DD/MM/YYYY (👈 Use this date format)"
+                    },
+                ]
+            )
+
+    return ET.tostring(syllabus, encoding="utf-8", xml_declaration=True).decode("utf-8")
 
 
 # Helper function to add a course

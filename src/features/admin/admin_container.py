@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 
+from src.features.admin.services.PreferenceService import PreferenceService
 from src.features.admin.services.TeacherService import TeacherService
-from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
 from src.features.admin.services.admin_service import AdminService
 from src.features.admin.services.course_service import CourseService
 from src.features.admin.services.department_service import DepartmentService
@@ -64,4 +64,10 @@ class AdminContainer(BaseContainer):
         teacher_course_repository=BaseContainer.teacher_courses_repository,
         teacher_service=teacher_service,
         course_service=course_service
+    )
+
+    preference_service = providers.Factory(
+        PreferenceService,
+        preferences_repository=BaseContainer.preferences_repository,
+        teachers_repository=BaseContainer.teachers_repository,
     )

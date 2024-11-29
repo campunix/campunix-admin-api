@@ -23,7 +23,7 @@ def upgrade() -> None:
     op.create_table(
         "syllabuses",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("department_id", sa.BigInteger, nullable=False, unique=True),
+        sa.Column("department_id", sa.BigInteger, nullable=False),
         sa.Column("syllabus", JSONB, nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("NOW()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), onupdate=sa.text("NOW()"), nullable=True),

@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 class TeacherOut(BaseModel):
     # id: int
-    id: int = Field(..., alias='teacherId')
+    id: int
     full_name: str
     email: str
     designation: str

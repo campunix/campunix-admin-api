@@ -1,7 +1,7 @@
 from http.client import HTTPException
 
 from dependency_injector.wiring import inject, Provide
-from fastapi import APIRouter, Depends, status, File, UploadFile
+from fastapi import APIRouter, Depends, status, File, UploadFile, Response
 
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_container import SyllabusContainer
@@ -72,4 +72,4 @@ async def template(
         syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
 ):
     syllabus_template = await syllabus_service.template(department_id)
-    return syllabus_template
+    return Response(content=syllabus_template, media_type="application/xml")

@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 class CourseOut(BaseModel):
     #id: int
-    id: int = Field(..., alias='courseId')
+    id: int
     title: str
     code: str
     course_type: str

@@ -97,7 +97,12 @@ class SyllabusService(SyllabusServiceContract):
         return await self.repository.updateSyllabus(department_id, semester_code, course_code, course_type)
 
     async def template(self, department_id: int) -> Optional[Any]:
-        semesters = await self.repository.getSemesters(department_id)
-        courses = await self.repository.getCourses(department_id)
-        template = create_template(department_id, semesters, courses)
-        return template
+        department = await self.departments_repository.get_by_id(department_id)
+
+        semesters = await self.semesters_repository.get_semesters_by_department_id(department_id)
+
+        return create_template(
+            department_code=department.code,
+            department_name=department.name,
+            semesters_list=semesters
+        )

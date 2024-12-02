@@ -18,7 +18,15 @@ class OrganizationService(OrganizationServiceContract):
         return OrganizationOut(id=new_organization.id, name=new_organization.name)
 
     async def get_organizations(self, page: int = 1, page_size: int = 10, paginate: bool = False) -> Dict[str, Any]:
-        return await self.organizations_repository.get_all()
+        data = await self.organizations_repository.get_all()
+
+        organizations = {
+            "items": [
+                {key: value for key, value in item.items() if key not in ["created_at", "updated_at"]}
+                for item in data["items"]
+            ]
+        }
+        return organizations
 
     async def update_organization(self, id: int, organization: OrganizationIn) -> Optional[OrganizationOut]:
         return await self.organizations_repository.update(id, Organization(id = id, name=organization.name))

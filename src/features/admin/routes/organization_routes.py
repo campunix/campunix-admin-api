@@ -8,6 +8,7 @@ from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.admin_service_contract import AdminServiceContract
 from src.features.admin.services.organization_service_contract import OrganizationServiceContract
 from src.models.organization import OrganizationIn
+from src.models.response import APIResponse
 from src.models.user_organization import UserOrganizationIn
 from src.utils.oauth2_utils import oauth2_scheme
 
@@ -20,7 +21,7 @@ async def create_organization(
         organization_in: OrganizationIn,
         organization_service: OrganizationServiceContract = Depends(Provide[AdminContainer.organization_service]),
         admin_service: AdminServiceContract = Depends(Provide[AdminContainer.admin_service]),
-        token: str = Depends(oauth2_scheme),
+        #token: str = Depends(oauth2_scheme),
 ):
     organization = await organization_service.create_organization(organization_in)
 
@@ -34,7 +35,8 @@ async def create_organization(
 async def get_all_organization(
         organization_service: OrganizationServiceContract = Depends(Provide[AdminContainer.organization_service]),
 ):
-    return await organization_service.get_organizations()
+    organizations = await organization_service.get_organizations()
+    return APIResponse(data=organizations)
 
 
 @organization_router.get("/{id}")

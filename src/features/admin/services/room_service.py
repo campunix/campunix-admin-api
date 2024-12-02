@@ -29,8 +29,16 @@ class RoomService(RoomServiceContract):
         return entity_to_model(entity=new_room, model=RoomOut)
 
     async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        room_dict = await self.rooms_repository.get_all()
-        return entity_to_model_list(entity_dict=room_dict, model=RoomOut, paginate=paginate)
+        data = await self.rooms_repository.get_all()
+        rooms = {
+            "rooms": [
+                {key: value for key, value in item.items() if
+                 key not in ["created_at", "updated_at"]}
+                for item in data["items"]
+            ]
+        }
+
+        return rooms
 
     async def update_room(self, id: int, roomIn: RoomIn) -> Optional[RoomOut]:
         room = await self.rooms_repository.update(
@@ -59,3 +67,6 @@ class RoomService(RoomServiceContract):
     async def get_room_by_id(self, id: int) -> Optional[RoomOut]:
         room = await self.rooms_repository.get_by_id(id)
         return entity_to_model(entity=room, model=RoomOut)
+
+    async def get_room_types(self):
+        return await self.rooms_repository.get_room_types()

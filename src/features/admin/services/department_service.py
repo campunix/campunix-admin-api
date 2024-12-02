@@ -27,7 +27,15 @@ class DepartmentService(DepartmentServiceContract):
         return DepartmentOut(id=new_department.id, name=new_department.name, code=new_department.code)
 
     async def get_departments(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.departments_repository.get_all()
+        data = await self.departments_repository.get_all()
+
+        departments = {
+            "departments": [
+                {key: value for key, value in item.items() if key not in ["organization_id", "created_at", "updated_at"]}
+                for item in data["items"]
+            ]
+        }
+        return departments
 
     async def update_department(self, id: int, department: DepartmentIn) -> Optional[DepartmentOut]:
         return await (

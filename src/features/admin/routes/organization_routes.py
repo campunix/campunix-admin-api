@@ -21,13 +21,11 @@ async def create_organization(
         organization_in: OrganizationIn,
         organization_service: OrganizationServiceContract = Depends(Provide[AdminContainer.organization_service]),
         admin_service: AdminServiceContract = Depends(Provide[AdminContainer.admin_service]),
-        #token: str = Depends(oauth2_scheme),
+        token: str = Depends(oauth2_scheme),
 ):
     organization = await organization_service.create_organization(organization_in)
-
     await admin_service.initiate_organization_for_current_user(token=token, organization_id=organization.id)
-
-    return organization
+    return APIResponse(data=organization)
 
 
 @organization_router.get("")

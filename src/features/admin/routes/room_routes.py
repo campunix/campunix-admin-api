@@ -10,6 +10,7 @@ from src.models.room import RoomIn
 room_router = APIRouter(prefix="/rooms")
 
 
+
 @room_router.post("")
 @inject
 async def create_room(
@@ -59,3 +60,12 @@ async def delete_room(
 ):
     res = await room_service.delete_room(id)
     return APIResponse(status=res, message="Deleted successfully")
+
+
+@room_router.get("/room_types/")
+@inject
+async def get_room_types(
+        room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
+):
+    room_types = await room_service.get_room_types()
+    return APIResponse(data=room_types)

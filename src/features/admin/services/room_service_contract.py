@@ -24,3 +24,7 @@ class RoomServiceContract(ABC):
     @abstractmethod
     async def get_room_by_id(self, id: int) -> Optional[RoomOut]:
         pass
+
+    @abstractmethod
+    async def get_room_types(self) -> Dict[str, Any]:
+        pass

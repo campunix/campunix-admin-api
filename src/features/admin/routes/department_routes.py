@@ -6,6 +6,7 @@ from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.department_service_contract import DepartmentServiceContract
 from src.features.auth.services.auth_service_contract import AuthServiceContract
 from src.models.department import DepartmentIn, DepartmentCreate
+from src.models.response import APIResponse
 from src.utils.oauth2_utils import oauth2_scheme
 
 department_router = APIRouter(prefix="/departments")
@@ -39,7 +40,8 @@ async def create_department(
 async def get_all_departments(
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
 ):
-    return await department_service.get_departments()
+    departments = await department_service.get_departments()
+    return APIResponse(data=departments)
 
 
 @department_router.get("/{id}")

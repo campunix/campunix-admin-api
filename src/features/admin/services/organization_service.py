@@ -21,7 +21,7 @@ class OrganizationService(OrganizationServiceContract):
         data = await self.organizations_repository.get_all()
 
         organizations = {
-            "items": [
+            "organizations": [
                 {key: value for key, value in item.items() if key not in ["created_at", "updated_at"]}
                 for item in data["items"]
             ]

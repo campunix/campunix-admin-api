@@ -1,6 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
+import ssl
 
 from sqlalchemy import MetaData, Table, insert, text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
@@ -8,8 +9,20 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sess
 from db_seed.seed import data
 from src.core.config import settings
 
+# Create an SSL context
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False  # Optional: Disable hostname check
+ssl_context.verify_mode = ssl.CERT_NONE  # Optional: Disable certificate verification
+
+
 DATABASE_URL = str(settings.DATABASE_URL)
-engine = create_async_engine(DATABASE_URL, echo=True, future=True)
+engine = create_async_engine(
+    DATABASE_URL,
+    connect_args={"ssl": ssl_context},
+    echo=True,
+    future=True,
+    execution_options={"isolation_level": "AUTOCOMMIT"}
+)
 metadata = MetaData()
 
 SessionLocal = async_sessionmaker(
@@ -21,14 +34,14 @@ SessionLocal = async_sessionmaker(
 # Insert data asynchronously into each table
 async def insert_data(table_name, records):
     async with engine.connect() as conn:
-        await conn.execute(text(
-            "SET session_replication_role = 'replica';"))
+        # await conn.execute(text(
+        #     "SET session_replication_role = 'replica';"))
 
         await conn.execute(text(
             f"DELETE FROM {table_name};"))
 
-        await conn.execute(text(
-            "SET session_replication_role = 'origin';"))
+        # await conn.execute(text(
+        #     "SET session_replication_role = 'origin';"))
 
         seq_name = f"public.{table_name}_id_seq"
         await conn.execute(text(f"ALTER SEQUENCE {seq_name} RESTART WITH 1;"))

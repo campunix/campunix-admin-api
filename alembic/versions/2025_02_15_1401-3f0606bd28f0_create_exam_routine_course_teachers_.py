@@ -22,17 +22,13 @@ def upgrade() -> None:
     op.create_table(
         "exam_routine_course_teachers",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("exam_routine_course_id", sa.BigInteger, nullable=False),
-        sa.Column("teacher_id", sa.BigInteger, nullable=False),
-        sa.Column("is_chief", sa.Boolean),
-        sa.ForeignKeyConstraint(["exam_routine_course_id"], ["exam_routine_courses.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["teacher_id"], ["teachers.id"], ondelete="CASCADE"),
+        sa.Column("title", sa.String(), nullable=True),
+        sa.Column("description", sa.String(), nullable=True),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
         ),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
     )
-
 
 def downgrade() -> None:
     op.drop_table("exam_routine_course_teachers")

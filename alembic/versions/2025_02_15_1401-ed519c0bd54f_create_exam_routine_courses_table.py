@@ -16,25 +16,17 @@ down_revision: Union[str, None] = '506ad8c1ffcb'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-
 def upgrade() -> None:
     op.create_table(
         "exam_routine_courses",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("exam_routine_id", sa.BigInteger, nullable=False),
-        sa.Column("course_id", sa.BigInteger, nullable=False),
-        sa.Column("exam_date", sa.DateTime()),
-        sa.Column("start_time", sa.DateTime()),
-        sa.Column("end_time", sa.DateTime()),
-        sa.Column("instruction", sa.String(), nullable=True),
-        sa.ForeignKeyConstraint(["course_id"], ["courses.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["exam_routine_id"], ["exam_routines.id"], ondelete="CASCADE"),
+        sa.Column("title", sa.String(), nullable=True),
+        sa.Column("description", sa.String(), nullable=True),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
         ),
         sa.Column("updated_at", sa.DateTime(), nullable=True),
     )
-
 
 def downgrade() -> None:
     op.drop_table("exam_routine_courses")

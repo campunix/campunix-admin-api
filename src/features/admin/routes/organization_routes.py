@@ -1,5 +1,10 @@
+from http import HTTPStatus
+from pyexpat.errors import messages
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
+from sqlalchemy.testing import fails
+from starlette.status import HTTP_201_CREATED
 
 from src.core.contracts.user_organizations_repository_contract import UserOrganizationsRepositoryContract
 from src.core.entities.enums.user_role import UserRole
@@ -8,7 +13,7 @@ from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.admin_service_contract import AdminServiceContract
 from src.features.admin.services.organization_service_contract import OrganizationServiceContract
 from src.models.organization import OrganizationIn
-from src.models.response import APIResponse
+from src.models.response import APIResponse, CreateResponse, DeleteResponse, UpdateResponse, ErrorResponse
 from src.models.user_organization import UserOrganizationIn
 from src.utils.oauth2_utils import oauth2_scheme
 
@@ -27,7 +32,7 @@ async def create_organization(
 
     await admin_service.initiate_organization_for_current_user(token=token, organization_id=organization.id)
 
-    return organization
+    return CreateResponse(data=organization)
 
 
 @organization_router.get("")
@@ -45,7 +50,12 @@ async def get_organization(
         id: int,
         organization_service: OrganizationServiceContract = Depends(Provide[AdminContainer.organization_service]),
 ):
-    return await organization_service.get_organization_by_id(id)
+    organization = await organization_service.get_organization_by_id(id)
+
+    if not organization:
+        return APIResponse(message="Organization does not exist!")
+
+    return APIResponse(data=organization)
 
 
 @organization_router.put("/{id}")
@@ -56,7 +66,10 @@ async def update_organization(
         organization_service: OrganizationServiceContract = Depends(Provide[AdminContainer.organization_service]),
 ):
     organization = await organization_service.update_organization(id, organization_in)
-    return organization
+    if not organization:
+        return APIResponse(message="Organization does not exist!")
+
+    return UpdateResponse(data=organization)
 
 
 @organization_router.delete("/{id}")
@@ -65,21 +78,29 @@ async def delete_organization(
         id: int,
         organization_service: OrganizationServiceContract = Depends(Provide[AdminContainer.organization_service]),
 ):
-    organization = await organization_service.delete_organization(id)
-    return organization
+    is_deleted = await organization_service.delete_organization(id)
+    if not is_deleted:
+        return ErrorResponse()
+    return DeleteResponse()
 
 
 @organization_router.post("/{id}/link-user")
+@inject
 async def link_user(
         id: int,
         user_organization: UserOrganizationIn,
+        organization_service: OrganizationServiceContract = Depends(Provide[AdminContainer.organization_service]),
         admin_service: AdminServiceContract = Depends(Provide[AdminContainer.admin_service])
 ):
+    organization = await organization_service.get_organization_by_id(id)
+
+    if not organization:
+        return APIResponse(message="Organization does not exist!")
+
     await admin_service.map_user_to_organization(
         organization_id=id,
         user_id=user_organization.user_id,
         role=UserRole.from_str(user_organization.role),
     )
 
-    # todo: response model
-    return "linked"
+    return APIResponse(message="User linked successfully")

@@ -17,3 +17,21 @@ class APIResponse(BaseModel):
     message: Optional[str] = None
     data: Any = None
     errors: Optional[Any] = None
+
+
+class CreateResponse(APIResponse):
+    message: Optional[str] = "Created successfully"
+    code: int = s.HTTP_201_CREATED
+
+
+class DeleteResponse(APIResponse):
+    message: Optional[str] = "Deleted successfully"
+
+
+class UpdateResponse(APIResponse):
+    message: Optional[str] = "Updated successfully"
+
+
+class ErrorResponse(APIResponse):
+    code: int = s.HTTP_500_INTERNAL_SERVER_ERROR
+    message: Optional[str] = "Something went wrong!"

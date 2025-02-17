@@ -58,4 +58,8 @@ class RoomService(RoomServiceContract):
 
     async def get_room_by_id(self, id: int) -> Optional[RoomOut]:
         room = await self.rooms_repository.get_by_id(id)
+
+        if not room:
+            raise NotFoundException
+
         return entity_to_model(entity=room, model=RoomOut)

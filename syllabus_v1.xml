@@ -1,0 +1,269 @@
+<Syllabus>
+    <DepartmentCode>CSE</DepartmentCode>
+    <DepartmentName>Computer Science and Engineering</DepartmentName>
+    <Semesters>
+        <Semester year="1" number="1">
+            <Courses>
+                <Course>
+                    <CourseCode>CSE-105</CourseCode>
+                    <Title>Structured Programming</Title>
+                    <Credit>3.0</Credit>
+                    <Prerequisite>None</Prerequisite>
+                    <Type>THEORY</Type>
+                    <ContactHours>39</ContactHours>
+                    <Rationale>
+                        This course is designed to introduce students to the algorithms' way of thinking and
+                        problem-solving
+                        by computers.
+                        Students learn the fundamental principles of structured programming. Typical characteristics and
+                        mechanisms of
+                        structured programming languages are introduced, and students are introduced to the design and
+                        development of
+                        programs written in this language. Programming languages in use in the software business.
+                        Lessons
+                        are completed
+                        by practices where theoretical knowledge is applied in a cooperative software environment.
+                    </Rationale>
+                    <CourseObjectives>
+                        <Objective>Make students familiar with basic software design principles, good programming style,
+                            structured approach to program design, development, testing, and documentation
+                        </Objective>
+                    </CourseObjectives>
+                    <StudentLearningOutcomes>
+                        <Outcome>After successful completion of this course, students should be able to:</Outcome>
+                        <Outcome>Familiarize with algorithms and step into algorithmic program in its structured way
+                        </Outcome>
+                        <Outcome>Implement algorithms into code and describe programming methodologies</Outcome>
+                    </StudentLearningOutcomes>
+                    <CourseDescription>
+                        <Module>Structured Programming Language fundamentals</Module>
+                        <Content>C, Keywords, History and Features, Basic Structure of Program and Hello World Program,
+                            C Program Execution Process
+                        </Content>
+                        <Module>Basic Input/Output</Module>
+                        <Content>Formatted and Unformatted, Basic Types, Operator and Expression, Bitwise, Relational
+                            Operators
+                        </Content>
+                        <Module>Arrays and Pointers</Module>
+                        <Content>One and Multi-dimensional arrays, Pointers and Strings</Content>
+                    </CourseDescription>
+                    <RecommendedBooks>
+                        <Book>
+                            <Title>Teach Yourself C</Title>
+                            <Author>Herbert Schildt</Author>
+                            <Publisher>McGraw-Hill</Publisher>
+                            <Year>1997</Year>
+                        </Book>
+                        <Book>
+                            <Title>Programming in ANSI C</Title>
+                            <Author>E. Balagurusamy</Author>
+                            <Publisher>Tata McGraw-Hill</Publisher>
+                            <Year>2010</Year>
+                        </Book>
+                    </RecommendedBooks>
+                </Course>
+
+                <Course>
+                    <CourseCode>CSE-106</CourseCode>
+                    <Title>Structured Programming Laboratory</Title>
+                    <Credit>1.0</Credit>
+                    <Prerequisite>None</Prerequisite>
+                    <Type>LAB</Type>
+                    <ContactHours>20</ContactHours>
+                    <Rationale>
+                        This lab course is designed to provide students with hands-on experience on basic programming
+                        using
+                        C.
+                        Programming language is used as the base in this course. Theoretical lessons are complemented by
+                        this
+                        practical where students' theoretical knowledge is applied to cooperative software development.
+                    </Rationale>
+                    <CourseObjectives>
+                        <Objective>To make students familiar with the practical experience of basic programming
+                            principles,
+                            good programming style, and structured programming
+                        </Objective>
+                    </CourseObjectives>
+                    <LabOutcomes>
+                        <Outcome>Familiarize students with algorithmic programming steps</Outcome>
+                        <Outcome>Make students implement the theory they learn in C</Outcome>
+                    </LabOutcomes>
+                    <HardwareSoftwareRequirements>
+                        <HW>Core i5, 2.4 GHz, 4 GB RAM, 500 MB disk space</HW>
+                        <SW>Code::Blocks, GCC Compiler, Dev C++</SW>
+                    </HardwareSoftwareRequirements>
+                </Course>
+
+                <Course>
+                    <CourseCode>CSE-107</CourseCode>
+                    <Title>Electrical Circuits</Title>
+                    <Credit>3.0</Credit>
+                    <Prerequisite>None</Prerequisite>
+                    <Type>THEORY</Type>
+                    <ContactHours>39</ContactHours>
+                    <Rationale>
+                        This course gives an introduction to electrical circuit theory. It provides a foundation for
+                        understanding and designing
+                        simple electric and magnetic circuits built using basic electrical circuit elements.
+                    </Rationale>
+                    <CourseObjectives>
+                        <Objective>To introduce the basics of electrical circuit analysis and design</Objective>
+                    </CourseObjectives>
+                    <CourseDescription>
+                        <Module>Network Sources and Analysis</Module>
+                        <Content>Basic principles of voltage sources, current sources, and Ohm's law.</Content>
+                        <Module>AC Fundamentals</Module>
+                        <Content>AC series and parallel circuits, voltage, current, and impedance calculations.
+                        </Content>
+                    </CourseDescription>
+                    <RecommendedBooks>
+                        <Book>
+                            <Title>Introductory Circuit Analysis</Title>
+                            <Author>Robert L. Boylestad</Author>
+                            <Publisher>Pearson</Publisher>
+                            <Year>2010</Year>
+                        </Book>
+                        <Book>
+                            <Title>Electric Machines</Title>
+                            <Author>D. P. Kothari, I. J. Nagrath</Author>
+                            <Publisher>McGraw-Hill</Publisher>
+                            <Year>2004</Year>
+                        </Book>
+                    </RecommendedBooks>
+                </Course>
+            </Courses>
+        </Semester>
+
+		<Semester year="2" number="1">
+            <Courses>
+                <Course>
+                    <CourseCode>CSE-205</CourseCode>
+                    <Title>Structured Programming II</Title>
+                    <Credit>3.0</Credit>
+                    <Prerequisite>None</Prerequisite>
+                    <Type>THEORY</Type>
+                    <ContactHours>39</ContactHours>
+                    <Rationale>
+                        This course is designed to introduce students to the algorithms' way of thinking and
+                        problem-solving
+                        by computers.
+                        Students learn the fundamental principles of structured programming. Typical characteristics and
+                        mechanisms of
+                        structured programming languages are introduced, and students are introduced to the design and
+                        development of
+                        programs written in this language. Programming languages in use in the software business.
+                        Lessons
+                        are completed
+                        by practices where theoretical knowledge is applied in a cooperative software environment.
+                    </Rationale>
+                    <CourseObjectives>
+                        <Objective>Make students familiar with basic software design principles, good programming style,
+                            structured approach to program design, development, testing, and documentation
+                        </Objective>
+                    </CourseObjectives>
+                    <StudentLearningOutcomes>
+                        <Outcome>After successful completion of this course, students should be able to:</Outcome>
+                        <Outcome>Familiarize with algorithms and step into algorithmic program in its structured way
+                        </Outcome>
+                        <Outcome>Implement algorithms into code and describe programming methodologies</Outcome>
+                    </StudentLearningOutcomes>
+                    <CourseDescription>
+                        <Module>Structured Programming Language fundamentals</Module>
+                        <Content>C, Keywords, History and Features, Basic Structure of Program and Hello World Program,
+                            C Program Execution Process
+                        </Content>
+                        <Module>Basic Input/Output</Module>
+                        <Content>Formatted and Unformatted, Basic Types, Operator and Expression, Bitwise, Relational
+                            Operators
+                        </Content>
+                        <Module>Arrays and Pointers</Module>
+                        <Content>One and Multi-dimensional arrays, Pointers and Strings</Content>
+                    </CourseDescription>
+                    <RecommendedBooks>
+                        <Book>
+                            <Title>Teach Yourself C</Title>
+                            <Author>Herbert Schildt</Author>
+                            <Publisher>McGraw-Hill</Publisher>
+                            <Year>1997</Year>
+                        </Book>
+                        <Book>
+                            <Title>Programming in ANSI C</Title>
+                            <Author>E. Balagurusamy</Author>
+                            <Publisher>Tata McGraw-Hill</Publisher>
+                            <Year>2010</Year>
+                        </Book>
+                    </RecommendedBooks>
+                </Course>
+
+                <Course>
+                    <CourseCode>CSE-206</CourseCode>
+                    <Title>Structured Programming Laboratory II</Title>
+                    <Credit>1.0</Credit>
+                    <Prerequisite>None</Prerequisite>
+                    <Type>LAB</Type>
+                    <ContactHours>20</ContactHours>
+                    <Rationale>
+                        This lab course is designed to provide students with hands-on experience on basic programming
+                        using
+                        C.
+                        Programming language is used as the base in this course. Theoretical lessons are complemented by
+                        this
+                        practical where students' theoretical knowledge is applied to cooperative software development.
+                    </Rationale>
+                    <CourseObjectives>
+                        <Objective>To make students familiar with the practical experience of basic programming
+                            principles,
+                            good programming style, and structured programming
+                        </Objective>
+                    </CourseObjectives>
+                    <LabOutcomes>
+                        <Outcome>Familiarize students with algorithmic programming steps</Outcome>
+                        <Outcome>Make students implement the theory they learn in C</Outcome>
+                    </LabOutcomes>
+                    <HardwareSoftwareRequirements>
+                        <HW>Core i5, 2.4 GHz, 4 GB RAM, 500 MB disk space</HW>
+                        <SW>Code::Blocks, GCC Compiler, Dev C++</SW>
+                    </HardwareSoftwareRequirements>
+                </Course>
+
+                <Course>
+                    <CourseCode>CSE-207</CourseCode>
+                    <Title>Electrical Circuits II</Title>
+                    <Credit>3.0</Credit>
+                    <Prerequisite>None</Prerequisite>
+                    <Type>THEORY</Type>
+                    <ContactHours>39</ContactHours>
+                    <Rationale>
+                        This course gives an introduction to electrical circuit theory. It provides a foundation for
+                        understanding and designing
+                        simple electric and magnetic circuits built using basic electrical circuit elements.
+                    </Rationale>
+                    <CourseObjectives>
+                        <Objective>To introduce the basics of electrical circuit analysis and design</Objective>
+                    </CourseObjectives>
+                    <CourseDescription>
+                        <Module>Network Sources and Analysis</Module>
+                        <Content>Basic principles of voltage sources, current sources, and Ohm's law.</Content>
+                        <Module>AC Fundamentals</Module>
+                        <Content>AC series and parallel circuits, voltage, current, and impedance calculations.
+                        </Content>
+                    </CourseDescription>
+                    <RecommendedBooks>
+                        <Book>
+                            <Title>Introductory Circuit Analysis</Title>
+                            <Author>Robert L. Boylestad</Author>
+                            <Publisher>Pearson</Publisher>
+                            <Year>2010</Year>
+                        </Book>
+                        <Book>
+                            <Title>Electric Machines</Title>
+                            <Author>D. P. Kothari, I. J. Nagrath</Author>
+                            <Publisher>McGraw-Hill</Publisher>
+                            <Year>2004</Year>
+                        </Book>
+                    </RecommendedBooks>
+                </Course>
+            </Courses>
+        </Semester>
+    </Semesters>
+</Syllabus>

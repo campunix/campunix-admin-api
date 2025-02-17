@@ -6,6 +6,7 @@ from src.core.contracts.courses_repository_contract import CoursesRepositoryCont
 from src.core.converters import entity_to_model_list
 from src.core.entities.course import Course
 from src.core.entities.enums.course_type import CourseType
+from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.course_service_contract import CourseServiceContract
 from src.models.course import CourseOut, CourseIn
 
@@ -53,6 +54,9 @@ class CourseService(CourseServiceContract):
             )
         )
 
+        if not new_course:
+            raise NotFoundException
+
         return CourseOut(
             id=new_course.id,
             title=new_course.title,
@@ -65,6 +69,10 @@ class CourseService(CourseServiceContract):
 
     async def get_course_by_id(self, id: int) -> Optional[CourseOut]:
         course = await self.course_repository.get_by_id(id)
+
+        if not course:
+            raise NotFoundException
+
         return CourseOut(
             id=course.id,
             title=course.title,

@@ -1,6 +1,7 @@
 from typing import Optional
 
 from src.core.contracts.departments_repository_contract import DepartmentsRepositoryContract
+from src.core.converters import entity_to_model_list
 from src.core.entities.department import Department
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.department_service_contract import DepartmentServiceContract
@@ -27,7 +28,8 @@ class DepartmentService(DepartmentServiceContract):
         return DepartmentOut(id=new_department.id, name=new_department.name, code=new_department.code)
 
     async def get_departments(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.departments_repository.get_all()
+        departments = await self.departments_repository.get_all(page=page, page_size=page_size, paginate=paginate)
+        return entity_to_model_list(entity_dict=departments, model=DepartmentOut, paginate=paginate)
 
     async def update_department(self, id: int, department: DepartmentIn) -> Optional[DepartmentOut]:
         return await (

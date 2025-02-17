@@ -2,10 +2,12 @@ from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 from starlette.authentication import UnauthenticatedUser
 
+from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.department_service_contract import DepartmentServiceContract
 from src.features.auth.services.auth_service_contract import AuthServiceContract
 from src.models.department import DepartmentIn, DepartmentCreate
+from src.models.response import CreateResponse, APIResponse, DeleteResponse, ErrorResponse, UpdateResponse
 from src.utils.oauth2_utils import oauth2_scheme
 
 department_router = APIRouter(prefix="/departments")
@@ -24,7 +26,7 @@ async def create_department(
     if not user:
         raise UnauthenticatedUser
 
-    return await department_service.create_department(
+    department = await department_service.create_department(
         department=DepartmentIn(
             name=department.name,
             code=department.code,
@@ -33,22 +35,28 @@ async def create_department(
         ),
     )
 
+    return CreateResponse(data=department)
+
 
 @department_router.get("")
 @inject
 async def get_all_departments(
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
+        page: int = 1,
+        page_size: int = 20,
 ):
-    return await department_service.get_departments()
+    departments = await department_service.get_departments(page=page, page_size=page_size, paginate=True)
+    return APIResponse(data=departments)
 
 
 @department_router.get("/{id}")
 @inject
-async def get_organization(
+async def get_department(
         id: int,
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
 ):
-    return await department_service.get_department_by_id(id)
+    department = await department_service.get_department_by_id(id)
+    return APIResponse(data=department)
 
 
 @department_router.put("/{id}")
@@ -65,7 +73,7 @@ async def update_department(
     if not user:
         raise UnauthenticatedUser
 
-    return await department_service.update_department(
+    department = await department_service.update_department(
         id=id,
         department=DepartmentIn(
             name=department.name,
@@ -75,6 +83,11 @@ async def update_department(
         ),
     )
 
+    if not department:
+        raise NotFoundException
+
+    return UpdateResponse(data=department)
+
 
 @department_router.delete("/{id}")
 @inject
@@ -82,4 +95,8 @@ async def delete_department(
         id: int,
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
 ):
-    return await department_service.delete_department(id)
+    is_deleted = await department_service.delete_department(id)
+    if not is_deleted:
+        raise NotFoundException
+
+    return DeleteResponse()

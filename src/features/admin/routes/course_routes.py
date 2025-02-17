@@ -4,10 +4,12 @@ from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 from starlette.authentication import UnauthenticatedUser
 
+from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.course_service_contract import CourseServiceContract
 from src.features.auth.services.auth_service_contract import AuthServiceContract
 from src.models.course import CourseIn
+from src.models.response import CreateResponse, APIResponse, UpdateResponse, DeleteResponse
 from src.utils.oauth2_utils import oauth2_scheme
 
 course_router = APIRouter(prefix="/courses")
@@ -19,15 +21,19 @@ async def create_course(
         course: CourseIn,
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
 ):
-    return await course_service.create_course(course)
+    course = await course_service.create_course(course)
+    return CreateResponse(data=course)
 
 
 @course_router.get("")
 @inject
 async def get_all_courses(
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
+        page: int = 1,
+        page_size: int = 20,
 ):
-    return await course_service.get_courses()
+    courses = await course_service.get_courses(page=page, page_size=page_size, paginate=True)
+    return APIResponse(data=courses)
 
 
 @course_router.get("/{id}")
@@ -36,7 +42,12 @@ async def get_course(
         id: int,
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
 ):
-    return await course_service.get_course_by_id(id)
+    course = await course_service.get_course_by_id(id)
+
+    if not course:
+        raise NotFoundException
+
+    return APIResponse(data=course)
 
 
 @course_router.put("/{id}")
@@ -46,7 +57,12 @@ async def update_course(
         course: CourseIn,
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
 ):
-    return await course_service.update_course(id, course)
+    course = await course_service.update_course(id, course)
+
+    if not course:
+        raise NotFoundException
+
+    return UpdateResponse(data=course)
 
 
 @course_router.delete("/{id}")
@@ -55,7 +71,12 @@ async def delete_course(
         id: int,
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
 ):
-    return await course_service.delete_course(id)
+    is_deleted = await course_service.delete_course(id)
+
+    if not is_deleted:
+        raise NotFoundException
+
+    return DeleteResponse()
 
 
 @course_router.post("/bulk")
@@ -64,4 +85,6 @@ async def create_courses(
         courses: List[CourseIn],
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
 ):
-    return await course_service.bulk_insert_courses(courses)
+    await course_service.bulk_insert_courses(courses)
+
+    return APIResponse()

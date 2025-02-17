@@ -891,7 +891,7 @@ data = {
             "course_type": "LAB"
         },
         {
-            "id": 78,
+            "id": 77,
             "title": "Research Project",
             "code": "CSE-480",
             "department_id": 1,
@@ -1317,47 +1317,47 @@ data = {
         }
     ],
     "rooms": [
-  {
-    "id": 1,
-    "name": "R-101",
-    "code": "R-101",
-    "department_id": 1,
-    "room_type": "LECTURE"
-  },
-  {
-    "id": 2,
-    "name": "R-102",
-    "code": "R-102",
-    "department_id": 1,
-    "room_type": "LECTURE"
-  },
-  {
-    "id": 3,
-    "name": "Lab-302",
-    "code": "Lab-302",
-    "department_id": 1,
-    "room_type": "LAB"
-  },
-  {
-    "id": 4,
-    "name": "Lab-201",
-    "code": "Lab-201",
-    "department_id": 1,
-    "room_type": "LAB"
-  },
-  {
-    "id": 5,
-    "name": "R-103",
-    "code": "R-103",
-    "department_id": 1,
-    "room_type": "LECTURE"
-  },
-  {
-    "id": 6,
-    "name": "R-202",
-    "code": "R-202",
-    "department_id": 1,
-    "room_type": "LECTURE"
-  }
-]
+        {
+            "id": 1,
+            "name": "R-101",
+            "code": "R-101",
+            "department_id": 1,
+            "room_type": "LECTURE"
+        },
+        {
+            "id": 2,
+            "name": "R-102",
+            "code": "R-102",
+            "department_id": 1,
+            "room_type": "LECTURE"
+        },
+        {
+            "id": 3,
+            "name": "Lab-302",
+            "code": "Lab-302",
+            "department_id": 1,
+            "room_type": "LAB"
+        },
+        {
+            "id": 4,
+            "name": "Lab-201",
+            "code": "Lab-201",
+            "department_id": 1,
+            "room_type": "LAB"
+        },
+        {
+            "id": 5,
+            "name": "R-103",
+            "code": "R-103",
+            "department_id": 1,
+            "room_type": "LECTURE"
+        },
+        {
+            "id": 6,
+            "name": "R-202",
+            "code": "R-202",
+            "department_id": 1,
+            "room_type": "LECTURE"
+        }
+    ]
 }

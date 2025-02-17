@@ -4,7 +4,7 @@ from starlette.status import HTTP_201_CREATED
 
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.room_service_contract import RoomServiceContract
-from src.models.response import APIResponse
+from src.models.response import APIResponse, UpdateResponse, CreateResponse
 from src.models.room import RoomIn
 
 room_router = APIRouter(prefix="/rooms")
@@ -18,15 +18,17 @@ async def create_room(
         # token: str = Depends(oauth2_scheme),
 ):
     room = await room_service.create_room(room_in)
-    return APIResponse(code=HTTP_201_CREATED, message="Created successfully", data=room)
+    return CreateResponse(data=room)
 
 
 @room_router.get("")
 @inject
 async def get_all_room(
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
+        page: int = 1,
+        page_size: int = 20,
 ):
-    rooms = await room_service.get_rooms()
+    rooms = await room_service.get_rooms(page=page, page_size=page_size, paginate=True)
     return APIResponse(data=rooms)
 
 
@@ -48,7 +50,7 @@ async def update_room(
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
 ):
     room = await room_service.update_room(id, room_in)
-    return APIResponse(message="Updated successfully", data=room)
+    return UpdateResponse(data=room)
 
 
 @room_router.delete("/{id}")

@@ -62,6 +62,9 @@ class TeacherService(TeacherServiceContract):
         ]
 
         teacher_dict = await self.teachers_repository.get_all(
+            page=page,
+            page_size=page_size,
+            paginate=paginate,
             joins=[(User, Teacher.user_id == User.id)],
             columns=columns
         )

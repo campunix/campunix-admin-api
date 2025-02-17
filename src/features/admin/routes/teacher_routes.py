@@ -4,7 +4,7 @@ from fastapi import status
 
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
-from src.models.response import APIResponse
+from src.models.response import APIResponse, UpdateResponse, CreateResponse
 from src.models.teacher import TeacherIn
 from src.utils.oauth2_utils import oauth2_scheme
 
@@ -19,15 +19,17 @@ async def create_teacher(
         token: str = Depends(oauth2_scheme),
 ):
     teacher = await teacher_service.create_teacher(teacher_in)
-    return APIResponse(code=status.HTTP_201_CREATED, message="Created successfully", data=teacher)
+    return CreateResponse(data=teacher)
 
 
 @teacher_router.get("")
 @inject
 async def get_all_teacher(
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
+        page: int = 1,
+        page_size: int = 20,
 ):
-    teachers = await teacher_service.get_teachers()
+    teachers = await teacher_service.get_teachers(page=page, page_size=page_size, paginate=True)
     return APIResponse(data=teachers)
 
 
@@ -49,7 +51,7 @@ async def update_teacher(
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
 ):
     teacher = await teacher_service.update_teacher(id, teacher_in)
-    return APIResponse(message="Updated successfully", data=teacher)
+    return UpdateResponse(data=teacher)
 
 
 @teacher_router.delete("/{id}")

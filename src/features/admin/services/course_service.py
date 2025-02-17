@@ -3,6 +3,7 @@ from typing import Optional, List
 from sqlmodel import select
 
 from src.core.contracts.courses_repository_contract import CoursesRepositoryContract
+from src.core.converters import entity_to_model_list
 from src.core.entities.course import Course
 from src.core.entities.enums.course_type import CourseType
 from src.features.admin.services.course_service_contract import CourseServiceContract
@@ -36,7 +37,8 @@ class CourseService(CourseServiceContract):
         )
 
     async def get_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.course_repository.get_all()
+        courses = await self.course_repository.get_all(page=page, page_size=page_size, paginate=paginate)
+        return entity_to_model_list(entity_dict=courses, model=CourseOut, paginate=paginate)
 
     async def update_course(self, id: int, course: CourseIn) -> Optional[CourseOut]:
         course_type = CourseType.from_str(course.course_type)

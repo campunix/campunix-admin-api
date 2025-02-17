@@ -29,7 +29,7 @@ class RoomService(RoomServiceContract):
         return entity_to_model(entity=new_room, model=RoomOut)
 
     async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        room_dict = await self.rooms_repository.get_all()
+        room_dict = await self.rooms_repository.get_all(page=page, page_size=page_size, paginate=paginate)
         return entity_to_model_list(entity_dict=room_dict, model=RoomOut, paginate=paginate)
 
     async def update_room(self, id: int, roomIn: RoomIn) -> Optional[RoomOut]:

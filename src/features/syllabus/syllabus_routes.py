@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, status, File, UploadFile, Response
 
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_container import SyllabusContainer
+from src.models.response import APIResponse, CreateResponse
 
 router = APIRouter(prefix="/syllabus")
 
@@ -19,7 +20,7 @@ async def save(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only XML files are allowed.")
 
     syllabus_parsed = await syllabus_service.save(file)
-    return syllabus_parsed
+    return CreateResponse(message="Syllabus uploaded successfully!", data=syllabus_parsed)
 
 
 @router.get("", summary="Get department wise syllabus")
@@ -29,7 +30,7 @@ async def get_by_department(
         syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
 ):
     course = await syllabus_service.get_course_list(department_id)
-    return course
+    return APIResponse(data=course)
 
 
 @router.get("/getBySemesterCode", summary="Get semester wise syllabus")

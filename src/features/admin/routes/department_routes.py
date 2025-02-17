@@ -53,7 +53,7 @@ async def get_organization(
 
 @department_router.put("/{id}")
 @inject
-async def update_organization(
+async def update_department(
         id: int,
         department: DepartmentCreate,
         token: str = Depends(oauth2_scheme),
@@ -78,7 +78,7 @@ async def update_organization(
 
 @department_router.delete("/{id}")
 @inject
-async def delete_organization(
+async def delete_department(
         id: int,
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
 ):

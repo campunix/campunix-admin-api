@@ -8,6 +8,7 @@ from starlette.status import HTTP_201_CREATED
 
 from src.core.contracts.user_organizations_repository_contract import UserOrganizationsRepositoryContract
 from src.core.entities.enums.user_role import UserRole
+from src.core.exceptions.not_found_exception import NotFoundException
 from src.core.exceptions.validation_exception import ValidationException
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.admin_service_contract import AdminServiceContract
@@ -53,7 +54,7 @@ async def get_organization(
     organization = await organization_service.get_organization_by_id(id)
 
     if not organization:
-        return APIResponse(message="Organization does not exist!")
+        raise NotFoundException
 
     return APIResponse(data=organization)
 
@@ -67,7 +68,7 @@ async def update_organization(
 ):
     organization = await organization_service.update_organization(id, organization_in)
     if not organization:
-        return APIResponse(message="Organization does not exist!")
+        raise NotFoundException
 
     return UpdateResponse(data=organization)
 
@@ -80,7 +81,7 @@ async def delete_organization(
 ):
     is_deleted = await organization_service.delete_organization(id)
     if not is_deleted:
-        return ErrorResponse()
+        raise NotFoundException
     return DeleteResponse()
 
 
@@ -95,7 +96,7 @@ async def link_user(
     organization = await organization_service.get_organization_by_id(id)
 
     if not organization:
-        return APIResponse(message="Organization does not exist!")
+        raise NotFoundException
 
     await admin_service.map_user_to_organization(
         organization_id=id,

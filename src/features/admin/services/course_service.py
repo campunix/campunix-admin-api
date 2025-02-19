@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from sqlmodel import select
 
@@ -100,3 +100,12 @@ class CourseService(CourseServiceContract):
         ]
 
         await self.course_repository.bulk_insert(courses)
+
+
+    async def get_course_types(self) -> Dict[str, Any]:
+        course_types = await self.course_repository.get_course_types()
+
+        if not course_types:
+            raise NotFoundException()
+
+        return course_types

@@ -2,18 +2,22 @@ from typing import List
 
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
-from starlette.authentication import UnauthenticatedUser
 
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.course_service_contract import CourseServiceContract
-from src.features.auth.services.auth_service_contract import AuthServiceContract
 from src.models.course import CourseIn
 from src.models.response import CreateResponse, APIResponse, UpdateResponse, DeleteResponse
-from src.utils.oauth2_utils import oauth2_scheme
 
 course_router = APIRouter(prefix="/courses")
 
+@course_router.get("/course_types")
+@inject
+async def room_types(
+        course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
+):
+    types = await course_service.get_course_types()
+    return APIResponse(data=types)
 
 @course_router.post("")
 @inject

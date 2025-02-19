@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from src.models.course import CourseIn, CourseOut
 
@@ -31,4 +31,8 @@ class CourseServiceContract(ABC):
 
     @abstractmethod
     async def bulk_insert_courses(self, courses_in: List[CourseIn]):
+        pass
+
+    @abstractmethod
+    async def get_course_types(self) -> Optional[Dict[str, Any]]:
         pass

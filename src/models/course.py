@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 
 
 class CourseOut(BaseModel):
-    #id: int
     id: int
     title: str
     code: str

@@ -1,6 +1,9 @@
+from typing import Dict, Any
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.contracts.rooms_repository_contract import RoomsRepositoryContract
+from src.core.entities.enums.room_type import RoomType
 from src.core.entities.room import Room
 from src.infrastructure.repositories.base_repository import BaseRepository
 
@@ -10,3 +13,6 @@ class RoomsRepository(
 ):
     def __init__(self, db_session: AsyncSession):
         super().__init__(db_session, Room)
+
+    async def get_room_types(self) -> Dict[str, Any]:
+        return {"items": [room.value for room in RoomType]}

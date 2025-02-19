@@ -1,4 +1,5 @@
 from typing import Optional
+from typing import Dict, Any
 
 from src.core.contracts.rooms_repository_contract import RoomsRepositoryContract
 from src.core.converters import entity_to_model, entity_to_model_list
@@ -63,3 +64,12 @@ class RoomService(RoomServiceContract):
             raise NotFoundException
 
         return entity_to_model(entity=room, model=RoomOut)
+
+    async def get_room_types(self) -> Dict[str, Any]:
+        room_types = await self.rooms_repository.get_room_types()
+
+        if not room_types:
+            raise NotFoundException()
+
+        return room_types
+

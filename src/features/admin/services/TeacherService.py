@@ -7,8 +7,9 @@ from src.core.entities.enums.teacher_designation import TeacherDesignation
 from src.core.entities.enums.teacher_status import TeacherStatus
 from src.core.entities.teacher import Teacher
 from src.core.entities.user import User
-from src.core.exceptions.duplicate_exception import DuplicateException
+from src.core.exceptions.db_exceptions import DatabaseError
 from src.core.exceptions.not_found_exception import NotFoundException
+from src.core.exceptions.validation_exception import ValidationException
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
 from src.models.teacher import TeacherOut, TeacherIn
 
@@ -24,9 +25,12 @@ class TeacherService(TeacherServiceContract):
 
     async def create_teacher(self, teacher: TeacherIn) -> Optional[TeacherOut]:
         user = await self.users_repository.get_user_by_id(user_id=teacher.user_id)
-
         if not user:
             raise NotFoundException(detail="User not found")
+
+        is_teacher = await self.teachers_repository.is_teacher(user_id=teacher.user_id)
+        if is_teacher:
+            raise ValidationException(detail="This user is already a teacher!")
 
         new_teacher = await self.teachers_repository.create(
             Teacher(
@@ -38,11 +42,11 @@ class TeacherService(TeacherServiceContract):
         )
 
         if not new_teacher:
-            raise DuplicateException(detail="Teacher already exist")
+            raise DatabaseError()
 
         teacher_out = TeacherOut(
             id=new_teacher.id,
-            name=user.full_name,
+            full_name=user.full_name,
             email=user.email,
             designation=new_teacher.designation,
             status=new_teacher.status

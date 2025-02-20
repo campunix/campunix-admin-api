@@ -3,8 +3,10 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
+from src.core.converters import entity_to_model_list
 from src.core.entities.user import User, UserBase
 from src.infrastructure.repositories.base_repository import BaseRepository
+from src.models.user import UserOut, UserPublic
 
 
 class UsersRepository(BaseRepository[User], UsersRepositoryContract):
@@ -27,7 +29,7 @@ class UsersRepository(BaseRepository[User], UsersRepositoryContract):
         return result.scalars().one_or_none()
 
     async def get_user_by_email_or_username(
-        self, email_or_username: str
+            self, email_or_username: str
     ) -> Optional[User]:
         statement = select(User).where(
             (User.email == email_or_username) | (User.username == email_or_username)
@@ -45,11 +47,11 @@ class UsersRepository(BaseRepository[User], UsersRepositoryContract):
         return await self.create(new_user)
 
     async def create_new_user(
-        self,
-        username: str,
-        full_name: str,
-        email: str,
-        password_hash: str,
+            self,
+            username: str,
+            full_name: str,
+            email: str,
+            password_hash: str,
     ) -> User:
         new_user = User(
             username=username,
@@ -61,6 +63,7 @@ class UsersRepository(BaseRepository[User], UsersRepositoryContract):
         return await self.create_user(new_user)
 
     async def get_all_users(
-        self, page: int = 1, page_size: int = 10, paginate: bool = False
+            self, page: int = 1, page_size: int = 10, paginate: bool = False
     ) -> Dict[str, Any]:
-        return await self.get_all(page=page, page_size=page_size, paginate=paginate)
+        users = await self.get_all(page=page, page_size=page_size, paginate=paginate)
+        return entity_to_model_list(entity_dict=users, model=UserPublic, paginate=paginate)

@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 
 from src.features.admin.services.PreferenceService import PreferenceService
-from src.features.admin.services.TeacherService import TeacherService
+from src.features.admin.services.teacher_service import TeacherService
 from src.features.admin.services.admin_service import AdminService
 from src.features.admin.services.course_service import CourseService
 from src.features.admin.services.department_service import DepartmentService

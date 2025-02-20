@@ -2,7 +2,7 @@ from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 
 from src.features.admin.admin_container import AdminContainer
-from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
+from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.models.response import APIResponse, UpdateResponse, CreateResponse
 from src.models.teacher import TeacherIn
 from src.utils.oauth2_utils import oauth2_scheme

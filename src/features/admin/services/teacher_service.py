@@ -10,7 +10,7 @@ from src.core.entities.user import User
 from src.core.exceptions.db_exceptions import DatabaseError
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.core.exceptions.validation_exception import ValidationException
-from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
+from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.models.teacher import TeacherOut, TeacherIn
 
 

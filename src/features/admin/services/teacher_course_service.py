@@ -8,7 +8,7 @@ from src.core.entities.teacher_course import TeacherCourse
 from src.core.entities.user import User
 from src.core.exceptions.duplicate_exception import DuplicateException
 from src.core.exceptions.not_found_exception import NotFoundException
-from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
+from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.features.admin.services.course_service_contract import CourseServiceContract
 from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.models.teacher_course import TeacherCourseOut, TeacherCourseIn

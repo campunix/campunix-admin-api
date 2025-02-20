@@ -11,9 +11,9 @@ from src.models.response import CreateResponse, APIResponse, UpdateResponse, Del
 
 course_router = APIRouter(prefix="/courses")
 
-@course_router.get("/course_types")
+@course_router.get("/courseTypes")
 @inject
-async def room_types(
+async def course_types(
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
 ):
     types = await course_service.get_course_types()

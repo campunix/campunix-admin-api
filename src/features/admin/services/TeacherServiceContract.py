@@ -24,3 +24,11 @@ class TeacherServiceContract(ABC):
     @abstractmethod
     async def get_teacher_by_id(self, id: int) -> Optional[TeacherOut]:
         pass
+
+    @abstractmethod
+    async def get_teacher_designation(self) -> Optional[Dict[str, Any]]:
+        pass
+
+    @abstractmethod
+    async def get_teacher_status(self) -> Optional[Dict[str, Any]]:
+        pass

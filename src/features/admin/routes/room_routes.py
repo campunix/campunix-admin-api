@@ -1,6 +1,5 @@
 from dependency_injector.wiring import inject, Provide
-from fastapi import APIRouter, Depends, status
-from starlette.status import HTTP_201_CREATED
+from fastapi import APIRouter, Depends
 
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.room_service_contract import RoomServiceContract
@@ -9,7 +8,7 @@ from src.models.room import RoomIn
 
 room_router = APIRouter(prefix="/rooms")
 
-@room_router.get("/room_types")
+@room_router.get("/roomTypes")
 @inject
 async def room_types(
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),

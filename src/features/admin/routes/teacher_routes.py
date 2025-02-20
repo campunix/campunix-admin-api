@@ -1,6 +1,5 @@
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
-from fastapi import status
 
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.TeacherServiceContract import TeacherServiceContract
@@ -9,6 +8,24 @@ from src.models.teacher import TeacherIn
 from src.utils.oauth2_utils import oauth2_scheme
 
 teacher_router = APIRouter(prefix="/teachers")
+
+
+@teacher_router.get("/teacherDesignations")
+@inject
+async def teacher_designation(
+        teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
+):
+    types = await teacher_service.get_teacher_designation()
+    return APIResponse(data=types)
+
+
+@teacher_router.get("/teacherStatus")
+@inject
+async def teacher_status(
+        teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
+):
+    types = await teacher_service.get_teacher_status()
+    return APIResponse(data=types)
 
 
 @teacher_router.post("")

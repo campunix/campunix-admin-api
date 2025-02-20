@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
@@ -124,3 +124,19 @@ class TeacherService(TeacherServiceContract):
             designation=teacher.designation,
             status=teacher.status
         )
+
+    async def get_teacher_designation(self) -> Dict[str, Any]:
+        teacher_designations = await self.teachers_repository.get_teacher_designation()
+
+        if not teacher_designations:
+            raise NotFoundException()
+
+        return teacher_designations
+
+    async def get_teacher_status(self) -> Dict[str, Any]:
+        teacher_designations = await self.teachers_repository.get_teacher_status()
+
+        if not teacher_designations:
+            raise NotFoundException()
+
+        return teacher_designations

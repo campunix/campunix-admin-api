@@ -13,7 +13,7 @@ from src.features.admin.services.teacher_course_service_contract import TeacherC
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_utils.xml_utils import parse_syllabus, create_template
 from src.models.semester import SemesterOut
-from src.models.syllabus.syllabus_models import SyllabusParsed
+from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn, Course, Semester
 
 
 class SyllabusService(SyllabusServiceContract):
@@ -105,4 +105,59 @@ class SyllabusService(SyllabusServiceContract):
             department_code=department.code,
             department_name=department.name,
             semesters_list=semesters
+        )
+
+    async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
+        syllabus_parsed = await self.convert_syllabus_in(syllabus_in)
+        return await self.repository.save(department_id=syllabus_in.department_id, syllabus=syllabus_parsed)
+
+    async def convert_syllabus_in(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
+        department_in_db = await self.departments_repository.get_by_id(syllabus_in.department_id)
+        if not department_in_db:
+            NotFoundException(detail="Department not found!")
+
+        semesters = []
+
+        for semester in syllabus_in.semesters:
+            semester_in_db = await self.semesters_repository.get_by_id(semester.id)
+            if not semester_in_db:
+                NotFoundException(detail="Semester not found!")
+
+            courses = []
+            for course in semester.courses:
+                course_in_db = await self.courses_repository.get_by_id(course.id)
+                if not course_in_db:
+                    NotFoundException(detail="Course not found!")
+
+                courses.append(
+                    Course(
+                        course_code=course_in_db.code,
+                        title=course_in_db.title,
+                        credit=course.credit,
+                        prerequisite=course.prerequisite,
+                        type=course_in_db.course_type,
+                        contact_hours=course.contact_hours,
+                        rationale=course.rationale,
+                        course_objectives=course.course_objectives,
+                        outcomes=course.outcomes,
+                        course_description=course.course_description,
+                        recommended_books=course.recommended_books,
+                        hardware_software_requirements=course.hardware_software_requirements,
+                    )
+                )
+            pass
+
+            semesters.append(
+                Semester(
+                    year=semester_in_db.year,
+                    number=semester_in_db.number,
+                    courses=courses
+                )
+            )
+        pass
+
+        return SyllabusParsed(
+            department_code=department_in_db.code,
+            department_name=department_in_db.name,
+            semesters=semesters
         )

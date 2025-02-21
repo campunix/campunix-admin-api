@@ -6,7 +6,7 @@ from sqlmodel import select, desc
 
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
 from src.core.entities.syllabus.syllabus import Syllabus
-from src.models.syllabus.syllabus_models import SyllabusParsed
+from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn
 
 
 class SyllabusRepository(SyllabusRepositoryContract):

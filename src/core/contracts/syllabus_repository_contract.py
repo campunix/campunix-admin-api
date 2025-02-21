@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Optional, List
 
-from src.models.syllabus.syllabus_models import SyllabusParsed
+from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn
 
 
 class SyllabusRepositoryContract(ABC):

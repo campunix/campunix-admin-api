@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+from pydantic.v1.errors import cls_kwargs
 
 
 # Define Pydantic models
@@ -61,3 +62,29 @@ class SyllabusParsed(BaseModel):
     class Config:
         arbitrary_types_allowed = True
         orm_mode = True  # If you are using SQLAlchemy objects
+
+
+class SyllabusCourseIn(BaseModel):
+    id: int
+    credit: Optional[float]
+    prerequisite: Optional[str]
+    contact_hours: Optional[int]
+    rationale: Optional[str]
+    course_objectives: List[str] = []
+    outcomes: List[str] = []
+    course_description: List[CourseDescription] = []
+    recommended_books: List[Book] = []
+    hardware_software_requirements: Optional[dict] = Field(default_factory=lambda: {"HW": None, "SW": None})
+
+
+class SyllabusSemesterIn(BaseModel):
+    id: int
+    courses: List[SyllabusCourseIn]
+
+
+class SyllabusIn(BaseModel):
+    department_id: int
+    title: Optional[str]
+    description: Optional[str]
+    is_active: bool
+    semesters: List[SyllabusSemesterIn]

@@ -3,7 +3,7 @@ from typing import Optional, Any
 
 from fastapi import File
 
-from src.models.syllabus.syllabus_models import SyllabusParsed
+from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn
 
 
 class SyllabusServiceContract(ABC):
@@ -31,4 +31,8 @@ class SyllabusServiceContract(ABC):
 
     @abstractmethod
     async def template(self, department_id: int) -> Optional[Any]:
+        pass
+
+    @abstractmethod
+    async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
         pass

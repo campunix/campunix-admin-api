@@ -133,6 +133,9 @@ class SyllabusService(SyllabusServiceContract):
                 syllabus=syllabus_parsed.model_dump()
             )
         )
+
+        # syllabus = await self.repository.save(syllabus_in.department_id, syllabus_parsed)
+
         if not syllabus:
             raise DatabaseError()
 

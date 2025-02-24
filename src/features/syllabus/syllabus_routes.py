@@ -10,13 +10,16 @@ from src.models.syllabus.syllabus_models import SyllabusIn
 
 router = APIRouter(prefix="/syllabus")
 
+
 @router.get("")
 @inject
 async def get_all(
-        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service]),
+        department_id: int = None
 ):
-    syllabuses = await syllabus_service.get_all_syllabuses()
+    syllabuses = await syllabus_service.get_all_syllabuses(department_id=department_id)
     return APIResponse(data=syllabuses)
+
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Create Syllabus")
 @inject

@@ -111,9 +111,14 @@ class SyllabusService(SyllabusServiceContract):
             semesters_list=semesters
         )
 
-    async def get_all_syllabuses(self, page: int = 1, page_size: int = 10, paginate: bool = False) -> Dict[str, Any]:
+    async def get_all_syllabuses(self, page: int = 1, page_size: int = 10, paginate: bool = False,
+                                 department_id: int = None) -> Dict[str, Any]:
         syllabuses = []
-        syllabuses_in_db = await self.repository.get_all()
+        filters = []
+        if department_id:
+            filters.append((Syllabus.department_id == department_id))
+
+        syllabuses_in_db = await self.repository.get_all(filters=filters)
         for item in syllabuses_in_db["items"]:
             syllabuses.append(
                 SyllabusOut(

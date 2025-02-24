@@ -21,6 +21,16 @@ async def get_all(
     return APIResponse(data=syllabuses)
 
 
+@router.get("/{id}", status_code=status.HTTP_200_OK, summary="Get Syllabus")
+@inject
+async def get(
+        id: int,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus = await syllabus_service.get_syllabus(id=id)
+    return APIResponse(data=syllabus)
+
+
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Create Syllabus")
 @inject
 async def create(

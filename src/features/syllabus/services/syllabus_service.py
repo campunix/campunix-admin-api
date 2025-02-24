@@ -129,6 +129,17 @@ class SyllabusService(SyllabusServiceContract):
 
         return {"items": syllabuses}
 
+    async def get_syllabus(self, id: int) -> Optional[SyllabusOut]:
+        syllabus = await self.repository.get_by_id(id)
+
+        if not syllabus:
+            raise NotFoundException
+
+        return SyllabusOut(
+            department_id=syllabus.department_id,
+            syllabus=SyllabusParsed(**syllabus.syllabus)
+        )
+
     async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
         syllabus_parsed = await self.convert_syllabus_in(syllabus_in)
 

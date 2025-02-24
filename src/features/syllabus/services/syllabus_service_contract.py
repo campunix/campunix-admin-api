@@ -45,3 +45,7 @@ class SyllabusServiceContract(ABC):
     async def get_all_syllabuses(self, page: int = 1, page_size: int = 10, paginate: bool = False,
                                  department_id: int = None) -> Dict[str, Any]:
         pass
+
+    @abstractmethod
+    async def get_syllabus(self, id: int) -> Optional[SyllabusOut]:
+        pass

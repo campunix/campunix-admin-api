@@ -88,3 +88,11 @@ class SyllabusIn(BaseModel):
     description: Optional[str]
     is_active: bool
     semesters: List[SyllabusSemesterIn]
+
+
+class SyllabusOut(BaseModel):
+    department_id: int
+    title: Optional[str]
+    description: Optional[str]
+    is_active: Optional[bool]
+    syllabus: SyllabusParsed

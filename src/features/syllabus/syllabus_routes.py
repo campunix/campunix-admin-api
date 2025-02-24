@@ -5,11 +5,18 @@ from fastapi import APIRouter, Depends, status, File, UploadFile, Response
 
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_container import SyllabusContainer
-from src.models.response import APIResponse, CreateResponse
+from src.models.response import APIResponse, CreateResponse, UpdateResponse
 from src.models.syllabus.syllabus_models import SyllabusIn
 
 router = APIRouter(prefix="/syllabus")
 
+@router.get("")
+@inject
+async def get_all(
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabuses = await syllabus_service.get_all_syllabuses()
+    return APIResponse(data=syllabuses)
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Create Syllabus")
 @inject
@@ -19,6 +26,17 @@ async def create(
 ):
     syllabus_parsed = await syllabus_service.create_syllabus(syllabus_in)
     return CreateResponse(message="Syllabus created successfully!", data=syllabus_parsed)
+
+
+@router.post("/{id}", status_code=status.HTTP_200_OK, summary="Update Syllabus")
+@inject
+async def update(
+        id: int,
+        syllabus_in: SyllabusIn,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus_parsed = await syllabus_service.update_syllabus(id, syllabus_in)
+    return UpdateResponse(data=syllabus_parsed)
 
 
 @router.post("/upload", status_code=status.HTTP_201_CREATED, summary="Save Syllabus")

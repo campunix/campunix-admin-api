@@ -1,10 +1,11 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Any, Optional, List
 
-from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn
+from src.core.contracts.base_repository_contract import BaseRepositoryContract
+from src.models.syllabus.syllabus_models import SyllabusParsed
 
 
-class SyllabusRepositoryContract(ABC):
+class SyllabusRepositoryContract(BaseRepositoryContract):
 
     @abstractmethod
     async def save(self, department_id: int, syllabus: SyllabusParsed):

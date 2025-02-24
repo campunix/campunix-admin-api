@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+from typing import Optional, Any, List, Dict
 
 from fastapi import File
 
-from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn
+from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn, SyllabusOut
 
 
 class SyllabusServiceContract(ABC):
@@ -42,5 +42,5 @@ class SyllabusServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def get_all_syllabuses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
+    async def get_all_syllabuses(self, page: int = 1, page_size: int = 10, paginate: bool = False) -> Dict[str, Any]:
         pass

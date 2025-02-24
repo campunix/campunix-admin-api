@@ -92,7 +92,7 @@ class SyllabusIn(BaseModel):
 
 class SyllabusOut(BaseModel):
     department_id: int
-    title: Optional[str]
-    description: Optional[str]
-    is_active: Optional[bool]
-    syllabus: SyllabusParsed
+    title: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+    syllabus: Optional[SyllabusParsed]

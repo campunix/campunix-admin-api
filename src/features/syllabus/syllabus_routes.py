@@ -52,7 +52,7 @@ async def save(
     return CreateResponse(message="Syllabus uploaded successfully!", data=syllabus_parsed)
 
 
-@router.get("", summary="Get department wise syllabus")
+@router.get("/getSyllabusByDepartment", summary="Get department wise syllabus")
 @inject
 async def get_by_department(
         department_id: int = None,

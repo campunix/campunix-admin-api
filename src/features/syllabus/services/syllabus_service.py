@@ -1,5 +1,6 @@
+import json
 import xml.etree.ElementTree as ET
-from typing import Optional, Any
+from typing import Optional, Any, List, Dict
 
 from fastapi import File
 from fastapi import HTTPException
@@ -8,12 +9,15 @@ from src.core.contracts.courses_repository_contract import CoursesRepositoryCont
 from src.core.contracts.departments_repository_contract import DepartmentsRepositoryContract
 from src.core.contracts.semesters_repository_contract import SemestersRepositoryContract
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
+from src.core.converters import entity_to_model, entity_to_model_list
+from src.core.entities.syllabus.syllabus import Syllabus
+from src.core.exceptions.db_exceptions import DatabaseError
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_utils.xml_utils import parse_syllabus, create_template
 from src.models.semester import SemesterOut
-from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn, Course, Semester
+from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn, Course, Semester, SyllabusOut
 
 
 class SyllabusService(SyllabusServiceContract):
@@ -107,9 +111,66 @@ class SyllabusService(SyllabusServiceContract):
             semesters_list=semesters
         )
 
+    async def get_all_syllabuses(self, page: int = 1, page_size: int = 10, paginate: bool = False,
+                                 department_id: int = None) -> Dict[str, Any]:
+        syllabuses = []
+        filters = []
+        if department_id:
+            filters.append((Syllabus.department_id == department_id))
+
+        syllabuses_in_db = await self.repository.get_all(filters=filters)
+        for item in syllabuses_in_db["items"]:
+            syllabuses.append(
+                SyllabusOut(
+                    department_id=item.department_id,
+                    syllabus=SyllabusParsed(**item.syllabus)
+                )
+            )
+
+        return {"items": syllabuses}
+
+    async def get_syllabus(self, id: int) -> Optional[SyllabusOut]:
+        syllabus = await self.repository.get_by_id(id)
+
+        if not syllabus:
+            raise NotFoundException
+
+        return SyllabusOut(
+            department_id=syllabus.department_id,
+            syllabus=SyllabusParsed(**syllabus.syllabus)
+        )
+
     async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
         syllabus_parsed = await self.convert_syllabus_in(syllabus_in)
-        return await self.repository.save(department_id=syllabus_in.department_id, syllabus=syllabus_parsed)
+
+        syllabus = await self.repository.create(
+            Syllabus(
+                department_id=syllabus_in.department_id,
+                syllabus=syllabus_parsed.model_dump()
+            )
+        )
+
+        # syllabus = await self.repository.save(syllabus_in.department_id, syllabus_parsed)
+
+        if not syllabus:
+            raise DatabaseError()
+
+        return syllabus_parsed
+
+    async def update_syllabus(self, id: int, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
+        syllabus_parsed = await self.convert_syllabus_in(syllabus_in)
+        syllabus = await self.repository.update(
+            id=id,
+            obj_data=Syllabus(
+                department_id=syllabus_in.department_id,
+                syllabus=syllabus_parsed.model_dump()
+            )
+        )
+
+        if not syllabus:
+            raise DatabaseError()
+
+        return syllabus_parsed
 
     async def convert_syllabus_in(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
         department_in_db = await self.departments_repository.get_by_id(syllabus_in.department_id)

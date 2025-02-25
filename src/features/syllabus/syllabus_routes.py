@@ -5,10 +5,30 @@ from fastapi import APIRouter, Depends, status, File, UploadFile, Response
 
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_container import SyllabusContainer
-from src.models.response import APIResponse, CreateResponse
+from src.models.response import APIResponse, CreateResponse, UpdateResponse
 from src.models.syllabus.syllabus_models import SyllabusIn
 
 router = APIRouter(prefix="/syllabus")
+
+
+@router.get("")
+@inject
+async def get_all(
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service]),
+        department_id: int = None
+):
+    syllabuses = await syllabus_service.get_all_syllabuses(department_id=department_id)
+    return APIResponse(data=syllabuses)
+
+
+@router.get("/{id}", status_code=status.HTTP_200_OK, summary="Get Syllabus")
+@inject
+async def get(
+        id: int,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus = await syllabus_service.get_syllabus(id=id)
+    return APIResponse(data=syllabus)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Create Syllabus")
@@ -19,6 +39,17 @@ async def create(
 ):
     syllabus_parsed = await syllabus_service.create_syllabus(syllabus_in)
     return CreateResponse(message="Syllabus created successfully!", data=syllabus_parsed)
+
+
+@router.post("/{id}", status_code=status.HTTP_200_OK, summary="Update Syllabus")
+@inject
+async def update(
+        id: int,
+        syllabus_in: SyllabusIn,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus_parsed = await syllabus_service.update_syllabus(id, syllabus_in)
+    return UpdateResponse(data=syllabus_parsed)
 
 
 @router.post("/upload", status_code=status.HTTP_201_CREATED, summary="Save Syllabus")
@@ -34,7 +65,7 @@ async def save(
     return CreateResponse(message="Syllabus uploaded successfully!", data=syllabus_parsed)
 
 
-@router.get("", summary="Get department wise syllabus")
+@router.get("/getSyllabusByDepartment", summary="Get department wise syllabus")
 @inject
 async def get_by_department(
         department_id: int = None,

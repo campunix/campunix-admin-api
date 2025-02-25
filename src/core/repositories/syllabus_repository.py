@@ -6,12 +6,13 @@ from sqlmodel import select, desc
 
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
 from src.core.entities.syllabus.syllabus import Syllabus
-from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn
+from src.infrastructure.repositories.base_repository import BaseRepository
+from src.models.syllabus.syllabus_models import SyllabusParsed
 
 
-class SyllabusRepository(SyllabusRepositoryContract):
+class SyllabusRepository(BaseRepository[Syllabus], SyllabusRepositoryContract):
     def __init__(self, db_session: AsyncSession):
-        self.db_session = db_session
+        super().__init__(db_session, Syllabus)
 
     async def get_by_department(self, department_id: int) -> Optional[SyllabusParsed]:
         statement = select(Syllabus).where(Syllabus.department_id == department_id).order_by(desc('id')).limit(1)

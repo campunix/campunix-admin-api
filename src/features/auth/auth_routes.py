@@ -48,7 +48,8 @@ async def all_users(
         auth_service: AuthServiceContract = Depends(Provide[AuthContainer.auth_service]),
         page: int = 1,
         page_size: int = 20,
-        query: str = ""
+        paginate: bool = True,
+        query: str = "",
 ):
-    users = await auth_service.get_all_users(page=page, page_size=page_size, paginate=True)
+    users = await auth_service.get_all_users(page=page, page_size=page_size, paginate=paginate)
     return APIResponse(data=users)

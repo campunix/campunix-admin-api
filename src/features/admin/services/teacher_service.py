@@ -1,5 +1,7 @@
 from typing import Optional, Dict, Any
 
+from sqlalchemy import or_
+
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.converters import entity_to_model, entity_to_model_list
@@ -54,21 +56,31 @@ class TeacherService(TeacherServiceContract):
 
         return entity_to_model(entity=teacher_out, model=TeacherOut)
 
-    async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False):
+    async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False, search_query: Optional[str] = None):
 
         columns = [
             Teacher.id,
             User.full_name,
             User.email,
             Teacher.designation,
-            Teacher.status,
             Teacher.status
         ]
+
+        filters = []
+
+        if search_query:
+            filters.append(
+                or_(
+                    User.full_name.ilike(f"%{search_query}%"),
+                    User.email.ilike(f"%{search_query}%")
+                )
+            )
 
         teacher_dict = await self.teachers_repository.get_all(
             page=page,
             page_size=page_size,
             paginate=paginate,
+            filters=filters,
             joins=[(User, Teacher.user_id == User.id)],
             columns=columns
         )

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 
@@ -33,8 +35,9 @@ async def get_all_room(
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
         page: int = 1,
         page_size: int = 20,
+        search_query: Optional[str] = None
 ):
-    rooms = await room_service.get_rooms(page=page, page_size=page_size, paginate=True)
+    rooms = await room_service.get_rooms(page=page, page_size=page_size, paginate=True, search_query=search_query)
     return APIResponse(data=rooms)
 
 

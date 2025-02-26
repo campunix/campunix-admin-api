@@ -1,6 +1,8 @@
 from typing import Optional
 from typing import Dict, Any
 
+from sqlalchemy import or_
+
 from src.core.contracts.rooms_repository_contract import RoomsRepositoryContract
 from src.core.converters import entity_to_model, entity_to_model_list
 from src.core.entities.enums.room_type import RoomType
@@ -29,8 +31,24 @@ class RoomService(RoomServiceContract):
 
         return entity_to_model(entity=new_room, model=RoomOut)
 
-    async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        room_dict = await self.rooms_repository.get_all(page=page, page_size=page_size, paginate=paginate)
+    async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False, search_query: Optional[str] = None):
+
+        filters = []
+
+        if search_query:
+            filters.append(
+                or_(
+                    Room.name.ilike(f"%{search_query}%"),
+                    Room.code.ilike(f"%{search_query}%")
+                )
+            )
+
+        room_dict = await self.rooms_repository.get_all(
+            page=page,
+            page_size=page_size,
+            paginate=paginate,
+            filters = filters
+        )
         return entity_to_model_list(entity_dict=room_dict, model=RoomOut, paginate=paginate)
 
     async def update_room(self, id: int, roomIn: RoomIn) -> Optional[RoomOut]:

@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Any
 
+from sqlalchemy import or_
 from sqlmodel import select
 
 from src.core.contracts.courses_repository_contract import CoursesRepositoryContract
@@ -37,8 +38,24 @@ class CourseService(CourseServiceContract):
             course_type=new_course.course_type.value
         )
 
-    async def get_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        courses = await self.course_repository.get_all(page=page, page_size=page_size, paginate=paginate)
+    async def get_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False, search_query: Optional[str] = None):
+
+        filters = []
+
+        if search_query:
+            filters.append(
+                or_(
+                    Course.title.ilike(f"%{search_query}%"),
+                    Course.code.ilike(f"%{search_query}%")
+                )
+            )
+
+        courses = await self.course_repository.get_all(
+            page=page,
+            page_size=page_size,
+            paginate=paginate,
+            filters=filters
+        )
         return entity_to_model_list(entity_dict=courses, model=CourseOut, paginate=paginate)
 
     async def update_course(self, id: int, course: CourseIn) -> Optional[CourseOut]:

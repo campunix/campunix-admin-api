@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
@@ -35,8 +35,9 @@ async def get_all_courses(
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
         page: int = 1,
         page_size: int = 20,
+        search_query: Optional[str] = None
 ):
-    courses = await course_service.get_courses(page=page, page_size=page_size, paginate=True)
+    courses = await course_service.get_courses(page=page, page_size=page_size, paginate=True, search_query=search_query)
     return APIResponse(data=courses)
 
 

@@ -11,6 +11,19 @@ from src.models.syllabus.syllabus_models import SyllabusIn
 router = APIRouter(prefix="/syllabus")
 
 
+@router.post("/upload", status_code=status.HTTP_201_CREATED, summary="Save Syllabus")
+@inject
+async def save(
+        file: UploadFile = File(...),
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    if not file.filename.endswith(".xml"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only XML files are allowed.")
+
+    syllabus_parsed = await syllabus_service.save(file)
+    return CreateResponse(message="Syllabus uploaded successfully!", data=syllabus_parsed)
+
+
 @router.get("")
 @inject
 async def get_all(
@@ -50,19 +63,6 @@ async def update(
 ):
     syllabus_parsed = await syllabus_service.update_syllabus(id, syllabus_in)
     return UpdateResponse(data=syllabus_parsed)
-
-
-@router.post("/upload", status_code=status.HTTP_201_CREATED, summary="Save Syllabus")
-@inject
-async def save(
-        file: UploadFile = File(...),
-        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
-):
-    if not file.filename.endswith(".xml"):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only XML files are allowed.")
-
-    syllabus_parsed = await syllabus_service.save(file)
-    return CreateResponse(message="Syllabus uploaded successfully!", data=syllabus_parsed)
 
 
 @router.get("/getSyllabusByDepartment", summary="Get department wise syllabus")

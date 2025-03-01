@@ -11,6 +11,7 @@ from src.models.response import CreateResponse, APIResponse, UpdateResponse, Del
 
 course_router = APIRouter(prefix="/courses")
 
+
 @course_router.get("/courseTypes")
 @inject
 async def course_types(
@@ -18,6 +19,7 @@ async def course_types(
 ):
     types = await course_service.get_course_types()
     return APIResponse(data=types)
+
 
 @course_router.post("")
 @inject
@@ -35,9 +37,11 @@ async def get_all_courses(
         course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
         page: int = 1,
         page_size: int = 20,
-        search_query: Optional[str] = None
+        search_query: Optional[str] = None,
+        department_id: Optional[int] = None,
 ):
-    courses = await course_service.get_courses(page=page, page_size=page_size, paginate=True, search_query=search_query)
+    courses = await course_service.get_courses(page=page, page_size=page_size, paginate=True, search_query=search_query,
+                                               department_id=department_id)
     return APIResponse(data=courses)
 
 

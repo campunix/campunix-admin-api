@@ -48,8 +48,10 @@ async def get_all_teacher(
         page: int = 1,
         page_size: int = 20,
         search_query: Optional[str] = None,
+        department_id: Optional[int] = None,
 ):
-    teachers = await teacher_service.get_teachers(page=page, page_size=page_size, paginate=True, search_query=search_query)
+    teachers = await teacher_service.get_teachers(page=page, page_size=page_size, paginate=True,
+                                                  search_query=search_query, department_id=department_id)
     return APIResponse(data=teachers)
 
 

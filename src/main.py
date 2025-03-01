@@ -91,7 +91,7 @@ async def exception_handler(request: Request, exc: Exception):
 
 @app.get("/", include_in_schema=False)
 async def index() -> dict[str, str]:
-    return {"name": "Digital Library API"}
+    return {"name": "Digital Routine Generator"}
 
 
 @app.get("/healthcheck", include_in_schema=False)

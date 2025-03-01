@@ -47,7 +47,7 @@ async def get_all_teacher(
         teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
         page: int = 1,
         page_size: int = 20,
-        search_query: Optional[str] = None
+        search_query: Optional[str] = None,
 ):
     teachers = await teacher_service.get_teachers(page=page, page_size=page_size, paginate=True, search_query=search_query)
     return APIResponse(data=teachers)

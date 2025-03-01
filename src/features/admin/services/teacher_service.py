@@ -1,6 +1,7 @@
 from typing import Optional, Dict, Any
 
-from sqlalchemy import or_
+from sqlmodel import or_
+from sqlmodel import and_
 
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
@@ -56,7 +57,8 @@ class TeacherService(TeacherServiceContract):
 
         return entity_to_model(entity=teacher_out, model=TeacherOut)
 
-    async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False, search_query: Optional[str] = None):
+    async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False,
+                           search_query: Optional[str] = None, department_id: Optional[int] = None):
 
         columns = [
             Teacher.id,
@@ -73,6 +75,13 @@ class TeacherService(TeacherServiceContract):
                 or_(
                     User.full_name.ilike(f"%{search_query}%"),
                     User.email.ilike(f"%{search_query}%")
+                )
+            )
+
+        if department_id:
+            filters.append(
+                and_(
+                    Teacher.department_id == department_id
                 )
             )
 

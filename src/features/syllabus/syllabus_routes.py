@@ -34,16 +34,6 @@ async def get_all(
     return APIResponse(data=syllabuses)
 
 
-@router.get("/{id}", status_code=status.HTTP_200_OK, summary="Get Syllabus")
-@inject
-async def get(
-        id: int,
-        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
-):
-    syllabus = await syllabus_service.get_syllabus(id=id)
-    return APIResponse(data=syllabus)
-
-
 @router.post("", status_code=status.HTTP_201_CREATED, summary="Create Syllabus")
 @inject
 async def create(
@@ -52,17 +42,6 @@ async def create(
 ):
     syllabus_parsed = await syllabus_service.create_syllabus(syllabus_in)
     return CreateResponse(message="Syllabus created successfully!", data=syllabus_parsed)
-
-
-@router.post("/{id}", status_code=status.HTTP_200_OK, summary="Update Syllabus")
-@inject
-async def update(
-        id: int,
-        syllabus_in: SyllabusIn,
-        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
-):
-    syllabus_parsed = await syllabus_service.update_syllabus(id, syllabus_in)
-    return UpdateResponse(data=syllabus_parsed)
 
 
 @router.get("/getSyllabusByDepartment", summary="Get department wise syllabus")
@@ -116,3 +95,23 @@ async def template(
 ):
     syllabus_template = await syllabus_service.template(department_id)
     return Response(content=syllabus_template, media_type="application/xml")
+
+
+@router.get("/{id}", status_code=status.HTTP_200_OK, summary="Get Syllabus")
+@inject
+async def get(
+        id: int,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus = await syllabus_service.get_syllabus(id=id)
+    return APIResponse(data=syllabus)
+
+@router.put("/{id}", status_code=status.HTTP_200_OK, summary="Update Syllabus")
+@inject
+async def update(
+        id: int,
+        syllabus_in: SyllabusIn,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus_parsed = await syllabus_service.update_syllabus(id, syllabus_in)
+    return UpdateResponse(data=syllabus_parsed)

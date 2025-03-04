@@ -6,6 +6,25 @@ from sqlmodel import Field, SQLModel
 
 class SyllabusBase(SQLModel):
     department_id: int = Field(default=None, nullable=False)
+    title: str = Field(
+        default=None,
+        nullable=True,
+    )
+
+    description: str = Field(
+        default=None,
+        nullable=True,
+    )
+
+    calendar_year: str = Field(
+        default=None,
+        nullable=True,
+    )
+
+    is_active: bool = Field(
+        default=False,
+        nullable=False,
+    )
     syllabus: dict = Field(default=None, sa_column=Column(JSON))
 
 

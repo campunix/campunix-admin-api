@@ -9,7 +9,14 @@ from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn, Syll
 class SyllabusServiceContract(ABC):
 
     @abstractmethod
-    async def save(self, file: File(...)) -> SyllabusParsed:
+    async def save(
+            self,
+            file: File(...),
+            title: Optional[str] = None,
+            description: Optional[str] = None,
+            calendar_year: Optional[str] = None,
+            is_active: bool = False
+    ) -> SyllabusOut:
         pass
 
     @abstractmethod
@@ -34,11 +41,11 @@ class SyllabusServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
+    async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusOut]:
         pass
 
     @abstractmethod
-    async def update_syllabus(self, id: int, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
+    async def update_syllabus(self, id: int, syllabus_in: SyllabusIn) -> Optional[SyllabusOut]:
         pass
 
     @abstractmethod

@@ -37,16 +37,28 @@ class SyllabusRepository(BaseRepository[Syllabus], SyllabusRepositoryContract):
         syllabusOut = result.scalars().one_or_none()
         return syllabusOut
 
-    async def save(self, department_id: int, syllabus: SyllabusParsed) -> SyllabusParsed:
+    async def save(
+            self,
+            department_id: int,
+            syllabus: SyllabusParsed,
+            title: Optional[str] = None,
+            description: Optional[str] = None,
+            calendar_year: Optional[str] = None,
+            is_active: bool = False
+    ) -> Syllabus:
         syllabus_dict = Syllabus(
             department_id=department_id,
+            title=title,
+            description=description,
+            calendar_year=calendar_year,
+            is_active=is_active,
             syllabus=syllabus.model_dump()
         )
 
         self.db_session.add(syllabus_dict)
         await self.db_session.commit()
         await self.db_session.refresh(syllabus_dict)
-        return syllabus
+        return syllabus_dict
 
     async def updateSyllabus(self, department_id: int, semester_code: int, course_code: str,
                              course_type: str) -> SyllabusParsed:

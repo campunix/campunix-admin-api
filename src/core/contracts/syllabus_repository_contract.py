@@ -8,7 +8,15 @@ from src.models.syllabus.syllabus_models import SyllabusParsed
 class SyllabusRepositoryContract(BaseRepositoryContract):
 
     @abstractmethod
-    async def save(self, department_id: int, syllabus: SyllabusParsed):
+    async def save(
+            self,
+            department_id: int,
+            syllabus: SyllabusParsed,
+            title: Optional[str] = None,
+            description: Optional[str] = None,
+            calendar_year: Optional[str] = None,
+            is_active: bool = False
+    ):
         pass
 
     @abstractmethod

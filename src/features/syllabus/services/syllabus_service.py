@@ -1,6 +1,5 @@
-import json
 import xml.etree.ElementTree as ET
-from typing import Optional, Any, List, Dict
+from typing import Optional, Any, Dict
 
 from fastapi import File
 from fastapi import HTTPException
@@ -9,7 +8,6 @@ from src.core.contracts.courses_repository_contract import CoursesRepositoryCont
 from src.core.contracts.departments_repository_contract import DepartmentsRepositoryContract
 from src.core.contracts.semesters_repository_contract import SemestersRepositoryContract
 from src.core.contracts.syllabus_repository_contract import SyllabusRepositoryContract
-from src.core.converters import entity_to_model, entity_to_model_list
 from src.core.entities.syllabus.syllabus import Syllabus
 from src.core.exceptions.db_exceptions import DatabaseError
 from src.core.exceptions.not_found_exception import NotFoundException
@@ -35,18 +33,25 @@ class SyllabusService(SyllabusServiceContract):
         self.semesters_repository = semesters_repository
         self.teachers_course_service = teachers_course_service
 
-    async def save(self, file: File(...)) -> SyllabusParsed:
+    async def save(
+            self,
+            file: File(...),
+            title: Optional[str] = None,
+            description: Optional[str] = None,
+            calendar_year: Optional[str] = None,
+            is_active: bool = False
+    ) -> SyllabusOut:
         try:
             contents = await file.read()
             root = ET.fromstring(contents)
-            syllabus = parse_syllabus(root)
+            syllabus_parsed = parse_syllabus(root)
 
             department = await self.departments_repository.get_department_by_code(
-                department_code=syllabus.department_code)
+                department_code=syllabus_parsed.department_code)
             if not department:
                 raise NotFoundException(detail="Department not found!")
 
-            for semester in syllabus.semesters:
+            for semester in syllabus_parsed.semesters:
                 semester_in_db = await self.semesters_repository.get_semester_by_year_and_number(
                     department=department.id, year=1, number=1)
                 if not semester_in_db:
@@ -61,7 +66,24 @@ class SyllabusService(SyllabusServiceContract):
                     if not course_in_db:
                         raise NotFoundException(detail="Course not found!")
 
-            return await self.repository.save(department_id=department.id, syllabus=syllabus)
+            syllabus = await self.repository.save(
+                department_id=department.id,
+                syllabus=syllabus_parsed,
+                title=title,
+                description=description,
+                calendar_year=calendar_year,
+                is_active=is_active
+            )
+
+            return SyllabusOut(
+                id=syllabus.id,
+                department_id=syllabus.department_id,
+                title=syllabus.title,
+                description=syllabus.description,
+                calendar_year=syllabus.calendar_year,
+                is_active=syllabus.is_active,
+                syllabus=syllabus_parsed,
+            )
 
         except ET.ParseError:
             raise HTTPException(status_code=400, detail="Invalid XML format.")
@@ -122,7 +144,12 @@ class SyllabusService(SyllabusServiceContract):
         for item in syllabuses_in_db["items"]:
             syllabuses.append(
                 SyllabusOut(
+                    id=item.id,
                     department_id=item.department_id,
+                    title=item.title,
+                    description=item.description,
+                    calendar_year=item.calendar_year,
+                    is_active=item.is_active,
                     syllabus=SyllabusParsed(**item.syllabus)
                 )
             )
@@ -136,16 +163,25 @@ class SyllabusService(SyllabusServiceContract):
             raise NotFoundException
 
         return SyllabusOut(
+            id=syllabus.id,
             department_id=syllabus.department_id,
+            title=syllabus.title,
+            description=syllabus.description,
+            calendar_year=syllabus.calendar_year,
+            is_active=syllabus.is_active,
             syllabus=SyllabusParsed(**syllabus.syllabus)
         )
 
-    async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
+    async def create_syllabus(self, syllabus_in: SyllabusIn) -> Optional[SyllabusOut]:
         syllabus_parsed = await self.convert_syllabus_in(syllabus_in)
 
         syllabus = await self.repository.create(
             Syllabus(
                 department_id=syllabus_in.department_id,
+                title=syllabus_in.title,
+                description=syllabus_in.description,
+                calendar_year=syllabus_in.calendar_year,
+                is_active=syllabus_in.is_active,
                 syllabus=syllabus_parsed.model_dump()
             )
         )
@@ -155,14 +191,26 @@ class SyllabusService(SyllabusServiceContract):
         if not syllabus:
             raise DatabaseError()
 
-        return syllabus_parsed
+        return SyllabusOut(
+            id=syllabus.id,
+            department_id=syllabus.department_id,
+            title=syllabus.title,
+            description=syllabus.description,
+            calendar_year=syllabus.calendar_year,
+            is_active=syllabus.is_active,
+            syllabus=syllabus_parsed
+        )
 
-    async def update_syllabus(self, id: int, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
+    async def update_syllabus(self, id: int, syllabus_in: SyllabusIn) -> Optional[SyllabusOut]:
         syllabus_parsed = await self.convert_syllabus_in(syllabus_in)
         syllabus = await self.repository.update(
             id=id,
             obj_data=Syllabus(
                 department_id=syllabus_in.department_id,
+                title=syllabus_in.title,
+                description=syllabus_in.description,
+                calendar_year=syllabus_in.calendar_year,
+                is_active=syllabus_in.is_active,
                 syllabus=syllabus_parsed.model_dump()
             )
         )
@@ -170,25 +218,33 @@ class SyllabusService(SyllabusServiceContract):
         if not syllabus:
             raise DatabaseError()
 
-        return syllabus_parsed
+        return SyllabusOut(
+            id=syllabus.id,
+            department_id=syllabus.department_id,
+            title=syllabus.title,
+            description=syllabus.description,
+            calendar_year=syllabus.calendar_year,
+            is_active=syllabus.is_active,
+            syllabus=syllabus_parsed
+        )
 
     async def convert_syllabus_in(self, syllabus_in: SyllabusIn) -> Optional[SyllabusParsed]:
         department_in_db = await self.departments_repository.get_by_id(syllabus_in.department_id)
         if not department_in_db:
-            NotFoundException(detail="Department not found!")
+            raise NotFoundException(detail="Department not found!")
 
         semesters = []
 
         for semester in syllabus_in.semesters:
             semester_in_db = await self.semesters_repository.get_by_id(semester.id)
             if not semester_in_db:
-                NotFoundException(detail="Semester not found!")
+                raise NotFoundException(detail="Semester not found!")
 
             courses = []
             for course in semester.courses:
                 course_in_db = await self.courses_repository.get_by_id(course.id)
                 if not course_in_db:
-                    NotFoundException(detail="Course not found!")
+                    raise NotFoundException(detail="Course not found!")
 
                 courses.append(
                     Course(

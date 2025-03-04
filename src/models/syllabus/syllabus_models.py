@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-from pydantic.v1.errors import cls_kwargs
 
 
 # Define Pydantic models
@@ -86,13 +85,16 @@ class SyllabusIn(BaseModel):
     department_id: int
     title: Optional[str]
     description: Optional[str]
+    calendar_year: Optional[str]
     is_active: bool
     semesters: List[SyllabusSemesterIn]
 
 
 class SyllabusOut(BaseModel):
+    id: int
     department_id: int
     title: Optional[str] = None
     description: Optional[str] = None
+    calendar_year: Optional[str] = None
     is_active: Optional[bool] = None
     syllabus: Optional[SyllabusParsed]

@@ -57,7 +57,7 @@ class SyllabusParsed(BaseModel):
     department_code: str
     department_name: str
     semesters: List[Semester] = []
-
+    
     class Config:
         arbitrary_types_allowed = True
         orm_mode = True  # If you are using SQLAlchemy objects

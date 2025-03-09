@@ -92,6 +92,9 @@ class SyllabusService(SyllabusServiceContract):
         syllabus = await self.repository.get_by_department(department_id)
 
         result = []
+        if syllabus is None:
+            return result
+    
         for semester in syllabus.semesters:
             semester_data = await self.semesters_repository.get_semester_by_year_and_number(
                 department=department_id,

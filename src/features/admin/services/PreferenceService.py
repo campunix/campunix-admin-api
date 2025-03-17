@@ -2,7 +2,7 @@ from typing import Optional
 
 from src.core.contracts.preferences_repository_contract import PreferencesRepositoryContract
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
-from src.core.converters import entity_to_model
+from src.core.converters import entity_to_model, entity_to_model_list
 from src.core.entities.enums.day import Day
 from src.core.entities.preference import Preference
 from src.core.exceptions.duplicate_exception import DuplicateException
@@ -30,7 +30,7 @@ class PreferenceService(PreferenceServiceContract):
         preference = await self.preferences_repository.create(
             Preference(
                 teacher_id=teacher.id,
-                day=Day.to_str(preference.day),
+                day=preference.day,
                 slot_no=preference.slot_no
             )
         )
@@ -40,14 +40,22 @@ class PreferenceService(PreferenceServiceContract):
 
         preference_out = PreferenceOut(
             teacher_id=preference.teacher_id,
-            day=preference.day.value,
+            day=preference.day.name,
             slot_no=preference.slot_no
         )
 
         return entity_to_model(entity=preference_out, model=PreferenceOut)
 
     async def get_preferences(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        return await self.preferences_repository.get_all()
+        preferences = await self.preferences_repository.get_all()
+
+        if "items" in preferences and isinstance(preferences["items"], list):
+            preferences["items"] = [
+                {**dict(item), "day": item["day"].name if isinstance(item["day"], Day) else item["day"]}
+                for item in preferences["items"]
+            ]
+
+        return entity_to_model_list(entity_dict=preferences, model=PreferenceOut, paginate=paginate)
 
     async def update_preference(self, id: int, preference: PreferenceIn) -> Optional[PreferenceOut]:
         teacher = await self.preferences_repository.get_by_id(id=id)
@@ -59,7 +67,7 @@ class PreferenceService(PreferenceServiceContract):
             id,
             Preference(
                 teacher_id=preference.teacher_id,
-                day=Day.to_str(preference.day),
+                day=preference.day,
                 slot_no=preference.slot_no
             )
         )
@@ -69,7 +77,7 @@ class PreferenceService(PreferenceServiceContract):
 
         return PreferenceOut(
             teacher_id=new_preference.teacher_id,
-            day=Day.from_str(new_preference.day),
+            day=new_preference.day,
             slot_no=new_preference.slot_no
         )
 
@@ -88,6 +96,6 @@ class PreferenceService(PreferenceServiceContract):
 
         return PreferenceOut(
             teacher_id=preference.teacher_id,
-            day=preference.day.value,
+            day=preference.day.name,
             slot_no=preference.slot_no
         )

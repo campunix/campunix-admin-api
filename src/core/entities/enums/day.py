@@ -15,8 +15,3 @@ class Day(int, Enum):
             return cls[type_str.upper()]
         except KeyError:
             raise ValueError(f"Invalid day type: {type_str}")
-
-    @classmethod
-    def to_str(cls, day: 'Day'):
-        day_enum = cls(day)
-        return day_enum.name

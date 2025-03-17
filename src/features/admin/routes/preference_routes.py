@@ -10,6 +10,15 @@ from src.models.response import APIResponse, UpdateResponse, DeleteResponse, Cre
 preference_router = APIRouter(prefix="/preferences")
 
 
+@preference_router.get("/days")
+@inject
+async def days(
+        preference_service: PreferenceServiceContract = Depends(Provide[AdminContainer.preference_service]),
+):
+    types = await preference_service.get_days()
+    return APIResponse(data=types)
+
+
 @preference_router.post("")
 @inject
 async def create_preference(

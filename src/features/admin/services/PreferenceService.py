@@ -1,13 +1,15 @@
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from src.core.contracts.preferences_repository_contract import PreferencesRepositoryContract
-from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.converters import entity_to_model, entity_to_model_list
 from src.core.entities.enums.day import Day
 from src.core.entities.preference import Preference
+from src.core.entities.teacher import Teacher
+from src.core.entities.user import User
 from src.core.exceptions.duplicate_exception import DuplicateException
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.PreferenceServiceContract import PreferenceServiceContract
+from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.models.preference import PreferenceIn, PreferenceOut
 from src.models.teacher import TeacherOut
 
@@ -16,20 +18,20 @@ class PreferenceService(PreferenceServiceContract):
     def __init__(
             self,
             preferences_repository: PreferencesRepositoryContract,
-            teachers_repository: TeachersRepositoryContract
+            teacher_service: TeacherServiceContract
     ):
         self.preferences_repository = preferences_repository
-        self.teachers_repository = teachers_repository
+        self.teacher_service = teacher_service
 
     async def create_preference(self, preference: PreferenceIn) -> Optional[TeacherOut]:
-        teacher = await self.teachers_repository.get_by_id(id=preference.teacher_id)
+        teacher = await self.teacher_service.get_teacher_by_id(preference.teacher_id)
 
         if not teacher:
             raise NotFoundException(detail="Teacher not found")
 
-        preference = await self.preferences_repository.create(
+        new_preference = await self.preferences_repository.create(
             Preference(
-                teacher_id=teacher.id,
+                teacher_id=preference.teacher_id,
                 day=preference.day,
                 slot_no=preference.slot_no
             )
@@ -39,29 +41,45 @@ class PreferenceService(PreferenceServiceContract):
             raise DuplicateException(detail="Preference already exist")
 
         preference_out = PreferenceOut(
-            teacher_id=preference.teacher_id,
-            day=preference.day.name,
+            id= new_preference.id,
+            teacher_id=teacher.id,
+            teacher_name=teacher.full_name,
+            day=preference.day,
             slot_no=preference.slot_no
         )
 
         return entity_to_model(entity=preference_out, model=PreferenceOut)
 
     async def get_preferences(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        preferences = await self.preferences_repository.get_all()
+        columns = [
+            Preference.id,
+            Teacher.id.label("teacher_id"),
+            User.full_name.label("teacher_name"),
+            Preference.day,
+            Preference.slot_no
+        ]
 
-        if "items" in preferences and isinstance(preferences["items"], list):
-            preferences["items"] = [
+        preferences_dict = await self.preferences_repository.get_all(
+            joins=[
+                (Teacher, Preference.teacher_id == Teacher.id),
+                (User, Teacher.user_id == User.id)
+            ],
+            columns=columns
+        )
+
+        if "items" in preferences_dict and isinstance(preferences_dict["items"], list):
+            preferences_dict["items"] = [
                 {**dict(item), "day": item["day"].name if isinstance(item["day"], Day) else item["day"]}
-                for item in preferences["items"]
+                for item in preferences_dict["items"]
             ]
 
-        return entity_to_model_list(entity_dict=preferences, model=PreferenceOut, paginate=paginate)
+        return entity_to_model_list(entity_dict=preferences_dict, model=PreferenceOut, paginate=paginate)
 
     async def update_preference(self, id: int, preference: PreferenceIn) -> Optional[PreferenceOut]:
-        teacher = await self.preferences_repository.get_by_id(id=id)
+        teacher = await self.teacher_service.get_teacher_by_id(preference.teacher_id)
 
         if not teacher:
-            raise NotFoundException(detail='Teacher not found')
+            raise NotFoundException(detail="Teacher not found")
 
         new_preference = await self.preferences_repository.update(
             id,
@@ -76,7 +94,9 @@ class PreferenceService(PreferenceServiceContract):
             raise NotFoundException(detail='Preference not found')
 
         return PreferenceOut(
-            teacher_id=new_preference.teacher_id,
+            id=new_preference.id,
+            teacher_id=teacher.id,
+            teacher_name=teacher.full_name,
             day=new_preference.day,
             slot_no=new_preference.slot_no
         )
@@ -91,11 +111,27 @@ class PreferenceService(PreferenceServiceContract):
 
     async def get_preference_by_id(self, id: int) -> Optional[PreferenceOut]:
         preference = await self.preferences_repository.get_by_id(id=id)
+
         if not preference:
             raise NotFoundException(detail="Preference not found")
 
+        teacher = await self.teacher_service.get_teacher_by_id(preference.teacher_id)
+
+        if not teacher:
+            raise NotFoundException(detail="Teacher not found")
+
         return PreferenceOut(
-            teacher_id=preference.teacher_id,
+            id=preference.id,
+            teacher_id=teacher.id,
+            teacher_name=teacher.full_name,
             day=preference.day.name,
             slot_no=preference.slot_no
         )
+
+    async def get_days(self) -> Dict[str, Any]:
+        course_types = await self.preferences_repository.get_days()
+
+        if not course_types:
+            raise NotFoundException()
+
+        return course_types

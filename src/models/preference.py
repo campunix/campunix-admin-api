@@ -1,7 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
 
 class PreferenceOut(BaseModel):
+    id: int
     teacher_id: int
+    teacher_name: str
     day: str
     slot_no: int
 

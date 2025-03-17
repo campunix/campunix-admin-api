@@ -69,5 +69,5 @@ class AdminContainer(BaseContainer):
     preference_service = providers.Factory(
         PreferenceService,
         preferences_repository=BaseContainer.preferences_repository,
-        teachers_repository=BaseContainer.teachers_repository,
+        teacher_service=teacher_service
     )

@@ -25,3 +25,7 @@ class PreferenceServiceContract(ABC):
     @abstractmethod
     async def get_preference_by_id(self, id: int) -> Optional[PreferenceOut]:
         pass
+
+    @abstractmethod
+    async def get_days(self) -> Optional[Dict[str, Any]]:
+        pass

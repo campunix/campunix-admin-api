@@ -12,6 +12,8 @@ from src.features.admin.services.PreferenceServiceContract import PreferenceServ
 from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.models.preference import PreferenceIn, PreferenceOut
 from src.models.teacher import TeacherOut
+from sqlmodel import or_
+from sqlmodel import select, and_
 
 
 class PreferenceService(PreferenceServiceContract):
@@ -50,7 +52,18 @@ class PreferenceService(PreferenceServiceContract):
 
         return entity_to_model(entity=preference_out, model=PreferenceOut)
 
-    async def get_preferences(self, page: int = 1, page_size: int = 10, paginate: bool = False):
+    async def get_preferences(self, page: int = 1, page_size: int = 10, paginate: bool = False,
+                          search_query: Optional[str] = None,):
+
+        filters = []
+
+        if search_query:
+            filters.append(
+                or_(
+                    User.full_name.ilike(f"%{search_query}%")
+                )
+            )
+
         columns = [
             Preference.id,
             Teacher.id.label("teacher_id"),
@@ -60,6 +73,10 @@ class PreferenceService(PreferenceServiceContract):
         ]
 
         preferences_dict = await self.preferences_repository.get_all(
+            page=page,
+            page_size=page_size,
+            paginate=paginate,
+            filters=filters,
             joins=[
                 (Teacher, Preference.teacher_id == Teacher.id),
                 (User, Teacher.user_id == User.id)

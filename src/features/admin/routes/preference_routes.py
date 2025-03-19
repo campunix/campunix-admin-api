@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 
@@ -33,8 +35,12 @@ async def create_preference(
 @inject
 async def get_all_preferences(
         preference_service: PreferenceServiceContract = Depends(Provide[AdminContainer.preference_service]),
+        page: int = 1,
+        page_size: int = 20,
+        search_query: Optional[str] = None,
+        paginate: bool = True
 ):
-    preferences = await preference_service.get_preferences()
+    preferences = await preference_service.get_preferences(page=page, page_size=page_size, paginate=paginate, search_query=search_query,)
     return APIResponse(data=preferences)
 
 

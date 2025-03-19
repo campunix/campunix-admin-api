@@ -11,7 +11,8 @@ class PreferenceServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def get_preferences(self, page: int = 1, page_size: int = 10, paginate: bool = False)  -> Dict[str, Any]:
+    async def get_preferences(self, page: int = 1, page_size: int = 10, paginate: bool = False,
+                              search_query: Optional[str] = None, ) -> Dict[str, Any]:
         pass
 
     @abstractmethod

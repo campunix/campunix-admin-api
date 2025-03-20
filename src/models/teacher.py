@@ -1,4 +1,8 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
+
+from src.models.department import DepartmentOut
 
 
 class TeacherOut(BaseModel):
@@ -7,6 +11,7 @@ class TeacherOut(BaseModel):
     email: str
     designation: str
     status: str
+    department: DepartmentOut = None
 
 
 class TeacherIn(BaseModel):

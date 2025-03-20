@@ -1,11 +1,12 @@
 from typing import Optional, Dict, Any
 
-from sqlmodel import or_
 from sqlmodel import and_
+from sqlmodel import or_
 
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
-from src.core.converters import entity_to_model, entity_to_model_list
+from src.core.converters import entity_to_model, entity_to_model_list, convert_nested_fields
+from src.core.entities.department import Department
 from src.core.entities.enums.teacher_designation import TeacherDesignation
 from src.core.entities.enums.teacher_status import TeacherStatus
 from src.core.entities.teacher import Teacher
@@ -55,7 +56,7 @@ class TeacherService(TeacherServiceContract):
             status=new_teacher.status
         )
 
-        return entity_to_model(entity=teacher_out, model=TeacherOut)
+        return teacher_out
 
     async def get_teachers(self, page: int = 1, page_size: int = 10, paginate: bool = False,
                            search_query: Optional[str] = None, department_id: Optional[int] = None):
@@ -65,7 +66,8 @@ class TeacherService(TeacherServiceContract):
             User.full_name,
             User.email,
             Teacher.designation,
-            Teacher.status
+            Teacher.status,
+            Department
         ]
 
         filters = []
@@ -93,6 +95,17 @@ class TeacherService(TeacherServiceContract):
             joins=[(User, Teacher.user_id == User.id)],
             columns=columns
         )
+
+        updated_items = []
+        for teacher in teacher_dict["items"]:
+            teacher_dict_item = dict(teacher)
+            department = teacher_dict_item["Department"]
+            teacher_dict_item.pop("Department")
+            teacher_dict_item["department"] = {"id": department.id, "name": department.name, "code": department.code}
+            updated_items.append(teacher_dict_item)
+
+        teacher_dict["items"] = updated_items
+
         return entity_to_model_list(entity_dict=teacher_dict, model=TeacherOut, paginate=paginate)
 
     async def update_teacher(self, id: int, teacher: TeacherIn) -> Optional[TeacherOut]:
@@ -131,24 +144,28 @@ class TeacherService(TeacherServiceContract):
         return res
 
     async def get_teacher_by_id(self, id: int) -> Optional[TeacherOut]:
-        teacher = await self.teachers_repository.get_by_id(
+        columns = [
+            Teacher.id,
+            User.full_name,
+            User.email,
+            Teacher.designation,
+            Teacher.status,
+            Department
+        ]
+        teacher = await self.teachers_repository.get_by_id_with_columns(
             id,
-            joins=[(User, Teacher.user_id == User.id)]
+            columns=columns,
+            joins=[(User, Teacher.user_id == User.id)],
         )
+
         if not teacher:
             raise NotFoundException(detail="Teacher not found")
 
-        user = await self.users_repository.get_user_by_id(user_id=teacher.user_id)
-        if not user:
-            raise NotFoundException(detail="User not found")
+        department = teacher['Department']
+        teacher.pop('Department')
+        teacher['department'] = {"id": department.id, "name": department.name, "code": department.code}
 
-        return TeacherOut(
-            id=teacher.id,
-            full_name=user.full_name,
-            email=user.email,
-            designation=teacher.designation,
-            status=teacher.status
-        )
+        return TeacherOut(**convert_nested_fields(item=teacher, model=TeacherOut))
 
     async def get_teacher_designation(self) -> Dict[str, Any]:
         teacher_designations = await self.teachers_repository.get_teacher_designation()

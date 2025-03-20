@@ -33,6 +33,26 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         result = await self.db_session.execute(statement)
         return result.scalars().one_or_none()
 
+    async def get_by_id_with_columns(
+            self,
+            id: int,
+            columns: Optional[List[Any]] = None,
+            joins: Optional[List[Any]] = None
+    ) -> Dict[str, Any]:
+        if columns is None:
+            statement = select(self.model).where(self.model.id == id)
+        else:
+            statement = select(*columns).where(self.model.id == id)
+
+        # Apply joins if provided
+        if joins:
+            for related_model, condition in joins:
+                statement = statement.join(related_model, condition)
+
+        result = await self.db_session.execute(statement)
+
+        return dict(result.mappings().first())
+
     async def get_all(
             self,
             page: int = 1,

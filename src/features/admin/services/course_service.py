@@ -7,6 +7,8 @@ from src.core.contracts.courses_repository_contract import CoursesRepositoryCont
 from src.core.converters import entity_to_model_list
 from src.core.entities.course import Course
 from src.core.entities.enums.course_type import CourseType
+from src.core.entities.teacher import Teacher
+from src.core.entities.teacher_course import TeacherCourse
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.course_service_contract import CourseServiceContract
 from src.models.course import CourseOut, CourseIn
@@ -65,6 +67,40 @@ class CourseService(CourseServiceContract):
             filters=filters
         )
         return entity_to_model_list(entity_dict=courses, model=CourseOut, paginate=paginate)
+
+    async def get_courses_by_teacher_id(self, teacher_id: int, page: int = 1, page_size: int = 10,
+                                        paginate: bool = False,
+                                        search_query: Optional[str] = None):
+
+        filters = []
+
+        if teacher_id:
+            filters.append(Teacher.id == teacher_id)
+
+        if search_query:
+            filters.append(
+                or_(
+                    Course.title.ilike(f"%{search_query}%"),
+                    Course.code.ilike(f"%{search_query}%")
+                )
+            )
+
+        columns = [
+            Course.id,
+            Course.title,
+            Course.code,
+            Course.course_type
+        ]
+
+        course_dict = await self.course_repository.get_all(
+            page=page,
+            page_size=page_size,
+            paginate=paginate,
+            filters=filters,
+            joins=[(TeacherCourse, TeacherCourse.course_id == Course.id)],
+            columns=columns
+        )
+        return entity_to_model_list(entity_dict=course_dict, model=CourseOut, paginate=paginate)
 
     async def update_course(self, id: int, course: CourseIn) -> Optional[CourseOut]:
         course_type = CourseType.from_str(course.course_type)

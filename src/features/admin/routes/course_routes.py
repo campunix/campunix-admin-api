@@ -41,8 +41,24 @@ async def get_all_courses(
         department_id: Optional[int] = None,
         paginate: bool = True
 ):
-    courses = await course_service.get_courses(page=page, page_size=page_size, paginate=paginate, search_query=search_query,
+    courses = await course_service.get_courses(page=page, page_size=page_size, paginate=paginate,
+                                               search_query=search_query,
                                                department_id=department_id)
+    return APIResponse(data=courses)
+
+
+@course_router.get("/byTeacher")
+@inject
+async def get_courses_by_teacher_id(
+        teacher_id: int,
+        course_service: CourseServiceContract = Depends(Provide[AdminContainer.course_service]),
+        page: int = 1,
+        page_size: int = 20,
+        search_query: Optional[str] = None,
+        paginate: bool = True
+):
+    courses = await course_service.get_courses_by_teacher_id(teacher_id=teacher_id, page=page, page_size=page_size,
+                                                             paginate=paginate, search_query=search_query)
     return APIResponse(data=courses)
 
 

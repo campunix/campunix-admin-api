@@ -1,5 +1,7 @@
 from typing import Optional, Dict, Any
 
+from sqlmodel import or_
+
 from src.core.contracts.preferences_repository_contract import PreferencesRepositoryContract
 from src.core.converters import entity_to_model, entity_to_model_list
 from src.core.entities.enums.day import Day
@@ -12,8 +14,6 @@ from src.features.admin.services.PreferenceServiceContract import PreferenceServ
 from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.models.preference import PreferenceIn, PreferenceOut
 from src.models.teacher import TeacherOut
-from sqlmodel import or_
-from sqlmodel import select, and_
 
 
 class PreferenceService(PreferenceServiceContract):
@@ -56,6 +56,49 @@ class PreferenceService(PreferenceServiceContract):
                           search_query: Optional[str] = None,):
 
         filters = []
+
+        if search_query:
+            filters.append(
+                or_(
+                    User.full_name.ilike(f"%{search_query}%")
+                )
+            )
+
+        columns = [
+            Preference.id,
+            Teacher.id.label("teacher_id"),
+            User.full_name.label("teacher_name"),
+            Preference.day,
+            Preference.slot_no
+        ]
+
+        preferences_dict = await self.preferences_repository.get_all(
+            page=page,
+            page_size=page_size,
+            paginate=paginate,
+            filters=filters,
+            joins=[
+                (Teacher, Preference.teacher_id == Teacher.id),
+                (User, Teacher.user_id == User.id)
+            ],
+            columns=columns
+        )
+
+        if "items" in preferences_dict and isinstance(preferences_dict["items"], list):
+            preferences_dict["items"] = [
+                {**dict(item), "day": item["day"].name if isinstance(item["day"], Day) else item["day"]}
+                for item in preferences_dict["items"]
+            ]
+
+        return entity_to_model_list(entity_dict=preferences_dict, model=PreferenceOut, paginate=paginate)
+
+    async def get_preferences_by_teacher_id(self, teacher_id: int, page: int = 1, page_size: int = 10, paginate: bool = False,
+                          search_query: Optional[str] = None,):
+
+        filters = []
+
+        if teacher_id:
+            filters.append(Teacher.id == teacher_id)
 
         if search_query:
             filters.append(

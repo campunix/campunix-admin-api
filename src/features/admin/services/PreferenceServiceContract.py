@@ -16,6 +16,11 @@ class PreferenceServiceContract(ABC):
         pass
 
     @abstractmethod
+    async def get_preferences_by_teacher_id(self, teacher_id: int, page: int = 1, page_size: int = 10, paginate: bool = False,
+                              search_query: Optional[str] = None, ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
     async def update_preference(self, id: int, preference: PreferenceIn) -> Optional[PreferenceOut]:
         pass
 

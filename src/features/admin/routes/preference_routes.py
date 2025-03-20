@@ -43,6 +43,19 @@ async def get_all_preferences(
     preferences = await preference_service.get_preferences(page=page, page_size=page_size, paginate=paginate, search_query=search_query,)
     return APIResponse(data=preferences)
 
+@preference_router.get("/byTeacher")
+@inject
+async def get_preferences_by_teacher_id(
+        teacher_id: int,
+        preference_service: PreferenceServiceContract = Depends(Provide[AdminContainer.preference_service]),
+        page: int = 1,
+        page_size: int = 20,
+        search_query: Optional[str] = None,
+        paginate: bool = True
+):
+    preferences = await preference_service.get_preferences_by_teacher_id(page=page, teacher_id=teacher_id, page_size=page_size, paginate=paginate, search_query=search_query,)
+    return APIResponse(data=preferences)
+
 
 @preference_router.get("/{id}")
 @inject

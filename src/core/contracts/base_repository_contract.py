@@ -14,6 +14,14 @@ class BaseRepositoryContract(ABC):
     ) -> Optional[T]:
         pass
 
+    async def get_by_id_with_columns(
+            self,
+            id: int,
+            columns: Optional[List[Any]] = None,
+            joins: Optional[List[Any]] = None
+    ) -> Dict[str, Any]:
+        pass
+
     async def get_all(
             self,
             page: int = 1,

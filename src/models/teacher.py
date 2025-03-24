@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from src.models.department import DepartmentOut
+from src.models.teacher_course_map import TeachersCourseOut
 
 
 class TeacherOut(BaseModel):
@@ -12,6 +13,7 @@ class TeacherOut(BaseModel):
     designation: str
     status: str
     department: DepartmentOut = None
+    courses: List[TeachersCourseOut] = []
 
 
 class TeacherIn(BaseModel):
@@ -19,3 +21,6 @@ class TeacherIn(BaseModel):
     designation: str
     status: str
     department_id: int
+
+
+

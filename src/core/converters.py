@@ -71,6 +71,13 @@ def convert_nested_fields(item: Dict[str, Any], model: Type[BaseModel]) -> Dict[
         if hasattr(field_type, '__name__') and field_type.__name__ == 'Type':
             # Skip type annotations that are not models (e.g., primitive types)
             continue
+
+        if hasattr(field_type, '__origin__') and field_type.__origin__ is list:
+            list_item_type = field_type.__args__[0] if field_type.__args__ else None
+            if isinstance(list_item_type, type) and issubclass(list_item_type, BaseModel):
+                item_dict[field] = [list_item_type(**i) if i else None for i in item.get(field, [])]
+            continue
+
         if issubclass(field_type, BaseModel):
             # If the field is a model, recursively convert it
             item_dict[field] = field_type(**item[field]) if field in item else None

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.converters import entity_to_model_list
@@ -11,7 +11,11 @@ from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.features.admin.services.course_service_contract import CourseServiceContract
 from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
-from src.models.teacher_course import TeacherCourseOut, TeacherCourseIn
+from src.models.course import CourseOut
+from src.models.course_teacher_map import CoursesTeacherOut
+from src.models.teacher import TeacherOut
+from src.models.teacher_course import TeacherCourseIn, TeacherCourseOut
+from src.models.teacher_course_map import TeachersCourseOut
 
 
 class TeacherCourseService(TeacherCourseServiceContract):
@@ -147,3 +151,49 @@ class TeacherCourseService(TeacherCourseServiceContract):
             teacher=teacher,
             course=course
         )
+
+    async def assign_teachers(self, course_id: int, teachers: List[int]) -> Optional[CourseOut]:
+        course = await self.course_service.get_course_by_id(course_id)
+
+        for teacher_id in teachers:
+            teacher_course = await self.create_teacher_course(
+                TeacherCourseIn(
+                    teacher_id=teacher_id,
+                    course_id=course_id
+                )
+            )
+
+            course.course_teachers.append(
+                CoursesTeacherOut(
+                    id=teacher_course.teacher.id,
+                    full_name=teacher_course.teacher.full_name,
+                    email=teacher_course.teacher.email,
+                    designation=teacher_course.teacher.designation,
+                    status=teacher_course.teacher.status,
+                    department=teacher_course.teacher.department
+                )
+            )
+
+        return course
+
+    async def assign_courses(self, teacher_id: int, courses: List[int]) -> Optional[TeacherOut]:
+        teacher = await self.teacher_service.get_teacher_by_id(teacher_id)
+
+        for course_id in courses:
+            teacher_course = await self.create_teacher_course(
+                TeacherCourseIn(
+                    teacher_id=teacher_id,
+                    course_id=course_id
+                )
+            )
+
+            teacher.courses.append(
+                TeachersCourseOut(
+                    id=teacher_course.course.id,
+                    title=teacher_course.course.title,
+                    code=teacher_course.course.code,
+                    course_type=teacher_course.course.course_type
+                )
+            )
+
+        return teacher

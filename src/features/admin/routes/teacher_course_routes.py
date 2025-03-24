@@ -1,3 +1,5 @@
+from typing import List
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 from starlette.status import HTTP_201_CREATED
@@ -58,3 +60,25 @@ async def delete_teacher_course(
 ):
     res = await teacher_course_service.delete_teacher_course(id)
     return APIResponse(status=res, message="Deleted successfully")
+
+
+@teacher_course_router.post("/{course_id}/assignTeachers")
+@inject
+async def assign_teachers(
+        course_id: int,
+        teachers: List[int],
+        teacher_course_service: TeacherCourseServiceContract = Depends(Provide[AdminContainer.teacher_course_service]),
+):
+    course = await teacher_course_service.assign_teachers(course_id, teachers)
+    return APIResponse(data=course)
+
+
+@teacher_course_router.post("/{teacher_id}/assignCourses")
+@inject
+async def assign_courses(
+        teacher_id: int,
+        courses: List[int],
+        teacher_course_service: TeacherCourseServiceContract = Depends(Provide[AdminContainer.teacher_course_service]),
+):
+    teacher = await teacher_course_service.assign_courses(teacher_id, courses)
+    return APIResponse(data=teacher)

@@ -17,6 +17,7 @@ from src.features.admin.routes.teacher_course_routes import teacher_course_route
 from src.features.admin.routes.teacher_routes import teacher_router
 from src.features.auth.auth_routes import router as auth_router
 from src.features.routine.routine_routes import router as routine_router
+from src.features.exam.exam_routes import router as exam_routine_router
 from src.features.syllabus.syllabus_routes import router as syllabus_router
 from src.models.response import APIResponse
 
@@ -116,3 +117,4 @@ app.include_router(teacher_router, tags=["teachers"])
 app.include_router(teacher_course_router, tags=["teacherCourse"])
 app.include_router(preference_router, tags=["preferences"])
 app.include_router(routine_router, tags=["routine"])
+app.include_router(exam_routine_router, tags=["routine"])

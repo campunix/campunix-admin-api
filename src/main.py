@@ -16,7 +16,7 @@ from src.features.admin.routes.room_routes import room_router
 from src.features.admin.routes.teacher_course_routes import teacher_course_router
 from src.features.admin.routes.teacher_routes import teacher_router
 from src.features.auth.auth_routes import router as auth_router
-from src.features.routine.routine_routes import router as routine_router
+from src.features.routine.routine_routes import routine_router
 from src.features.syllabus.syllabus_routes import router as syllabus_router
 from src.models.response import APIResponse
 

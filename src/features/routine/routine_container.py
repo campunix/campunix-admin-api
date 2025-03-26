@@ -11,4 +11,9 @@ class RoutineContainer(BaseContainer):
     wiring_config = containers.WiringConfiguration(modules=[".routine_routes"])
 
     routine_generator = providers.Factory(RoutineGenerator)
-    routine_service = providers.Factory(RoutineService, routine_generator, SyllabusContainer.syllabus_service)
+    routine_service = providers.Factory(
+        RoutineService,
+        routine_generator,
+        BaseContainer.routines_repository,
+        SyllabusContainer.syllabus_service
+    )

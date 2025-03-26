@@ -28,7 +28,7 @@ class TeacherCoursesRepository(
         result = await self.db_session.execute(statement)
         return result.scalar_one_or_none()
 
-    async def get_all_teacher_courses_by_course_id(self, course_id: int) -> Optional[List[Dict[str, Any]]]:
+    async def get_teachers_by_course(self, course_id: int) -> Optional[List[Dict[str, Any]]]:
         statement = (
             select(
                 TeacherCourse,
@@ -49,6 +49,32 @@ class TeacherCoursesRepository(
                 "teacher_course": teacher_course,
                 "teacher": teacher,
                 "user": user,
+                "department": department
+            }
+
+            outputs.append(item)
+            pass
+
+        return outputs
+
+    async def get_courses_by_teacher(self, teacher_id: int) -> Optional[List[Dict[str, Any]]]:
+        statement = (
+            select(
+                TeacherCourse,
+                Course,
+                Department
+            )
+            .where(TeacherCourse.teacher_id == teacher_id)
+            .join(Course, Course.id == TeacherCourse.course_id)
+            .join(Department, Course.department_id == Department.id)
+        )
+        results = await self.db_session.execute(statement)
+
+        outputs = []
+        for teacher_course, course, department in results:
+            item = {
+                "teacher_course": teacher_course,
+                "course": course,
                 "department": department
             }
 

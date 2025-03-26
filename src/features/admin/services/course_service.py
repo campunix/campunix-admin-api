@@ -189,10 +189,11 @@ class CourseService(CourseServiceContract):
         return course_types
 
     async def get_teachers_by_course(self, course_id: int) -> Optional[List[CoursesTeacherOut]]:
-        teacher_courses = await self.teacher_course_repository.get_all_teacher_courses_by_course_id(course_id=course_id)
+        teacher_courses = await self.teacher_course_repository.get_teachers_by_course(course_id=course_id)
         course_teachers = []
 
         for teacher_course in teacher_courses:
+            teacher_course_row = teacher_course["teacher_course"]
             teacher = teacher_course["teacher"]
             user = teacher_course["user"]
             department = teacher_course["department"]
@@ -203,7 +204,8 @@ class CourseService(CourseServiceContract):
                     email=user.email,
                     designation=teacher.designation,
                     status=teacher.status,
-                    department=DepartmentOut(id=department.id, name=department.name, code=department.code)
+                    department=DepartmentOut(id=department.id, name=department.name, code=department.code),
+                    relation_id=teacher_course_row.id
                 )
             )
 

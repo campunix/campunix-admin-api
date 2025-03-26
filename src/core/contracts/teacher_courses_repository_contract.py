@@ -16,5 +16,9 @@ class TeacherCoursesRepositoryContract(BaseRepositoryContract):
         pass
 
     @abstractmethod
-    async def get_all_teacher_courses_by_course_id(self, course_id: int) -> Optional[List[Dict[str, Any]]]:
+    async def get_teachers_by_course(self, course_id: int) -> Optional[List[Dict[str, Any]]]:
+        pass
+
+    @abstractmethod
+    async def get_courses_by_teacher(self, teacher_id: int) -> Optional[List[Dict[str, Any]]]:
         pass

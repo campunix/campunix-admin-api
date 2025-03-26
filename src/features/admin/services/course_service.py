@@ -152,11 +152,13 @@ class CourseService(CourseServiceContract):
         if not course:
             raise NotFoundException
 
+        course_teachers = await self.get_teachers_by_course(id)
         return CourseOut(
             id=course.id,
             title=course.title,
             code=course.code,
-            course_type=course.course_type.value
+            course_type=course.course_type.value,
+            course_teachers=course_teachers
         )
 
     async def get_course_by_course_code(self, department_id: int, course_code: str) -> Optional[CourseOut]:

@@ -39,11 +39,11 @@ def entity_to_model_list(
     items = entity_dict.get("items", [])
 
     try:
-        # model_list = [model(**item) for item in items]
-        model_list = [
-            model(**convert_nested_fields(item, model))
-            for item in items
-        ]
+        model_list = [model(**item) for item in items]
+        # model_list = [
+        #     model(**convert_nested_fields(item, model))
+        #     for item in items
+        # ]
     except ValidationError as e:
         print(repr(e.errors()))
         raise Exception(e)

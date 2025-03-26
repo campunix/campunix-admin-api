@@ -1,8 +1,9 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 from sqlmodel import and_
 from sqlmodel import or_
 
+from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.converters import entity_to_model, entity_to_model_list, convert_nested_fields
@@ -16,6 +17,7 @@ from src.core.exceptions.not_found_exception import NotFoundException
 from src.core.exceptions.validation_exception import ValidationException
 from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.models.teacher import TeacherOut, TeacherIn
+from src.models.teacher_course_map import TeachersCourseOut
 
 
 class TeacherService(TeacherServiceContract):
@@ -23,9 +25,11 @@ class TeacherService(TeacherServiceContract):
             self,
             teachers_repository: TeachersRepositoryContract,
             users_repository: UsersRepositoryContract,
+            teacher_course_repository: TeacherCoursesRepositoryContract,
     ):
         self.teachers_repository = teachers_repository
         self.users_repository = users_repository
+        self.teacher_course_repository = teacher_course_repository
 
     async def create_teacher(self, teacher: TeacherIn) -> Optional[TeacherOut]:
         user = await self.users_repository.get_user_by_id(user_id=teacher.user_id)
@@ -182,3 +186,19 @@ class TeacherService(TeacherServiceContract):
             raise NotFoundException()
 
         return teacher_designations
+
+    async def get_courses_by_teacher(self, teacher_id: int) -> Optional[List[TeachersCourseOut]]:
+        teacher_course = await self.teacher_course_repository.get_teacher_courses_by_teacher_id(teacher_id=teacher_id)
+        teacher = await self.get_teacher_by_id(teacher_id)
+
+        for course in teacher_course:
+            teacher.courses.append(
+                TeachersCourseOut(
+                    id=course.id,
+                    title=course.title,
+                    code=course.code,
+                    course_type=course.course_type
+                )
+            )
+
+        return teacher.courses

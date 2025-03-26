@@ -2,8 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any, List
 
 from src.models.course import CourseOut
+from src.models.course_teacher_map import CoursesTeacherOut
 from src.models.teacher import TeacherOut
 from src.models.teacher_course import TeacherCourseIn, TeacherCourseOut
+from src.models.teacher_course_map import TeachersCourseOut
 
 
 class TeacherCourseServiceContract(ABC):

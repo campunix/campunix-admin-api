@@ -45,7 +45,8 @@ class AdminContainer(BaseContainer):
 
     course_service = providers.Factory(
         CourseService,
-        course_repository=BaseContainer.courses_repository
+        course_repository=BaseContainer.courses_repository,
+        teacher_course_repository=BaseContainer.teacher_courses_repository
     )
 
     room_service = providers.Factory(
@@ -57,6 +58,7 @@ class AdminContainer(BaseContainer):
         TeacherService,
         teachers_repository=BaseContainer.teachers_repository,
         users_repository=BaseContainer.users_repository,
+        teacher_course_repository=BaseContainer.teacher_courses_repository
     )
 
     teacher_course_service = providers.Factory(

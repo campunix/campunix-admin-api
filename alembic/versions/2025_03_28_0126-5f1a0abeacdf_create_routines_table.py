@@ -1,8 +1,8 @@
-"""create routine table
+"""Create routines table
 
-Revision ID: 7178cb2ef7df
-Revises: 3f0606bd28f0
-Create Date: 2025-03-26 23:12:13.794003
+Revision ID: 5f1a0abeacdf
+Revises: d8f5c95bdf33
+Create Date: 2025-03-28 01:26:52.962024
 
 """
 from typing import Sequence, Union
@@ -12,11 +12,10 @@ import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
-revision: str = '7178cb2ef7df'
-down_revision: Union[str, None] = '3f0606bd28f0'
+revision: str = '5f1a0abeacdf'
+down_revision: Union[str, None] = 'd8f5c95bdf33'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
-
 
 
 def upgrade() -> None:
@@ -24,8 +23,8 @@ def upgrade() -> None:
         "routines",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column("syllabus_id", sa.BigInteger, nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=True),
-        sa.Column("description", sa.String(length=255), nullable=True),
+        sa.Column("title", sa.String(), nullable=True),
+        sa.Column("description", sa.String(), nullable=True),
         sa.Column("calendar_year", sa.String(length=255), nullable=True),
         sa.Column("is_active", sa.Boolean, default=False, nullable=False),
         sa.Column("routine", JSONB, nullable=False),

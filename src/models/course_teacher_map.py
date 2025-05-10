@@ -10,3 +10,4 @@ class CoursesTeacherOut(BaseModel):
     designation: str
     status: str
     department: DepartmentOut = None
+    relation_id: int = None

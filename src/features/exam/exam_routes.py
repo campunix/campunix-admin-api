@@ -2,84 +2,67 @@ from typing import Optional
 
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 
-from src.features.admin.admin_container import AdminContainer
-from src.features.admin.services.room_service_contract import RoomServiceContract
-from src.models.course import CourseOut
-from src.models.course_teacher_map import CoursesTeacherOut
-from src.models.department import DepartmentOut
-from src.models.response import APIResponse, CreateResponse
-from src.models.room import RoomOut
-from src.models.semester import SemesterOut
-from src.models.teacher import TeacherOut
-from datetime import date
+from src.features.exam.exam_container import ExamContainer
+from src.features.exam.services.exam_routine_service_contract import ExamRoutineServiceContract
+from src.models.exam_routine import ExamRoutineIn
+from src.models.response import CreateResponse, APIResponse, UpdateResponse, DeleteResponse
 
-router = APIRouter(prefix="/exam-routine")
+exam_routine_router = APIRouter(prefix="/examRoutines")
 
-
-@router.post("")
+@exam_routine_router.post("")
 @inject
-async def create_exam_routine():
-    return CreateResponse(data="Ok")
+async def save_exam_routine(
+        exam_routine_in: ExamRoutineIn,
+        exam_routine_service: ExamRoutineServiceContract = Depends(Provide[ExamContainer.exam_routine_service]),
+):
+    data = await exam_routine_service.save_exam_routine(exam_routine_in=exam_routine_in)
+
+    return CreateResponse(data=data)
 
 
-@router.get("")
+@exam_routine_router.get("")
 @inject
-async def get_all(
-        room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
+async def get_all_exam_routines(
+        exam_routine_service: ExamRoutineServiceContract = Depends(Provide[ExamContainer.exam_routine_service]),
         page: int = 1,
         page_size: int = 20,
-        search_query: Optional[str] = None,
-        department_id: Optional[int] = None,
-        paginate: bool = True
+        search_query: Optional[str] = None
 ):
-    exam_routine = ExamRoutine(
-        id=1,
-        date="2025-01-10",
-        department=DepartmentOut(id=1, name="Computer Science", code="CSE"),
-        semester=SemesterOut(id=2, year=2025, number=2, disabled=False),
-        room=RoomOut(id=101, name="Lab-1", code="L101", room_type="Lab"),
-        courses=[
-            CourseOut(
-                id=1,
-                title="Data Structures",
-                code="CSE201",
-                course_type="Theory",
-                course_teachers=[
-                    CoursesTeacherOut(
-                        id=1,
-                        full_name="Dr. John Doe",
-                        email="john.doe@example.com",
-                        designation="Professor",
-                        status="Active",
-                        department=DepartmentOut(id=1, name="Computer Science", code="CSE"),
-                    )
-                ]
-            )
-        ],
-        teachers=[
-            TeacherOut(
-                id=2,
-                full_name="Dr. Jane Smith",
-                email="jane.smith@example.com",
-                designation="Associate Professor",
-                status="Active",
-                department=DepartmentOut(id=1, name="Computer Science", code="CSE"),
-                courses=[]
-            )
-        ],
-        description="Final exam schedule"
-    )
+    routines = await exam_routine_service.get_exam_routines(page=page, page_size=page_size, search_query=search_query,
+                                                        paginate=True)
+    return APIResponse(data=routines)
 
-    return APIResponse(data=exam_routine)
 
-class ExamRoutine(BaseModel):
-    id: int
-    date: date
-    department: DepartmentOut
-    semester: SemesterOut
-    room: RoomOut
-    courses: list[CourseOut]
-    teachers: list[TeacherOut]
-    description: str
+@exam_routine_router.get("/{id}")
+@inject
+async def get_exam_routine(
+        id: int,
+        exam_routine_service: ExamRoutineServiceContract = Depends(Provide[ExamContainer.exam_routine_service]),
+):
+    routine = await exam_routine_service.get_exam_routine_by_id(id=id)
+
+    return APIResponse(data=routine)
+
+
+@exam_routine_router.put("/{id}")
+@inject
+async def update_exam_routines(
+        id: int,
+        exam_routine_in: ExamRoutineIn,
+        exam_routine_service: ExamRoutineServiceContract = Depends(Provide[ExamContainer.exam_routine_service]),
+):
+    updated_routine = await exam_routine_service.update_exam_routine(id=id, exam_routine_in=exam_routine_in)
+
+    return UpdateResponse(data=updated_routine)
+
+
+@exam_routine_router.delete("/{id}")
+@inject
+async def delete_exam_routine(
+        id: int,
+        exam_routine_service: ExamRoutineServiceContract = Depends(Provide[ExamContainer.exam_routine_service]),
+):
+    await exam_routine_service.delete_exam_routine(id)
+
+    return DeleteResponse(message="Routine deleted!")

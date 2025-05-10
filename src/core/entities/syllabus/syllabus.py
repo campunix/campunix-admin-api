@@ -5,7 +5,12 @@ from sqlmodel import Field, SQLModel
 
 
 class SyllabusBase(SQLModel):
-    department_id: int = Field(default=None, nullable=False)
+    department_id: int = Field(
+        default=None,
+        foreign_key="departments.id",
+        nullable=False
+    )
+
     title: str = Field(
         default=None,
         nullable=True,
@@ -25,6 +30,7 @@ class SyllabusBase(SQLModel):
         default=False,
         nullable=False,
     )
+
     syllabus: dict = Field(default=None, sa_column=Column(JSON))
 
 

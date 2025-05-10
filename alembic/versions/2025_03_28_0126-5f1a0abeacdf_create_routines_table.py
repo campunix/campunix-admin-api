@@ -1,50 +1,40 @@
-"""create syllabus table
+"""Create routines table
 
-Revision ID: ba34d6df389d
-Revises: 38aff3239c4c
-Create Date: 2024-10-30 23:11:07.569695
+Revision ID: 5f1a0abeacdf
+Revises: d8f5c95bdf33
+Create Date: 2025-03-28 01:26:52.962024
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
 from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
-revision: str = 'ba34d6df389d'
-down_revision: Union[str, None] = '38aff3239c4c'
+revision: str = '5f1a0abeacdf'
+down_revision: Union[str, None] = 'd8f5c95bdf33'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
     op.create_table(
-        "syllabuses",
+        "routines",
         sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column("department_id", sa.BigInteger, nullable=False),
-        sa.Column("title", sa.String(length=255), nullable=True),
-        sa.Column("description", sa.String(length=255), nullable=True),
+        sa.Column("syllabus_id", sa.BigInteger, nullable=False),
+        sa.Column("title", sa.String(), nullable=True),
+        sa.Column("description", sa.String(), nullable=True),
         sa.Column("calendar_year", sa.String(length=255), nullable=True),
         sa.Column("is_active", sa.Boolean, default=False, nullable=False),
-        sa.Column("syllabus", JSONB, nullable=False),
+        sa.Column("routine", JSONB, nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("NOW()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), onupdate=sa.text("NOW()"), nullable=True),
         sa.ForeignKeyConstraint(
-            ["department_id"], ["departments.id"], ondelete="CASCADE"
+            ["syllabus_id"], ["syllabuses.id"], ondelete="CASCADE"
         ),
-    )
-
-    op.create_index(
-        'ix_syllabus',
-        'syllabuses',
-        ['syllabus'],
-        postgresql_using='gin',
-        postgresql_ops={'syllabus': 'jsonb_ops'}
     )
 
 
 def downgrade() -> None:
-    op.drop_index('ix_syllabus', table_name='syllabuses')
-    op.drop_table("syllabuses")
+    op.drop_table("routines")

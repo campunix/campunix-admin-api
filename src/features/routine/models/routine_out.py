@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from pydantic import BaseModel
 
 from src.features.routine.models.chromosome import Chromosome
@@ -13,3 +15,12 @@ class RoutineOut:
         self.courses = courses
         self.semesters = semesters
         self.routine = routine
+
+class SavedRoutineOut(BaseModel):
+    id: int
+    syllabus_id: int
+    title: str = None
+    description: str = None
+    calendar_year: str = None
+    is_active: bool = False
+    routine: dict

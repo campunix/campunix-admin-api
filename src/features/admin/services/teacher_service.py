@@ -1,11 +1,12 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 from sqlmodel import and_
 from sqlmodel import or_
 
+from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.contracts.teachers_repository_contract import TeachersRepositoryContract
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
-from src.core.converters import entity_to_model, entity_to_model_list, convert_nested_fields
+from src.core.converters import entity_to_model_list, convert_nested_fields
 from src.core.entities.department import Department
 from src.core.entities.enums.teacher_designation import TeacherDesignation
 from src.core.entities.enums.teacher_status import TeacherStatus
@@ -15,7 +16,9 @@ from src.core.exceptions.db_exceptions import DatabaseError
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.core.exceptions.validation_exception import ValidationException
 from src.features.admin.services.teacher_service_contract import TeacherServiceContract
+from src.models.department import DepartmentOut
 from src.models.teacher import TeacherOut, TeacherIn
+from src.models.teacher_course_map import TeachersCourseOut
 
 
 class TeacherService(TeacherServiceContract):
@@ -23,9 +26,11 @@ class TeacherService(TeacherServiceContract):
             self,
             teachers_repository: TeachersRepositoryContract,
             users_repository: UsersRepositoryContract,
+            teacher_course_repository: TeacherCoursesRepositoryContract,
     ):
         self.teachers_repository = teachers_repository
         self.users_repository = users_repository
+        self.teacher_course_repository = teacher_course_repository
 
     async def create_teacher(self, teacher: TeacherIn) -> Optional[TeacherOut]:
         user = await self.users_repository.get_user_by_id(user_id=teacher.user_id)
@@ -99,9 +104,15 @@ class TeacherService(TeacherServiceContract):
         updated_items = []
         for teacher in teacher_dict["items"]:
             teacher_dict_item = dict(teacher)
+
             department = teacher_dict_item["Department"]
             teacher_dict_item.pop("Department")
             teacher_dict_item["department"] = {"id": department.id, "name": department.name, "code": department.code}
+
+            teacher_id = teacher_dict_item["id"]
+            courses = await self.get_courses_by_teacher(teacher_id=teacher_id)
+            teacher_dict_item["courses"] = courses
+
             updated_items.append(teacher_dict_item)
 
         teacher_dict["items"] = updated_items
@@ -165,7 +176,10 @@ class TeacherService(TeacherServiceContract):
         teacher.pop('Department')
         teacher['department'] = {"id": department.id, "name": department.name, "code": department.code}
 
-        return TeacherOut(**convert_nested_fields(item=teacher, model=TeacherOut))
+        courses = await self.get_courses_by_teacher(teacher_id=id)
+        teacher["courses"] = courses
+
+        return TeacherOut(**teacher)
 
     async def get_teacher_designation(self) -> Dict[str, Any]:
         teacher_designations = await self.teachers_repository.get_teacher_designation()
@@ -182,3 +196,25 @@ class TeacherService(TeacherServiceContract):
             raise NotFoundException()
 
         return teacher_designations
+
+    async def get_courses_by_teacher(self, teacher_id: int) -> Optional[List[TeachersCourseOut]]:
+        teacher_courses = await self.teacher_course_repository.get_courses_by_teacher(teacher_id=teacher_id)
+        course_teachers = []
+
+        for teacher_course in teacher_courses:
+            teacher_course_row = teacher_course["teacher_course"]
+            course = teacher_course["course"]
+            department = teacher_course["department"]
+
+            course_teachers.append(
+                TeachersCourseOut(
+                    id=course.id,
+                    title=course.title,
+                    code=course.code,
+                    course_type=course.course_type,
+                    department=DepartmentOut(id=department.id, name=department.name, code=department.code),
+                    relation_id=teacher_course_row.id
+                )
+            )
+
+        return course_teachers

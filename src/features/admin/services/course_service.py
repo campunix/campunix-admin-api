@@ -1,25 +1,31 @@
 from typing import Optional, List, Dict, Any
 
+from sqlmodel import and_
 from sqlmodel import or_
-from sqlmodel import select, and_
 
 from src.core.contracts.courses_repository_contract import CoursesRepositoryContract
+from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.converters import entity_to_model_list
 from src.core.entities.course import Course
+from src.core.entities.department import Department
 from src.core.entities.enums.course_type import CourseType
 from src.core.entities.teacher import Teacher
 from src.core.entities.teacher_course import TeacherCourse
 from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.course_service_contract import CourseServiceContract
 from src.models.course import CourseOut, CourseIn
+from src.models.course_teacher_map import CoursesTeacherOut
+from src.models.department import DepartmentOut
 
 
 class CourseService(CourseServiceContract):
     def __init__(
             self,
             course_repository: CoursesRepositoryContract,
+            teacher_course_repository: TeacherCoursesRepositoryContract
     ):
         self.course_repository = course_repository
+        self.teacher_course_repository = teacher_course_repository
 
     async def create_course(self, course: CourseIn) -> Optional[CourseOut]:
         course_type = CourseType.from_str(course.course_type)
@@ -66,6 +72,18 @@ class CourseService(CourseServiceContract):
             paginate=paginate,
             filters=filters
         )
+
+        updated_items = []
+        for course in courses["items"]:
+            courses_dict_item = dict(course)
+            teachers = await self.get_teachers_by_course(course_id=courses_dict_item["id"])
+            if teachers:
+                courses_dict_item["course_teachers"] = teachers
+
+            updated_items.append(courses_dict_item)
+
+        courses["items"] = updated_items
+
         return entity_to_model_list(entity_dict=courses, model=CourseOut, paginate=paginate)
 
     async def get_courses_by_teacher_id(self, teacher_id: int, page: int = 1, page_size: int = 10,
@@ -134,11 +152,13 @@ class CourseService(CourseServiceContract):
         if not course:
             raise NotFoundException
 
+        course_teachers = await self.get_teachers_by_course(id)
         return CourseOut(
             id=course.id,
             title=course.title,
             code=course.code,
-            course_type=course.course_type.value
+            course_type=course.course_type.value,
+            course_teachers=course_teachers
         )
 
     async def get_course_by_course_code(self, department_id: int, course_code: str) -> Optional[CourseOut]:
@@ -169,3 +189,26 @@ class CourseService(CourseServiceContract):
             raise NotFoundException()
 
         return course_types
+
+    async def get_teachers_by_course(self, course_id: int) -> Optional[List[CoursesTeacherOut]]:
+        teacher_courses = await self.teacher_course_repository.get_teachers_by_course(course_id=course_id)
+        course_teachers = []
+
+        for teacher_course in teacher_courses:
+            teacher_course_row = teacher_course["teacher_course"]
+            teacher = teacher_course["teacher"]
+            user = teacher_course["user"]
+            department = teacher_course["department"]
+            course_teachers.append(
+                CoursesTeacherOut(
+                    id=teacher.id,
+                    full_name=user.full_name,
+                    email=user.email,
+                    designation=teacher.designation,
+                    status=teacher.status,
+                    department=DepartmentOut(id=department.id, name=department.name, code=department.code),
+                    relation_id=teacher_course_row.id
+                )
+            )
+
+        return course_teachers

@@ -10,6 +10,7 @@ from src.models.room import RoomIn
 
 room_router = APIRouter(prefix="/rooms")
 
+
 @room_router.get("/roomTypes")
 @inject
 async def room_types(
@@ -17,6 +18,7 @@ async def room_types(
 ):
     types = await room_service.get_room_types()
     return APIResponse(data=types)
+
 
 @room_router.post("")
 @inject
@@ -35,9 +37,12 @@ async def get_all_room(
         room_service: RoomServiceContract = Depends(Provide[AdminContainer.room_service]),
         page: int = 1,
         page_size: int = 20,
-        search_query: Optional[str] = None
+        search_query: Optional[str] = None,
+        department_id: Optional[int] = None,
+        paginate: bool = True
 ):
-    rooms = await room_service.get_rooms(page=page, page_size=page_size, paginate=True, search_query=search_query)
+    rooms = await room_service.get_rooms(page=page, page_size=page_size, paginate=paginate,
+                                         search_query=search_query, department_id=department_id)
     return APIResponse(data=rooms)
 
 
@@ -70,4 +75,3 @@ async def delete_room(
 ):
     res = await room_service.delete_room(id)
     return APIResponse(status=res, message="Deleted successfully")
-

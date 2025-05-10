@@ -2,6 +2,7 @@ from typing import Optional
 from typing import Dict, Any
 
 from sqlalchemy import or_
+from sqlmodel import and_
 
 from src.core.contracts.rooms_repository_contract import RoomsRepositoryContract
 from src.core.converters import entity_to_model, entity_to_model_list
@@ -31,7 +32,8 @@ class RoomService(RoomServiceContract):
 
         return entity_to_model(entity=new_room, model=RoomOut)
 
-    async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False, search_query: Optional[str] = None):
+    async def get_rooms(self, page: int = 1, page_size: int = 10, paginate: bool = False,
+                           search_query: Optional[str] = None, department_id: Optional[int] = None):
 
         filters = []
 
@@ -40,6 +42,13 @@ class RoomService(RoomServiceContract):
                 or_(
                     Room.name.ilike(f"%{search_query}%"),
                     Room.code.ilike(f"%{search_query}%")
+                )
+            )
+
+        if department_id:
+            filters.append(
+                and_(
+                    Room.department_id == department_id
                 )
             )
 

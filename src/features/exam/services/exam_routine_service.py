@@ -22,7 +22,7 @@ class ExamRoutineService(ExamRoutineServiceContract):
     async def save_exam_routine(self, exam_routine_in: ExamRoutineIn) -> Optional[ExamRoutineOut]:
         new_routine = await self.exam_routines_repository.create(
             ExamRoutine(
-                routine_id=exam_routine_in.routine_id,
+                syllabus_id=exam_routine_in.syllabus_id,
                 title=exam_routine_in.title,
                 description=exam_routine_in.description,
                 calendar_year=exam_routine_in.calendar_year,
@@ -75,7 +75,7 @@ class ExamRoutineService(ExamRoutineServiceContract):
         routine = await self.exam_routines_repository.update(
             id=id,
             obj_data=ExamRoutine(
-                routine_id=exam_routine_in.routine_id,
+                syllabus_id=exam_routine_in.syllabus_id,
                 title=exam_routine_in.title,
                 description=exam_routine_in.description,
                 calendar_year=exam_routine_in.calendar_year,

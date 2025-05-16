@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ExamRoutineIn(BaseModel):
-    routine_id: int
+    syllabus_id: int
     title: str = None
     description: str = None
     calendar_year: str = None
@@ -12,7 +12,7 @@ class ExamRoutineIn(BaseModel):
 
 class ExamRoutineOut(BaseModel):
     id: int
-    routine_id: int
+    syllabus_id: int
     title: str = None
     description: str = None
     calendar_year: str = None

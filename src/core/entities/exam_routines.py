@@ -5,9 +5,9 @@ from sqlmodel import SQLModel, Field, Relationship
 
 
 class ExamRoutineBase(SQLModel):
-    routine_id: int = Field(
+    syllabus_id: int = Field(
         default=None,
-        foreign_key="routines.id",
+        foreign_key="syllabuses.id",
         nullable=False
     )
 

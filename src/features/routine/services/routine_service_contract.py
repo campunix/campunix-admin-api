@@ -7,7 +7,7 @@ from src.features.routine.models.routine_out import SavedRoutineOut
 
 class RoutineServiceContract(ABC):
     @abstractmethod
-    async def generate_routine_async(self, department_id: int, total_slots: int):
+    async def generate_routine_async(self, syllabus_id: int, total_slots: int):
         pass
 
     @abstractmethod

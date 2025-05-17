@@ -19,14 +19,15 @@ from src.features.syllabus.services.syllabus_service_contract import SyllabusSer
 
 
 class RoutineService(RoutineServiceContract):
-    def __init__(self, routine_generator: RoutineGeneratorContract, routine_repository: RoutinesRepositoryContract,
+    def __init__(
+        self, routine_generator: RoutineGeneratorContract, routine_repository: RoutinesRepositoryContract,
                  syllabus_service: SyllabusServiceContract):
         self.routine_generator = routine_generator
         self.routine_repository = routine_repository
         self.syllabus_service = syllabus_service
 
-    async def generate_routine_async(self, department_id: int, total_slots: int):
-        syllabus_courses = await self.syllabus_service.get_course_list(department_id)
+    async def generate_routine_async(self, syllabus_id: int, total_slots: int):
+        syllabus_courses = await self.syllabus_service.get_syllabus_course_list(syllabus_id)
 
         course_dict = self.get_courses_from_syllabus(syllabus_courses)
         semester_dict = self.get_semesters_from_syllabus(syllabus_courses)

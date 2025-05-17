@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class RoutineIn(BaseModel):
-    department_id: int = Field(1, gt=0)
+    syllabus_id: int = Field(1, gt=0)
     total_slots: int = Field(1, gt=0, le=20)
 
 

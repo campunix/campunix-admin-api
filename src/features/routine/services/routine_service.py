@@ -25,8 +25,8 @@ class RoutineService(RoutineServiceContract):
         self.routine_repository = routine_repository
         self.syllabus_service = syllabus_service
 
-    async def generate_routine_async(self, total_slots: int):
-        syllabus_courses = await self.syllabus_service.get_course_list(1)
+    async def generate_routine_async(self, department_id: int, total_slots: int):
+        syllabus_courses = await self.syllabus_service.get_course_list(department_id)
 
         course_dict = self.get_courses_from_syllabus(syllabus_courses)
         semester_dict = self.get_semesters_from_syllabus(syllabus_courses)

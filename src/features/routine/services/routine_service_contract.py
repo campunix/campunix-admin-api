@@ -7,7 +7,7 @@ from src.features.routine.models.routine_out import SavedRoutineOut
 
 class RoutineServiceContract(ABC):
     @abstractmethod
-    async def generate_routine_async(self, total_slots: int):
+    async def generate_routine_async(self, department_id: int, total_slots: int):
         pass
 
     @abstractmethod
@@ -23,8 +23,12 @@ class RoutineServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def get_saved_routines(self, page: int = 1, page_size: int = 10, paginate: bool = False,
-                                 search_query: Optional[str] = None) -> Dict[str, Any]:
+    async def get_saved_routines(
+        self,
+        page: int = 1, 
+        page_size: int = 10, 
+        paginate: bool = False,
+        search_query: Optional[str] = None) -> Dict[str, Any]:
         pass
 
     @abstractmethod

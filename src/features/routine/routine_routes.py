@@ -17,7 +17,9 @@ async def generate_routine(
         routine_in: RoutineIn,
         routine_generator: RoutineServiceContract = Depends(Provide[RoutineContainer.routine_service])
 ):
-    response_data = await routine_generator.generate_routine_async(routine_in.total_slots)
+    response_data = await routine_generator.generate_routine_async(
+        routine_in.department_id,
+        routine_in.total_slots)
     return response_data
 
 

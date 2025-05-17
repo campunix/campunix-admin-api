@@ -94,7 +94,7 @@ class SyllabusService(SyllabusServiceContract):
         result = []
         if syllabus is None:
             return result
-    
+
         for semester in syllabus.semesters:
             semester_data = await self.semesters_repository.get_semester_by_year_and_number(
                 department=department_id,
@@ -281,3 +281,32 @@ class SyllabusService(SyllabusServiceContract):
             department_name=department_in_db.name,
             semesters=semesters
         )
+
+    async def get_syllabus_course_list(self, syllabus_id: int) -> list[dict[str, Any]]:
+        syllabus_out = await self.get_syllabus(syllabus_id)
+        department_id = syllabus_out.department_id
+
+        syllabus = syllabus_out.syllabus
+        if syllabus is None:
+            raise NotFoundException(detail="Syllabus not found")
+
+        result = []
+        for semester in syllabus.semesters:
+            semester_data = await self.semesters_repository.get_semester_by_year_and_number(
+                department=department_id,
+                year=semester.year,
+                number=semester.number,
+            )
+            for course in semester.courses:
+                course_data = await self.teachers_course_service.get_teacher_course_by_course_code(
+                    department_id=department_id, course_code=course.course_code)
+
+                result.append(
+                    {
+                        "semester": SemesterOut(**semester_data.model_dump()),
+                        "course": course_data.course,
+                        "teacher": course_data.teacher
+                    }
+                )
+
+        return result

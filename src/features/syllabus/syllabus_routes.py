@@ -127,3 +127,13 @@ async def update(
 ):
     syllabus = await syllabus_service.update_syllabus(id, syllabus_in)
     return UpdateResponse(data=syllabus)
+
+
+@router.get("/{id}/course_list", summary="Get department wise syllabus")
+@inject
+async def get_by_department(
+        syllabus_id: int = None,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    course = await syllabus_service.get_syllabus_course_list(syllabus_id)
+    return APIResponse(data=course)

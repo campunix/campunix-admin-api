@@ -10,7 +10,7 @@ def room_id_holder():
 
 
 @pytest.mark.asyncio
-async def test_create_room(room_service_mock, authorized_client, room_id_holder):
+async def test_create_room(authorized_client, room_id_holder):
     room_req = {
         "name": "Room T-101",
         "code": "T-101",
@@ -26,7 +26,7 @@ async def test_create_room(room_service_mock, authorized_client, room_id_holder)
 
 
 @pytest.mark.asyncio
-async def test_get_all_rooms(room_service_mock, authorized_client):
+async def test_get_all_rooms(authorized_client):
     response = await authorized_client.get("/rooms")
 
     assert response.status_code == status.HTTP_200_OK
@@ -34,7 +34,7 @@ async def test_get_all_rooms(room_service_mock, authorized_client):
 
 
 @pytest.mark.asyncio
-async def test_get_room_by_id(room_service_mock, authorized_client, room_id_holder):
+async def test_get_room_by_id(authorized_client, room_id_holder):
     room_id = room_id_holder["id"]
     response = await authorized_client.get(f"/rooms/{room_id}")
 
@@ -43,7 +43,7 @@ async def test_get_room_by_id(room_service_mock, authorized_client, room_id_hold
 
 
 @pytest.mark.asyncio
-async def test_update_room(room_service_mock, authorized_client, room_id_holder):
+async def test_update_room(authorized_client, room_id_holder):
     room_id = room_id_holder["id"]
     response = await authorized_client.put(f"/rooms/{room_id}", json={
         "name": "Room T-101",
@@ -57,14 +57,14 @@ async def test_update_room(room_service_mock, authorized_client, room_id_holder)
 
 
 @pytest.mark.asyncio
-async def test_get_room_types(room_service_mock, authorized_client):
+async def test_get_room_types(authorized_client):
     response = await authorized_client.get("/rooms/roomTypes")
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()["data"]["items"]) > 0
 
 @pytest.mark.asyncio
-async def test_delete_room(room_service_mock, authorized_client, room_id_holder):
+async def test_delete_room(authorized_client, room_id_holder):
     room_id = room_id_holder["id"]
     response = await authorized_client.delete(f"/rooms/{room_id}")
 

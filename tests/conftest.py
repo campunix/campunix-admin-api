@@ -23,49 +23,6 @@ def event_loop():
 
 
 @pytest.fixture
-async def async_session():
-    engine = create_async_engine("postgresql+asyncpg://postgres:1qazZAQ!@localhost/campunix_admin", echo=True)
-    async_session_maker = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-    async with async_session_maker() as session:
-        yield session
-    await engine.dispose()
-
-
-@pytest.fixture
-def organization_service_mock():
-    with patch.object(AdminContainer, "organization_service") as mock:
-        mock.return_value = AsyncMock()
-        yield mock.return_value
-
-
-@pytest.fixture
-def admin_service_mock():
-    with patch.object(AdminContainer, "admin_service") as mock:
-        mock.return_value = AsyncMock()
-        yield mock.return_value
-
-
-@pytest.fixture
-def preference_service_mock():
-    with patch.object(AdminContainer, "preference_service") as mock:
-        mock.return_value = AsyncMock()
-        yield mock.return_value
-
-
-@pytest.fixture
-def room_service_mock():
-    with patch.object(AdminContainer, "room_service") as mock:
-        mock.return_value = AsyncMock()
-        yield mock.return_value
-
-@pytest.fixture
-def department_service_mock():
-    with patch.object(AdminContainer, "department_service") as mock:
-        mock.return_value = AsyncMock()
-        yield mock.return_value
-
-
-@pytest.fixture
 def bearer_token():
     return (
         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc0NzkwMDc4MX0.qTDLLHKniVCfz-e847YYXsbmBRN50vbT_R37NmuLiz0"

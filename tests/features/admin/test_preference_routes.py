@@ -10,7 +10,7 @@ def pref_id_holder():
 
 
 @pytest.mark.asyncio
-async def test_create_preference(preference_service_mock, authorized_client, pref_id_holder):
+async def test_create_preference(authorized_client, pref_id_holder):
     pref_request = {
         "teacher_id": 1,
         "day": "SUNDAY",
@@ -25,7 +25,7 @@ async def test_create_preference(preference_service_mock, authorized_client, pre
 
 
 @pytest.mark.asyncio
-async def test_get_all_preferences(preference_service_mock, authorized_client):
+async def test_get_all_preferences(authorized_client):
     response = await authorized_client.get("/preferences")
 
     assert response.status_code == status.HTTP_200_OK
@@ -33,7 +33,7 @@ async def test_get_all_preferences(preference_service_mock, authorized_client):
 
 
 @pytest.mark.asyncio
-async def test_get_preferences_by_teacher_id(preference_service_mock, authorized_client):
+async def test_get_preferences_by_teacher_id(authorized_client):
     response = await authorized_client.get("/preferences/byTeacher", params={"teacher_id": 299})
 
     assert response.status_code == status.HTTP_200_OK
@@ -41,7 +41,7 @@ async def test_get_preferences_by_teacher_id(preference_service_mock, authorized
 
 
 @pytest.mark.asyncio
-async def test_get_preference_by_id(preference_service_mock, authorized_client, pref_id_holder):
+async def test_get_preference_by_id(authorized_client, pref_id_holder):
     pref_id = pref_id_holder["id"]
 
     response = await authorized_client.get(f"/preferences/{pref_id}")
@@ -51,14 +51,14 @@ async def test_get_preference_by_id(preference_service_mock, authorized_client, 
 
 
 @pytest.mark.asyncio
-async def test_get_preference_by_id_not_found(preference_service_mock, authorized_client):
+async def test_get_preference_by_id_not_found(authorized_client):
     response = await authorized_client.get("/preferences/999")
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_update_preference(preference_service_mock, authorized_client, pref_id_holder):
+async def test_update_preference(authorized_client, pref_id_holder):
     update_data = {
         "teacher_id": 1,
         "day": "MONDAY",
@@ -74,7 +74,7 @@ async def test_update_preference(preference_service_mock, authorized_client, pre
 
 
 @pytest.mark.asyncio
-async def test_update_preference_not_found(preference_service_mock, authorized_client):
+async def test_update_preference_not_found(authorized_client):
     response = await authorized_client.put("/preferences/999", json={
         "teacher_id": 1,
         "day": "MONDAY",
@@ -85,7 +85,7 @@ async def test_update_preference_not_found(preference_service_mock, authorized_c
 
 
 @pytest.mark.asyncio
-async def test_delete_preference(preference_service_mock, authorized_client, pref_id_holder):
+async def test_delete_preference(authorized_client, pref_id_holder):
     pref_id = pref_id_holder["id"]
     response = await authorized_client.delete(f"/preferences/{pref_id}")
 
@@ -93,14 +93,14 @@ async def test_delete_preference(preference_service_mock, authorized_client, pre
 
 
 @pytest.mark.asyncio
-async def test_delete_preference_not_found(preference_service_mock, authorized_client):
+async def test_delete_preference_not_found(authorized_client):
     response = await authorized_client.delete("/preferences/999")
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_get_days(preference_service_mock, authorized_client):
+async def test_get_days(authorized_client):
     response = await authorized_client.get("/preferences/days")
 
     assert response.status_code == status.HTTP_200_OK

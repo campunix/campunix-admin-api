@@ -8,7 +8,7 @@ def org_id_holder():
 
 
 @pytest.mark.asyncio
-async def test_create_organization(organization_service_mock, admin_service_mock, org_id_holder, authorized_client):
+async def test_create_organization(org_id_holder, authorized_client):
     test_org = {"name": "Dhaka University"}
 
     response = await authorized_client.post("/organizations", json=test_org)
@@ -19,8 +19,7 @@ async def test_create_organization(organization_service_mock, admin_service_mock
 
 
 @pytest.mark.asyncio
-async def test_get_all_organization(organization_service_mock, authorized_client):
-    organization_service_mock.get_organizations.return_value = [{"name": "Dhaka University"}]
+async def test_get_all_organization(authorized_client):
 
     response = await authorized_client.get("/organizations")
 
@@ -29,7 +28,7 @@ async def test_get_all_organization(organization_service_mock, authorized_client
 
 
 @pytest.mark.asyncio
-async def test_get_organization_found(organization_service_mock, org_id_holder, authorized_client):
+async def test_get_organization_found(org_id_holder, authorized_client):
     org_id = org_id_holder["id"]
 
     response = await authorized_client.get(f"/organizations/{org_id}")
@@ -39,14 +38,14 @@ async def test_get_organization_found(organization_service_mock, org_id_holder, 
 
 
 @pytest.mark.asyncio
-async def test_get_organization_not_found(organization_service_mock, authorized_client):
+async def test_get_organization_not_found(authorized_client):
     response = await authorized_client.get("/organizations/999")
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_update_organization_success(organization_service_mock, org_id_holder, authorized_client):
+async def test_update_organization_success(org_id_holder, authorized_client):
     org_id = org_id_holder["id"]
 
     response = await authorized_client.put(f"/organizations/{org_id}", json={"name": "Dhaka University New"})
@@ -56,10 +55,9 @@ async def test_update_organization_success(organization_service_mock, org_id_hol
 
 
 @pytest.mark.asyncio
-async def test_link_user_success(organization_service_mock, admin_service_mock, org_id_holder, authorized_client):
+async def test_link_user_success(org_id_holder, authorized_client):
     org_id = org_id_holder["id"]
 
-    admin_service_mock.map_user_to_organization.return_value = None
     data = {
         "user_id": 24,
         "role": "ADMIN"
@@ -72,14 +70,14 @@ async def test_link_user_success(organization_service_mock, admin_service_mock, 
 
 
 @pytest.mark.asyncio
-async def test_delete_organization_not_found(organization_service_mock, authorized_client):
+async def test_delete_organization_not_found(authorized_client):
     response = await authorized_client.delete("/organizations/999")
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
-async def test_delete_organization_success(organization_service_mock, org_id_holder, authorized_client):
+async def test_delete_organization_success(org_id_holder, authorized_client):
     org_id = org_id_holder["id"]
 
     response = await authorized_client.delete(f"/organizations/{org_id}")

@@ -67,3 +67,10 @@ REST API for CampUnix administration.
   ```shell
   pytest
   ```
+ 
+- **Run a single test file**  
+  ```shell
+  pytest tests/features/admin/test_department_routes.py::test_create_department
+  ``` 
+
+tests/features/admin/test_department_routes.py::test_create_department

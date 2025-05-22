@@ -12,7 +12,6 @@ admin_router = APIRouter(prefix="/admin")
 @admin_router.get("")
 @inject
 async def check_admin(
-        admin_service: AdminServiceContract = Depends(Provide[AdminContainer.admin_service]),
         token: str = Depends(oauth2_scheme),
         auth_service: AuthServiceContract = Depends(Provide[AdminContainer.auth_service]),
 ):

@@ -53,9 +53,16 @@ def preference_service_mock():
 
 
 @pytest.fixture
+def room_service_mock():
+    with patch.object(AdminContainer, "room_service") as mock:
+        mock.return_value = AsyncMock()
+        yield mock.return_value
+
+
+@pytest.fixture
 def bearer_token():
     return (
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc0Nzg5NzA1NX0.d7ajdYSczvfJyKY_RU9zq7Rnqe-I5i_3w6CNawjLCj4"
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc0NzkwMDc4MX0.qTDLLHKniVCfz-e847YYXsbmBRN50vbT_R37NmuLiz0"
     )
 
 

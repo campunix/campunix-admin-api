@@ -1,20 +1,13 @@
-from http import HTTPStatus
-from pyexpat.errors import messages
-
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
-from sqlalchemy.testing import fails
-from starlette.status import HTTP_201_CREATED
 
-from src.core.contracts.user_organizations_repository_contract import UserOrganizationsRepositoryContract
 from src.core.entities.enums.user_role import UserRole
 from src.core.exceptions.not_found_exception import NotFoundException
-from src.core.exceptions.validation_exception import ValidationException
 from src.features.admin.admin_container import AdminContainer
 from src.features.admin.services.admin_service_contract import AdminServiceContract
 from src.features.admin.services.organization_service_contract import OrganizationServiceContract
 from src.models.organization import OrganizationIn
-from src.models.response import APIResponse, CreateResponse, DeleteResponse, UpdateResponse, ErrorResponse
+from src.models.response import APIResponse, CreateResponse, DeleteResponse, UpdateResponse
 from src.models.user_organization import UserOrganizationIn
 from src.utils.oauth2_utils import oauth2_scheme
 

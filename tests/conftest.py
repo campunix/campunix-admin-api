@@ -1,34 +1,66 @@
-import asyncio
-from typing import Any, Generator, AsyncGenerator
+import os
+import sys
+from unittest.mock import AsyncMock
+from unittest.mock import patch
 
 import pytest
-import pytest_asyncio
-from async_asgi_testclient import TestClient
+from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
 
+from src.features.admin.admin_container import AdminContainer
 from src.main import app
 
-
-@pytest.fixture(autouse=True, scope="session")
-def run_migrations() -> None:
-    import os
-
-    print("running migrations..")
-    os.system("alembic upgrade head")
-    yield
-    os.system("alembic downgrade base")
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
 
 @pytest.fixture(scope="session")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
+def event_loop():
+    import asyncio
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 
 
-@pytest_asyncio.fixture
-async def client() -> AsyncGenerator[TestClient, None]:
-    host, port = "127.0.0.1", "8000"
-    scope = {"client": (host, port)}
+@pytest.fixture
+async def async_session():
+    engine = create_async_engine("postgresql+asyncpg://postgres:1qazZAQ!@localhost/campunix_admin", echo=True)
+    async_session_maker = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    async with async_session_maker() as session:
+        yield session
+    await engine.dispose()
 
-    async with TestClient(app, scope=scope) as client:
+
+@pytest.fixture
+def organization_service_mock():
+    with patch.object(AdminContainer, "organization_service") as mock:
+        mock.return_value = AsyncMock()
+        yield mock.return_value
+
+
+@pytest.fixture
+def admin_service_mock():
+    with patch.object(AdminContainer, "admin_service") as mock:
+        mock.return_value = AsyncMock()
+        yield mock.return_value
+
+
+@pytest.fixture
+def preference_service_mock():
+    with patch.object(AdminContainer, "preference_service") as mock:
+        mock.return_value = AsyncMock()
+        yield mock.return_value
+
+
+@pytest.fixture
+def bearer_token():
+    return (
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc0Nzg5NzA1NX0.d7ajdYSczvfJyKY_RU9zq7Rnqe-I5i_3w6CNawjLCj4"
+    )
+
+
+@pytest.fixture(scope="function")
+async def authorized_client(bearer_token):
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        client.headers.update({"Authorization": bearer_token})
         yield client

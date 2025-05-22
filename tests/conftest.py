@@ -58,6 +58,12 @@ def room_service_mock():
         mock.return_value = AsyncMock()
         yield mock.return_value
 
+@pytest.fixture
+def department_service_mock():
+    with patch.object(AdminContainer, "department_service") as mock:
+        mock.return_value = AsyncMock()
+        yield mock.return_value
+
 
 @pytest.fixture
 def bearer_token():

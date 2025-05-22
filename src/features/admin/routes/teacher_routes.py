@@ -34,8 +34,7 @@ async def teacher_status(
 @inject
 async def create_teacher(
         teacher_in: TeacherIn,
-        teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service]),
-        token: str = Depends(oauth2_scheme),
+        teacher_service: TeacherServiceContract = Depends(Provide[AdminContainer.teacher_service])
 ):
     teacher = await teacher_service.create_teacher(teacher_in)
     return CreateResponse(data=teacher)

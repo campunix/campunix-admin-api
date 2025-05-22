@@ -54,3 +54,16 @@ REST API for CampUnix administration.
   ```shell
   python -m db_seed.seeder
   ```
+
+
+## 🧪 Unit Testing
+
+- **Install Testing Dependencies**  
+  ```shell
+  pip install pytest pytest-asyncio httpx anyio
+  ```
+
+- **Run all tests**  
+  ```shell
+  pytest
+  ```

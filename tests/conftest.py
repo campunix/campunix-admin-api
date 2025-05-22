@@ -1,14 +1,9 @@
 import os
 import sys
-from unittest.mock import AsyncMock
-from unittest.mock import patch
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
 
-from src.features.admin.admin_container import AdminContainer
 from src.main import app
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))

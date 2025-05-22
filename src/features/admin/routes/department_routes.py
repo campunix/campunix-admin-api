@@ -46,8 +46,15 @@ async def get_all_departments(
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
         page: int = 1,
         page_size: int = 20,
-        search_query: Optional[str] = None
+        search_query: Optional[str] = None,
+        token: str = Depends(oauth2_scheme),
+        auth_service: AuthServiceContract = Depends(Provide[AdminContainer.auth_service]),
 ):
+    user = await auth_service.get_current_user(token)
+
+    if not user:
+        raise UnauthenticatedUser
+
     departments = await department_service.get_departments(page=page, page_size=page_size, paginate=True, search_query=search_query)
     return APIResponse(data=departments)
 
@@ -57,7 +64,14 @@ async def get_all_departments(
 async def get_department(
         id: int,
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
+        token: str = Depends(oauth2_scheme),
+        auth_service: AuthServiceContract = Depends(Provide[AdminContainer.auth_service]),
 ):
+    user = await auth_service.get_current_user(token)
+
+    if not user:
+        raise UnauthenticatedUser
+
     department = await department_service.get_department_by_id(id)
     return APIResponse(data=department)
 
@@ -97,7 +111,14 @@ async def update_department(
 async def delete_department(
         id: int,
         department_service: DepartmentServiceContract = Depends(Provide[AdminContainer.department_service]),
+        token: str = Depends(oauth2_scheme),
+        auth_service: AuthServiceContract = Depends(Provide[AdminContainer.auth_service]),
 ):
+    user = await auth_service.get_current_user(token)
+
+    if not user:
+        raise UnauthenticatedUser
+
     is_deleted = await department_service.delete_department(id)
     if not is_deleted:
         raise NotFoundException

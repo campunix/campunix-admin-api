@@ -6,7 +6,7 @@ from tests.conftest import authorized_client
 
 @pytest.fixture(scope="module")
 def course_id_holder():
-    return {"id": 98}
+    return {"id": 108}
 
 
 @pytest.mark.asyncio

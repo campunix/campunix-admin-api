@@ -25,7 +25,7 @@ def event_loop():
 @pytest.fixture
 def bearer_token():
     return (
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc0NzkwMzE5M30.b3RXt0UqtVdN3BIhpvVCqp-fBBmjYyoKnjA9OK3vMqw"
+        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTc0NzkwNzA1NH0.152aEZoGfJZ5af0KY6x7VX0kr4NSZ9ILt-oon4HvQlU"
     )
 
 

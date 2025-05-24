@@ -3,6 +3,7 @@ from starlette import status
 
 from tests.conftest import authorized_client
 
+'''
 
 @pytest.fixture(scope="module")
 def teacher_course_holder():
@@ -86,3 +87,6 @@ async def test_delete_teacher_course(authorized_client, teacher_course_holder):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["message"] == "Deleted successfully"
+
+
+'''

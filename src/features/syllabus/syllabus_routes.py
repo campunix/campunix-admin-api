@@ -129,9 +129,9 @@ async def update(
     return UpdateResponse(data=syllabus)
 
 
-@router.get("/{id}/course_list", summary="Get department wise syllabus")
+@router.get("/{syllabus_id}/course_list", summary="Get syllabus courses")
 @inject
-async def get_by_department(
+async def get_courses(
         syllabus_id: int = None,
         syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
 ):

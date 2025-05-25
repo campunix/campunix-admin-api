@@ -4,9 +4,10 @@ from typing import Optional
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, status, File, UploadFile, Response
 
+from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_container import SyllabusContainer
-from src.models.response import APIResponse, CreateResponse, UpdateResponse
+from src.models.response import APIResponse, CreateResponse, DeleteResponse, UpdateResponse
 from src.models.syllabus.syllabus_models import SyllabusIn
 
 router = APIRouter(prefix="/syllabus")
@@ -137,3 +138,15 @@ async def get_courses(
 ):
     course = await syllabus_service.get_syllabus_course_list(id)
     return APIResponse(data=course)
+
+@router.delete("/{id}", status_code=status.HTTP_200_OK, summary="Delete Syllabus")
+@inject
+async def delete(
+        id: int,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    is_deleted = await syllabus_service.delete_syllabus(id)
+    if not is_deleted:
+        raise NotFoundException
+
+    return DeleteResponse()

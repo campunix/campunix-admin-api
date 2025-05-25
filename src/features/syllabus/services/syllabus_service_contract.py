@@ -53,6 +53,10 @@ class SyllabusServiceContract(ABC):
         pass
 
     @abstractmethod
+    async def delete_syllabus(self, id: int) -> bool:
+        pass
+
+    @abstractmethod
     async def get_all_syllabuses(self, page: int = 1, page_size: int = 10, paginate: bool = False,
                                  department_id: int = None) -> Dict[str, Any]:
         pass

@@ -6,6 +6,7 @@ class RoomOut(BaseModel):
     name: str
     code: str
     room_type: str
+    department_id: int = None
 
 
 class RoomIn(BaseModel):

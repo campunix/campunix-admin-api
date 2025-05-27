@@ -14,6 +14,7 @@ from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 from src.features.syllabus.syllabus_utils.xml_utils import parse_syllabus, create_template
+from src.models.response import DeleteResponse
 from src.models.semester import SemesterOut
 from src.models.syllabus.syllabus_models import SyllabusParsed, SyllabusIn, Course, Semester, SyllabusOut
 
@@ -310,3 +311,6 @@ class SyllabusService(SyllabusServiceContract):
                 )
 
         return result
+    
+    async def delete_syllabus(self, id: int) -> bool:
+        return await self.repository.delete(id=id)

@@ -5,6 +5,7 @@ class PreferenceOut(BaseModel):
     id: int
     teacher_id: int
     teacher_name: str
+    department_id: int = None
     day: str
     slot_no: int
 

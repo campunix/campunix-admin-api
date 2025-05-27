@@ -184,6 +184,7 @@ class PreferenceService(PreferenceServiceContract):
             id=preference.id,
             teacher_id=teacher.id,
             teacher_name=teacher.full_name,
+            department_id=teacher.department.id,
             day=preference.day.name,
             slot_no=preference.slot_no
         )

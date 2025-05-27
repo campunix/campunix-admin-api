@@ -174,7 +174,13 @@ class TeacherService(TeacherServiceContract):
 
         department = teacher['Department']
         teacher.pop('Department')
-        teacher['department'] = {"id": department.id, "name": department.name, "code": department.code}
+        teacher['department'] = \
+            {
+                "id": department.id,
+                "name": department.name,
+                "code": department.code,
+                "organization_id": department.organization_id
+            }
 
         courses = await self.get_courses_by_teacher(teacher_id=id)
         teacher["courses"] = courses

@@ -73,4 +73,4 @@ class DepartmentService(DepartmentServiceContract):
         if not department:
             raise NotFoundException
 
-        return DepartmentOut(id=department.id, name=department.name, code=department.code)
+        return DepartmentOut(id=department.id, name=department.name, code=department.code, organization_id=department.organization_id)

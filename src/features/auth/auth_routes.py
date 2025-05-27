@@ -2,6 +2,9 @@ from dependency_injector.wiring import inject, Provide
 
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette.authentication import UnauthenticatedUser
+
+from src.features.admin.admin_container import AdminContainer
 from src.features.auth.services.auth_service_contract import AuthServiceContract
 from src.features.auth.auth_container import AuthContainer
 from src.models.response import APIResponse
@@ -39,7 +42,12 @@ async def current_user(
         token: str = Depends(oauth2_scheme),
         auth_service: AuthServiceContract = Depends(Provide[AuthContainer.auth_service]),
 ):
-    return await auth_service.get_current_user(token)
+    user = await auth_service.get_current_user(token)
+
+    if not user:
+        raise UnauthenticatedUser
+
+    return user
 
 
 @router.get("/users")
@@ -50,6 +58,12 @@ async def all_users(
         page_size: int = 20,
         paginate: bool = True,
         query: str = "",
+        token: str = Depends(oauth2_scheme)
 ):
+    user = await auth_service.get_current_user(token)
+
+    if not user:
+        raise UnauthenticatedUser
+
     users = await auth_service.get_all_users(page=page, page_size=page_size, paginate=paginate)
     return APIResponse(data=users)

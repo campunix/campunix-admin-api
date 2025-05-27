@@ -82,3 +82,23 @@ class TeacherCoursesRepository(
             pass
 
         return outputs
+
+    async def delete_by_course_id(self, course_id: int) -> bool:
+        try:
+            # Get all matching records
+            statement = select(self.model).where(self.model.course_id == course_id)
+            result = await self.db_session.execute(statement)
+            objs = result.scalars().all()  # Get all matching objects
+
+            if not objs:
+                return False
+
+            # Delete all matching records
+            for obj in objs:
+                await self.db_session.delete(obj)
+            await self.db_session.commit()
+            return True
+
+        except Exception as e:
+            await self.db_session.rollback()
+            raise e

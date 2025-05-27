@@ -5,7 +5,7 @@ class DepartmentOut(BaseModel):
     id: int
     name: str
     code: str
-    organization_id: int
+    organization_id: int = None
 
 
 class DepartmentIn(BaseModel):

@@ -29,7 +29,8 @@ class BaseRepositoryContract(ABC):
             paginate: bool = False,
             filters: Optional[List[Any]] = None,
             joins: Optional[List[Any]] = None,
-            columns: Optional[List[Any]] = None
+            columns: Optional[List[Any]] = None,
+            group_by: Optional[List[Any]] = None
     ) -> Dict[str, Any]:
         pass
 

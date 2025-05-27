@@ -60,10 +60,14 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             paginate: bool = False,
             filters: Optional[List[Any]] = None,
             joins: Optional[List[Any]] = None,
-            columns: Optional[List[Any]] = None
+            columns: Optional[List[Any]] = None,
+            group_by: Optional[List[Any]] = None
     ) -> Dict[str, Any]:
         # If no specific columns are passed, default to selecting all columns of the model
         if columns is None:
+            if group_by:
+                # If grouping, we need to be explicit about which columns to select
+                raise ValueError("When using group_by, you must specify columns to select")
             statement = select(*self.model.__table__.columns)
         else:
             statement = select(*columns)
@@ -78,6 +82,10 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             for condition in filters:
                 statement = statement.where(condition)
 
+        # Apply group_by if provided
+        if group_by:
+            statement = statement.group_by(*group_by)
+
         # Calculate total items based on the filtered query
         total_items_stmt = (
             select(func.count()).select_from(self.model).where(*filters)
@@ -90,14 +98,18 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
             for related_model, condition in joins:
                 total_items_stmt = total_items_stmt.join(related_model, condition)
 
+        # Clear GROUP BY for count query
+        if group_by:
+            total_items_stmt = total_items_stmt.group_by(None)
+
         total_items_result = await self.db_session.execute(total_items_stmt)
         total_items = total_items_result.scalar_one()
 
         # Calculate total pages based on total items and page size
-        total_pages = ceil(total_items / page_size)
+        total_pages = ceil(total_items / page_size) if page_size else 1
 
         # Apply pagination if enabled
-        if paginate:
+        if paginate and page_size:
             statement = statement.offset((page - 1) * page_size).limit(page_size)
 
         result = await self.db_session.execute(statement)

@@ -22,3 +22,7 @@ class TeacherCoursesRepositoryContract(BaseRepositoryContract):
     @abstractmethod
     async def get_courses_by_teacher(self, teacher_id: int) -> Optional[List[Dict[str, Any]]]:
         pass
+
+    @abstractmethod
+    async def delete_by_course_id(self, course_id: int) -> bool:
+        pass

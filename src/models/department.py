@@ -5,6 +5,7 @@ class DepartmentOut(BaseModel):
     id: int
     name: str
     code: str
+    organization_id: int
 
 
 class DepartmentIn(BaseModel):

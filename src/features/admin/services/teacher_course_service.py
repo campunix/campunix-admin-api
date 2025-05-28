@@ -9,6 +9,7 @@ from src.features.admin.services.course_service_contract import CourseServiceCon
 from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.features.admin.services.teacher_service_contract import TeacherServiceContract
 from src.models.course_teacher_map import CoursesTeachers
+from src.models.syllabus.syllabus_models import TeacherCourseOutForSyllabus
 from src.models.teacher_course_map import TeachersCourseOut, TeachersCourseIn, TeachersCourseMappingOut
 
 
@@ -139,7 +140,7 @@ class TeacherCourseService(TeacherCourseServiceContract):
         )
 
     async def get_teacher_course_by_course_code(self, department_id: int, course_code: str) -> Optional[
-        TeachersCourseOut]:
+        TeacherCourseOutForSyllabus]:
         course = await self.course_service.get_course_by_course_code(
             department_id=department_id,
             course_code=course_code
@@ -152,7 +153,7 @@ class TeacherCourseService(TeacherCourseServiceContract):
 
         teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
 
-        return TeachersCourseOut(
+        return TeacherCourseOutForSyllabus(
             id=teacher_course.id,
             teacher=teacher,
             course=course

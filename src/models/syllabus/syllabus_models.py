@@ -2,6 +2,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
+from src.models.course import CourseOut
+from src.models.teacher import TeacherOut
+
 
 # Define Pydantic models
 class Book(BaseModel):
@@ -98,3 +101,9 @@ class SyllabusOut(BaseModel):
     calendar_year: Optional[str] = None
     is_active: Optional[bool] = None
     syllabus: Optional[SyllabusParsed]
+
+
+class TeacherCourseOutForSyllabus(BaseModel):
+    id: int
+    teacher: TeacherOut
+    course: CourseOut

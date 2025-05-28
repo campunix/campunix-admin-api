@@ -31,6 +31,10 @@ class PreferenceService(PreferenceServiceContract):
         if not teacher:
             raise NotFoundException(detail="Teacher not found")
 
+        # Check if both day and slot_no are None
+        if preference.day is None and preference.slot_no is None:
+            raise ValueError("At least one of 'day' or 'slot_no' must be provided.")
+
         new_preference = await self.preferences_repository.create(
             Preference(
                 teacher_id=preference.teacher_id,
@@ -43,7 +47,7 @@ class PreferenceService(PreferenceServiceContract):
             raise DuplicateException(detail="Preference already exist")
 
         preference_out = PreferenceOut(
-            id= new_preference.id,
+            id=new_preference.id,
             teacher_id=teacher.id,
             teacher_name=teacher.full_name,
             day=preference.day,
@@ -53,7 +57,7 @@ class PreferenceService(PreferenceServiceContract):
         return entity_to_model(entity=preference_out, model=PreferenceOut)
 
     async def get_preferences(self, page: int = 1, page_size: int = 10, paginate: bool = False,
-                          search_query: Optional[str] = None,):
+                              search_query: Optional[str] = None, ):
 
         filters = []
 
@@ -92,8 +96,9 @@ class PreferenceService(PreferenceServiceContract):
 
         return entity_to_model_list(entity_dict=preferences_dict, model=PreferenceOut, paginate=paginate)
 
-    async def get_preferences_by_teacher_id(self, teacher_id: int, page: int = 1, page_size: int = 10, paginate: bool = False,
-                          search_query: Optional[str] = None,):
+    async def get_preferences_by_teacher_id(self, teacher_id: int, page: int = 1, page_size: int = 10,
+                                            paginate: bool = False,
+                                            search_query: Optional[str] = None, ):
 
         filters = []
 
@@ -185,8 +190,8 @@ class PreferenceService(PreferenceServiceContract):
             teacher_id=teacher.id,
             teacher_name=teacher.full_name,
             department_id=teacher.department.id,
-            day=preference.day.name,
-            slot_no=preference.slot_no
+            day=preference.day.name if preference.day is not None else None,
+            slot_no=preference.slot_no if preference.slot_no is not None else None
         )
 
     async def get_days(self) -> Dict[str, Any]:

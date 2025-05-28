@@ -2,7 +2,6 @@ from abc import abstractmethod, ABC
 from typing import Optional, Dict, Any
 
 from src.models.preference import PreferenceIn, PreferenceOut
-from src.models.teacher import TeacherIn, TeacherOut
 
 
 class PreferenceServiceContract(ABC):

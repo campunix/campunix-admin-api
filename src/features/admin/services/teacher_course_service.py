@@ -8,6 +8,7 @@ from src.core.exceptions.not_found_exception import NotFoundException
 from src.features.admin.services.course_service_contract import CourseServiceContract
 from src.features.admin.services.teacher_course_service_contract import TeacherCourseServiceContract
 from src.features.admin.services.teacher_service_contract import TeacherServiceContract
+from src.models.course_teacher_map import CoursesTeachers
 from src.models.teacher_course_map import TeachersCourseOut, TeachersCourseIn, TeachersCourseMappingOut
 
 
@@ -103,31 +104,12 @@ class TeacherCourseService(TeacherCourseServiceContract):
         return entity_to_model_list(entity_dict=data, model=TeachersCourseMappingOut, paginate=paginate)
 
     async def update_teacher_course(self, id: int, teacher_course: TeachersCourseIn) -> Optional[TeachersCourseOut]:
-        teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
-        course = await self.course_service.get_course_by_id(teacher_course.course_id)
+        res = await self.delete_teacher_course(teacher_course.course_id)
 
-        if not teacher:
-            raise NotFoundException(detail='Teacher not found')
-
-        if not course:
+        if not res:
             raise NotFoundException(detail='Course not found')
 
-        new_teacher_course = await self.teacher_course_repository.update(
-            id,
-            TeacherCourse(
-                teacher_id=teacher.id,
-                course_id=course.id
-            )
-        )
-
-        if not new_teacher_course:
-            raise NotFoundException(detail='Teacher Course not found')
-
-        return TeachersCourseOut(
-            id=new_teacher_course.id,
-            teacher=teacher,
-            course=course
-        )
+        return await self.create_teacher_course(teacher_course)
 
     async def delete_teacher_course(self, id: int) -> bool:
         res = await self.teacher_course_repository.delete_by_course_id(id)
@@ -135,25 +117,25 @@ class TeacherCourseService(TeacherCourseServiceContract):
             raise NotFoundException(detail="Deletion unsuccessful")
         return res
 
-    async def get_teacher_course_by_id(self, id: int) -> Optional[TeachersCourseOut]:
-        teacher_course = await self.teacher_course_repository.get_by_id(id)
+    async def get_teacher_course_by_id(self, course_id: int) -> Optional[CoursesTeachers]:
+        course = await self.course_service.get_course_by_id(course_id)
+        teachers = await self.teacher_course_repository.get_teachers_by_course(course_id=course.id)
 
-        if not teacher_course:
-            raise NotFoundException(detail="Teachers courses not found!")
-
-        teacher = await self.teacher_service.get_teacher_by_id(teacher_course.teacher_id)
-        course = await self.course_service.get_course_by_id(teacher_course.course_id)
-
-        if not teacher:
-            raise NotFoundException(detail="Teacher not found!")
+        if not teachers:
+            raise NotFoundException(detail="Teachers not found!")
 
         if not course:
             raise NotFoundException(detail="Course not found!")
 
-        return TeachersCourseOut(
-            id=teacher_course.id,
-            teacher=teacher,
-            course=course
+        teacher_ids = [item['teacher'].id for item in teachers]
+        department_id = teachers[0]['department'].id
+
+        return CoursesTeachers(
+            course_id=course.id,
+            title=course.title,
+            code=course.code,
+            teachers=teacher_ids,
+            department_id=department_id
         )
 
     async def get_teacher_course_by_course_code(self, department_id: int, course_code: str) -> Optional[

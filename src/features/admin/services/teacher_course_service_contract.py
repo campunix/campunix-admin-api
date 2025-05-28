@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any
 
+from src.models.course_teacher_map import CoursesTeachers
 from src.models.teacher_course_map import TeachersCourseIn, TeachersCourseOut
 
 
@@ -22,7 +23,7 @@ class TeacherCourseServiceContract(ABC):
         pass
 
     @abstractmethod
-    async def get_teacher_course_by_id(self, id: int) -> Optional[TeachersCourseOut]:
+    async def get_teacher_course_by_id(self, id: int) -> Optional[CoursesTeachers]:
         pass
 
     @abstractmethod

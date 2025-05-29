@@ -1,20 +1,24 @@
+from src.features.routine.models.routine_course import RoutineCourse
+from src.features.routine.models.routine_semester import RoutineSemester
+
+
 class Gene():
-    def __init__(self, course_code: str, course_teacher: str, semester: str, semester_number: int, is_lab: bool):
-        self.course_code = course_code
-        self.course_teacher = course_teacher
+    def __init__(self, course: RoutineCourse, semester: RoutineSemester):
+        self.course = course
         self.semester = semester
-        self.semester_number = semester_number
-        self.is_lab = is_lab
         self.cell_number = None
 
     def has_same_course_code_of(self, gene: 'Gene') -> bool:
-        return self.course_code == gene.course_code
+        return self.course.code == gene.course.code
 
     def has_same_course_teacher_of(self, gene: 'Gene') -> bool:
-        return self.course_teacher == gene.course_teacher
+        for item1 in self.course.teachers:
+            for item2 in gene.course.teachers:
+                if item1.id == item2.id:
+                    return True
 
     def has_same_semester_of(self, gene: 'Gene') -> bool:
-        return self.semester_number == gene.semester_number
+        return self.semester.number == gene.semester.number
 
     def is_in_same_slot_on_same_day_of(self, gene: 'Gene', total_slots: int, total_semesters: int) -> bool:
         return self.is_in_same_day_of(gene, total_slots, total_semesters) and self.is_in_same_slot_of(gene, total_slots)

@@ -27,20 +27,20 @@ class Chromosome:
                 if self.genes[i].cell_number == self.genes[j].cell_number:
                     conflicts += 1
 
-                if ((self.genes[i].is_lab and self.genes[i].is_last_slot(self.total_slots)) or
-                    (self.genes[j].is_lab and self.genes[j].is_last_slot(self.total_slots))):
+                if ((self.genes[i].course.is_lab and self.genes[i].is_last_slot(self.total_slots)) or
+                    (self.genes[j].course.is_lab and self.genes[j].is_last_slot(self.total_slots))):
                     conflicts += 1
 
                 if (self.genes[i].has_same_course_teacher_of(self.genes[j]) and
                     self.genes[i].is_in_same_slot_on_same_day_of(self.genes[j], self.total_slots, self.total_semesters)):
                     conflicts += 1
 
-                if (self.genes[i].is_lab and
+                if (self.genes[i].course.is_lab and
                     self.genes[i].has_same_course_teacher_of(self.genes[j]) and
                     self.genes[i].is_in_previous_slot_on_same_day_of(self.genes[j], self.total_slots, self.total_semesters)):
                     conflicts += 1
 
-                if (self.genes[i].is_lab and
+                if (self.genes[i].course.is_lab and
                     self.genes[i].has_same_semester_of(self.genes[j]) and
                     self.genes[i].is_in_previous_slot_on_same_day_of(self.genes[j], self.total_slots, self.total_semesters)):
                     conflicts += 1
@@ -63,7 +63,7 @@ class Chromosome:
 
     def calculate_cell_number(self, gene: Gene) -> int:
         total_cells_in_a_day = self.total_semesters * self.total_slots
-        current_semester = gene.semester_number
+        current_semester = gene.semester.number
 
         cell_number = (random.randint(0, 4) + ((current_semester - 1) * self.total_slots)) + \
                       (random.randint(0, 4) * total_cells_in_a_day)

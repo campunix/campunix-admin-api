@@ -53,11 +53,8 @@ class RoutineService(RoutineServiceContract):
             semester = semester_dict[x["semester"].id]
 
             available_genes.append(Gene(
-                course_code=course.code,
-                is_lab=course.is_lab,
-                course_teacher=x["teacher"].full_name,
-                semester=semester.id,
-                semester_number=semester.serial_number))
+                semester = semester,
+                course = course))
 
         return available_genes
 
@@ -70,7 +67,8 @@ class RoutineService(RoutineServiceContract):
                     id=x["course"].id,
                     code=x["course"].code,
                     title=x["course"].title,
-                    course_type=x["course"].course_type
+                    course_type=x["course"].course_type,
+                    teachers = x["course"].course_teachers,
                 )
 
         return course_dict

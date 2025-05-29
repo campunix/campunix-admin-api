@@ -13,23 +13,6 @@ class RoutineGenerator(RoutineGeneratorContract):
     available_genes: list[Gene] = []
 
     def __init__(self):
-
-        # self.available_genes = [
-        #     Gene("CSE-203", "EI", "2-1", 2, True),
-        #     Gene("CSE-205", "NAR", "2-1", 2, False),
-        #     Gene("CSE-206", "GM", "2-1", 2, False),
-        #     Gene("CSE-207", "MMB", "2-1", 2, False),
-        #     Gene("CSE-208", "MZR", "2-1", 2, False),
-        #     Gene("CSE-209", "MAI", "2-1", 2, False),
-        #     Gene("CSE-210", "MAI", "2-1", 2, True),
-        #     Gene("CSE-212", "EI", "2-1", 2, True),
-        #     Gene("CSE-303", "SKS", "3-1", 3, False),
-        #     Gene("CSE-304", "SKS", "3-1", 3, True),
-        #     Gene("CSE-305", "BA", "3-1", 3, False),
-        #     Gene("CSE-307", "JKD", "3-1", 3, False),
-        #     Gene("CSE-309", "AKA", "3-1", 3, False),
-        #     Gene("CSE-314", "SB", "3-1", 3, True),
-        # ]
         self._random = random.Random()
 
     async def generate_async(self, total_slots: int, total_semesters: int, available_genes: list[Gene]):
@@ -103,4 +86,4 @@ class RoutineGenerator(RoutineGeneratorContract):
         
         ordered_genes = sorted(schedule.genes, key=lambda x: x.cell_number)
         for i, gene in enumerate(ordered_genes, start=1):
-            print(f"Time Slot {i}: Class - {gene.course_code}, Teacher - {gene.course_teacher}, CellNumber - {gene.cell_number}, (row, col) = ({gene.cell_number // 5}, {gene.cell_number % 5})")
+            print(f"Time Slot {i}: Class - {gene.course.code}, Teacher - {gene.course.teachers}, CellNumber - {gene.cell_number}, (row, col) = ({gene.cell_number // 5}, {gene.cell_number % 5})")

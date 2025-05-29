@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from src.core.repositories.users_repository import UsersRepository
 from src.features.auth.services.auth_service import AuthService
-from src.features.routine.services.routine_generator import RoutineGenerator
+from src.features.routine.services.routine_generator_service import RoutineGenerator
 from src.features.routine.services.routine_service import RoutineService
 from src.features.syllabus.syllabus_container import SyllabusContainer
 from src.infrastructure.base_container import BaseContainer

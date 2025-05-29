@@ -14,14 +14,15 @@ from src.features.routine.models.routine_in import SavedRoutineIn
 from src.features.routine.models.routine_out import RoutineOut, SavedRoutineOut
 from src.features.routine.models.routine_semester import RoutineSemester
 from src.features.routine.services.routine_generator_contract import RoutineGeneratorContract
-from src.features.routine.services.routine_service_contract import RoutineServiceContract
+from src.features.routine.services.routine_contract import RoutineServiceContract
 from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
 
 
 class RoutineService(RoutineServiceContract):
-    def __init__(
-        self, routine_generator: RoutineGeneratorContract, routine_repository: RoutinesRepositoryContract,
-                 syllabus_service: SyllabusServiceContract):
+    def __init__(self,
+                routine_generator: RoutineGeneratorContract, 
+                routine_repository: RoutinesRepositoryContract,
+                syllabus_service: SyllabusServiceContract):
         self.routine_generator = routine_generator
         self.routine_repository = routine_repository
         self.syllabus_service = syllabus_service

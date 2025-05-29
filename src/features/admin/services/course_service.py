@@ -163,11 +163,18 @@ class CourseService(CourseServiceContract):
 
     async def get_course_by_course_code(self, department_id: int, course_code: str) -> Optional[CourseOut]:
         course = await self.course_repository.get_course_by_code(course_code=course_code, department_id=department_id)
+
+        if not course:
+            raise NotFoundException
+
+        course_teachers = await self.get_teachers_by_course(course.id)
+
         return CourseOut(
             id=course.id,
             title=course.title,
             code=course.code,
-            course_type=course.course_type.value
+            course_type=course.course_type.value,
+            course_teachers=course_teachers
         )
 
     async def bulk_insert_courses(self, courses_in: List[CourseIn]):

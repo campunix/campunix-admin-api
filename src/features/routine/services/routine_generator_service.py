@@ -9,7 +9,7 @@ from src.features.syllabus.services.syllabus_service_contract import SyllabusSer
 class RoutineGenerator(RoutineGeneratorContract):
     total_semesters: int
     total_slots: int = 2
-    total_population: int = 10
+    total_population: int = 20
     available_genes: list[Gene] = []
 
     def __init__(self):
@@ -24,7 +24,9 @@ class RoutineGenerator(RoutineGeneratorContract):
         chromosomes = self.initialize_population()
 
         generation = 0
-        while generation < 1500:  # max generations
+        max_generations = 2000
+
+        while generation < max_generations:  # max generations
             # Evaluate fitness
             for chromosome in chromosomes:
                 chromosome.calculate_fitness()
@@ -60,9 +62,8 @@ class RoutineGenerator(RoutineGeneratorContract):
                 available_genes=self.available_genes))
         return chromosomes
     
-    @staticmethod
-    def select_best_population(population: List[Chromosome]) -> List['Chromosome']:
-        return population[:5]  # Select top 5 schedules
+    def select_best_population(self, population: List[Chromosome]) -> List['Chromosome']:
+        return population[:10]
 
     @staticmethod
     def perform_crossover(population: List[Chromosome]) -> List['Chromosome']:

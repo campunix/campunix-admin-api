@@ -10,6 +10,7 @@ class Chromosome:
         self.fitness = 0.0
         self.total_slots = total_slots
         self.total_semesters = total_semesters
+        self.total_days = 5  # TODO: have to set dynamically
         
         if available_genes:
             for gene in available_genes:
@@ -62,13 +63,27 @@ class Chromosome:
 
     def mutate(self):
         index = random.randint(0, len(self.genes) - 1)
-        self.genes[index].set_cell_number(self.calculate_cell_number(self.genes[index]))
+        
+        # TODO: what if we only assign empty cell numbers? and this section must be improved using hash map or something
+        max_attempt = 20
+        while(max_attempt > 0):
+            max_attempt -= 1
+            new_cell_number = self.calculate_cell_number(self.genes[index])
+
+            for gene in self.genes:
+                if gene.cell_number == new_cell_number:
+                    break
+        
+            # if we find empty cell number then we exit loop
+            break
+
+        self.genes[index].set_cell_number(new_cell_number)
 
     def calculate_cell_number(self, gene: Gene) -> int:
-        total_cells_in_a_day = self.total_semesters * self.total_slots
         current_semester = gene.semester.number
+        total_cells_in_a_day = self.total_semesters * self.total_slots
 
-        cell_number = (random.randint(0, 4) + ((current_semester - 1) * self.total_slots)) + \
-                      (random.randint(0, 4) * total_cells_in_a_day)
+        cell_number = (random.randint(0, self.total_slots - 1) + ((current_semester - 1) * self.total_slots)) + \
+                      (random.randint(0, self.total_days - 1) * total_cells_in_a_day)
 
         return cell_number

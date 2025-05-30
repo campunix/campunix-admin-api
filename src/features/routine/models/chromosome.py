@@ -13,7 +13,7 @@ class Chromosome:
         
         if available_genes:
             for gene in available_genes:
-                gene.cell_number = self.calculate_cell_number(gene)
+                gene.set_cell_number(self.calculate_cell_number(gene))
                 self.genes.append(gene)
 
     def calculate_fitness(self):
@@ -45,6 +45,9 @@ class Chromosome:
                     self.genes[i].is_in_previous_slot_on_same_day_of(self.genes[j], self.total_slots, self.total_semesters)):
                     conflicts += 1
 
+                conflicts += (1 - self.genes[i].get_preference_satisfication_ratio(self.total_slots))
+                conflicts += (1 - self.genes[j].get_preference_satisfication_ratio(self.total_slots))
+
         self.conflicts = conflicts
         self.fitness = 1.0 / (1 + conflicts)
 
@@ -59,7 +62,7 @@ class Chromosome:
 
     def mutate(self):
         index = random.randint(0, len(self.genes) - 1)
-        self.genes[index].cell_number = self.calculate_cell_number(self.genes[index])
+        self.genes[index].set_cell_number(self.calculate_cell_number(self.genes[index]))
 
     def calculate_cell_number(self, gene: Gene) -> int:
         total_cells_in_a_day = self.total_semesters * self.total_slots

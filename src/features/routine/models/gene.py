@@ -8,6 +8,9 @@ class Gene():
         self.semester = semester
         self.cell_number = None
 
+    def set_cell_number(self, cell_number: int):
+        self.cell_number = cell_number
+
     def has_same_course_code_of(self, gene: 'Gene') -> bool:
         return self.course.code == gene.course.code
 
@@ -16,6 +19,17 @@ class Gene():
             for item2 in gene.course.teachers:
                 if item1.id == item2.id:
                     return True
+                
+    def get_preference_satisfication_ratio(self, total_slots: int) -> float:
+        total_preferences = 0
+        total_satisfied_preferences = 0
+        for teacher in self.course.teachers:
+            for preference in teacher.preferences:
+                total_preferences += 1
+                if (preference.slot_no - 1) == self.get_slot_no(total_slots): #subtracting 1 because preference slot_no starts from 1
+                    total_satisfied_preferences += 1
+
+        return total_satisfied_preferences/total_preferences if total_preferences > 0 else 1
 
     def has_same_semester_of(self, gene: 'Gene') -> bool:
         return self.semester.number == gene.semester.number
@@ -47,8 +61,8 @@ class Gene():
         return cell1_day == cell2_day
     
     def get_slot_no(self, total_slots: int) -> int:
-        return self.cell_number % total_slots
+        return self.cell_number % total_slots # slot number starts from 0
     
     def get_day_no(self, total_slots: int, total_semesters: int) -> int:
         total_cells_in_a_day = total_slots * total_semesters
-        return self.cell_number // total_cells_in_a_day
+        return self.cell_number // total_cells_in_a_day # day number starts from 0

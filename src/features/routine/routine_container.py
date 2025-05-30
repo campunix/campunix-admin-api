@@ -1,5 +1,6 @@
 from dependency_injector import containers, providers
 from src.core.repositories.users_repository import UsersRepository
+from src.features.admin.admin_container import AdminContainer
 from src.features.auth.services.auth_service import AuthService
 from src.features.routine.services.routine_generator_service import RoutineGenerator
 from src.features.routine.services.routine_service import RoutineService
@@ -15,5 +16,6 @@ class RoutineContainer(BaseContainer):
         RoutineService,
         routine_generator,
         BaseContainer.routines_repository,
-        SyllabusContainer.syllabus_service
+        SyllabusContainer.syllabus_service,
+        AdminContainer.preference_service
     )

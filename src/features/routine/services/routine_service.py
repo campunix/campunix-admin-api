@@ -8,6 +8,7 @@ from src.core.converters import entity_to_model, entity_to_model_list
 from src.core.entities.routine import Routine
 from src.core.exceptions.db_exceptions import DatabaseError
 from src.core.exceptions.not_found_exception import NotFoundException
+from src.features.admin.services import PreferenceServiceContract
 from src.features.routine.models.gene import Gene
 from src.features.routine.models.routine_course import RoutineCourse
 from src.features.routine.models.routine_in import SavedRoutineIn
@@ -22,15 +23,18 @@ class RoutineService(RoutineServiceContract):
     def __init__(self,
                 routine_generator: RoutineGeneratorContract, 
                 routine_repository: RoutinesRepositoryContract,
-                syllabus_service: SyllabusServiceContract):
+                syllabus_service: SyllabusServiceContract,
+                preference_service: PreferenceServiceContract):
         self.routine_generator = routine_generator
         self.routine_repository = routine_repository
         self.syllabus_service = syllabus_service
+        self.preference_service = preference_service
 
     async def generate_routine_async(self, syllabus_id: int, total_slots: int):
         syllabus_courses = await self.syllabus_service.get_syllabus_course_list(syllabus_id)
+        preferences = await self.preference_service.get_preferences()
 
-        course_dict = self.get_courses_from_syllabus(syllabus_courses)
+        course_dict = self.get_courses_from_syllabus(syllabus_courses, preferences=preferences["items"])
         semester_dict = self.get_semesters_from_syllabus(syllabus_courses)
         available_genes = self.get_genes_from_syllabus(syllabus_courses, course_dict, semester_dict)
 
@@ -58,17 +62,18 @@ class RoutineService(RoutineServiceContract):
 
         return available_genes
 
-    def get_courses_from_syllabus(self, syllabus_courses):
+    def get_courses_from_syllabus(self, syllabus_courses, preferences=None):
         course_dict: dict[str, RoutineCourse] = dict()
 
         for x in syllabus_courses:
             if x["course"].code not in course_dict:
                 course_dict[x["course"].code] = RoutineCourse(
-                    id=x["course"].id,
-                    code=x["course"].code,
-                    title=x["course"].title,
-                    course_type=x["course"].course_type,
+                    id = x["course"].id,
+                    code = x["course"].code,
+                    title = x["course"].title,
+                    course_type = x["course"].course_type,
                     teachers = x["course"].course_teachers,
+                    preferences = preferences or []
                 )
 
         return course_dict

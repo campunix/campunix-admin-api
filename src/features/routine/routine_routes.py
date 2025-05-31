@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 
 from src.features.routine.models.routine_in import RoutineIn, SavedRoutineIn
 from src.features.routine.routine_container import RoutineContainer
-from src.features.routine.services.routine_service_contract import RoutineServiceContract
+from src.features.routine.services.routine_contract import RoutineServiceContract
 from src.models.response import CreateResponse, DeleteResponse, APIResponse, UpdateResponse
 
 routine_router = APIRouter(prefix="/routines")

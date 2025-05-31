@@ -9,27 +9,10 @@ from src.features.syllabus.services.syllabus_service_contract import SyllabusSer
 class RoutineGenerator(RoutineGeneratorContract):
     total_semesters: int
     total_slots: int = 2
-    total_population: int = 10
+    total_population: int = 15
     available_genes: list[Gene] = []
 
     def __init__(self):
-
-        # self.available_genes = [
-        #     Gene("CSE-203", "EI", "2-1", 2, True),
-        #     Gene("CSE-205", "NAR", "2-1", 2, False),
-        #     Gene("CSE-206", "GM", "2-1", 2, False),
-        #     Gene("CSE-207", "MMB", "2-1", 2, False),
-        #     Gene("CSE-208", "MZR", "2-1", 2, False),
-        #     Gene("CSE-209", "MAI", "2-1", 2, False),
-        #     Gene("CSE-210", "MAI", "2-1", 2, True),
-        #     Gene("CSE-212", "EI", "2-1", 2, True),
-        #     Gene("CSE-303", "SKS", "3-1", 3, False),
-        #     Gene("CSE-304", "SKS", "3-1", 3, True),
-        #     Gene("CSE-305", "BA", "3-1", 3, False),
-        #     Gene("CSE-307", "JKD", "3-1", 3, False),
-        #     Gene("CSE-309", "AKA", "3-1", 3, False),
-        #     Gene("CSE-314", "SB", "3-1", 3, True),
-        # ]
         self._random = random.Random()
 
     async def generate_async(self, total_slots: int, total_semesters: int, available_genes: list[Gene]):
@@ -41,7 +24,9 @@ class RoutineGenerator(RoutineGeneratorContract):
         chromosomes = self.initialize_population()
 
         generation = 0
-        while generation < 1500:  # max generations
+        max_generations = 3000
+
+        while generation < max_generations:  # max generations
             # Evaluate fitness
             for chromosome in chromosomes:
                 chromosome.calculate_fitness()
@@ -77,19 +62,19 @@ class RoutineGenerator(RoutineGeneratorContract):
                 available_genes=self.available_genes))
         return chromosomes
     
-    @staticmethod
-    def select_best_population(population: List[Chromosome]) -> List['Chromosome']:
-        return population[:5]  # Select top 5 schedules
+    def select_best_population(self, population: List[Chromosome]) -> List['Chromosome']:
+        best_population_size = 6
+        return population[:best_population_size]
 
     @staticmethod
     def perform_crossover(population: List[Chromosome]) -> List['Chromosome']:
-        new_population = population.copy()
-        for i in range(0, len(population) - 1, 2):
+        length = len(population)
+        for i in range(0, length - 1, 2):
             parent1 = population[i]
             parent2 = population[i + 1]
             child = parent1.crossover(parent2)
-            new_population.append(child)
-        return new_population
+            population.append(child)
+        return population
 
     def perform_mutation(self, population: List[Chromosome]) -> List['Chromosome']:
         for schedule in population:
@@ -103,4 +88,4 @@ class RoutineGenerator(RoutineGeneratorContract):
         
         ordered_genes = sorted(schedule.genes, key=lambda x: x.cell_number)
         for i, gene in enumerate(ordered_genes, start=1):
-            print(f"Time Slot {i}: Class - {gene.course_code}, Teacher - {gene.course_teacher}, CellNumber - {gene.cell_number}, (row, col) = ({gene.cell_number // 5}, {gene.cell_number % 5})")
+            print(f"Time Slot {i}: Class - {gene.course.code}, Teacher - {gene.course.teachers}, CellNumber - {gene.cell_number}, (row, col) = ({gene.cell_number // 5}, {gene.cell_number % 5})")

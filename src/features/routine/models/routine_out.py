@@ -1,5 +1,3 @@
-from typing import Dict, Any
-
 from pydantic import BaseModel
 
 from src.features.routine.models.chromosome import Chromosome
@@ -11,7 +9,7 @@ class RoutineOut:
     semesters: list[RoutineSemester]
     routine: Chromosome
 
-    def __init__(self, courses, semesters, routine):
+    def __init__(self, courses: list[RoutineCourse], semesters: list[RoutineSemester], routine: Chromosome):
         self.courses = courses
         self.semesters = semesters
         self.routine = routine

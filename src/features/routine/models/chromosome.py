@@ -83,8 +83,8 @@ class Chromosome:
         current_semester = gene.semester.number
         total_cells_in_a_day = self.total_semesters * self.total_slots
 
-        total_slots = self.total_slots - 1 if gene.course.is_lab else self.total_slots # since lab takes 2 slots so it should not be slot
-        cell_number = (random.randint(0, total_slots - 1) + ((current_semester - 1) * self.total_slots)) + \
+        total_slots_consider = self.total_slots - 1 if gene.course.is_lab else self.total_slots # since lab takes 2 slots so it should not be last slot
+        cell_number = (random.randint(0, total_slots_consider - 1) + ((current_semester - 1) * self.total_slots)) + \
                       (random.randint(0, self.total_days - 1) * total_cells_in_a_day)
 
         return cell_number

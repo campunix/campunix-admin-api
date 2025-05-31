@@ -3,6 +3,7 @@ from src.features.routine.models.routine_semester import RoutineSemester
 
 
 class Gene():
+    days = {"SUNDAY": 0, "MONDAY": 1, "TUESDAY": 2, "WEDNESDAY": 3, "THURSDAY": 4}
     def __init__(self, course: RoutineCourse, semester: RoutineSemester):
         self.course = course
         self.semester = semester
@@ -20,14 +21,21 @@ class Gene():
                 if item1.id == item2.id:
                     return True
                 
-    def get_preference_satisfication_ratio(self, total_slots: int) -> float:
+    def get_preference_satisfication_ratio(self, total_slots: int, total_semesters: int) -> float:
         total_preferences = 0
         total_satisfied_preferences = 0
+        
         for teacher in self.course.teachers:
             for preference in teacher.preferences:
                 total_preferences += 1
-                if (preference.slot_no - 1) == self.get_slot_no(total_slots): #subtracting 1 because preference slot_no starts from 1
-                    total_satisfied_preferences += 1
+                slot_no = self.get_slot_no(total_slots)
+                day_no = self.get_day_no(total_slots, total_semesters)
+                
+                if ((preference.day is None or self.days[preference.day] == day_no)):
+                    total_satisfied_preferences += 0.5
+
+                if (slot_no == (preference.slot_no - 1)):
+                    total_satisfied_preferences += 0.5
 
         return total_satisfied_preferences/total_preferences if total_preferences > 0 else 1
 

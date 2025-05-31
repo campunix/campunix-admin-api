@@ -34,9 +34,17 @@ class RoutineService(RoutineServiceContract):
         syllabus_courses = await self.syllabus_service.get_syllabus_course_list(syllabus_id)
         preferences = await self.preference_service.get_preferences()
 
-        course_dict = self.get_courses_from_syllabus(syllabus_courses, preferences=preferences["items"])
-        semester_dict = self.get_semesters_from_syllabus(syllabus_courses)
-        available_genes = self.get_genes_from_syllabus(syllabus_courses, course_dict, semester_dict)
+        course_dict = self.get_courses_from_syllabus(
+            syllabus_courses=syllabus_courses,
+            preferences=preferences["items"])
+        
+        semester_dict = self.get_semesters_from_syllabus(
+            syllabus_courses=syllabus_courses)
+
+        available_genes = self.get_genes_from_syllabus(
+            syllabus_courses=syllabus_courses,
+            course_dict=course_dict,
+            semester_dict=semester_dict)
 
         chromosome = await self.routine_generator.generate_async(
             total_slots=total_slots,
@@ -50,7 +58,6 @@ class RoutineService(RoutineServiceContract):
         )
 
     def get_genes_from_syllabus(self, syllabus_courses, course_dict, semester_dict):
-
         available_genes = []
         for x in syllabus_courses:
             course = course_dict[x["course"].code]

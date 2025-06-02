@@ -116,7 +116,8 @@ class CourseService(CourseServiceContract):
             paginate=paginate,
             filters=filters,
             joins=[(TeacherCourse, TeacherCourse.course_id == Course.id)],
-            columns=columns
+            columns=columns,
+            group_by=[Course.id]
         )
         return entity_to_model_list(entity_dict=course_dict, model=CourseOut, paginate=paginate)
 

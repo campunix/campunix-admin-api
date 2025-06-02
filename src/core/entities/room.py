@@ -1,0 +1,36 @@
+from sqlalchemy import Column, Enum
+from sqlmodel import Field, SQLModel
+
+from src.core.entities.base_entity import BaseEntity
+from src.core.entities.enums.room_type import RoomType
+
+
+class RoomBase(SQLModel):
+    name: str = Field(
+        default=None,
+        nullable=True,
+    )
+    code: str = Field(
+        default=None,
+        nullable=False,
+    )
+    department_id: int = Field(
+        default=None,
+        foreign_key="departments.id",
+        nullable=True,
+    )
+    room_type: RoomType = Field(
+        sa_column=Column(Enum(RoomType, name="room_type", create_type=False))
+    )
+
+
+class Room(BaseEntity, RoomBase, table=True):
+    __tablename__ = "rooms"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "code": self.code,
+            "room_type": str(self.room_type)  # Adjust for enums or complex types
+        }

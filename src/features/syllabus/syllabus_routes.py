@@ -1,0 +1,152 @@
+from http.client import HTTPException
+from typing import Optional
+
+from dependency_injector.wiring import inject, Provide
+from fastapi import APIRouter, Depends, status, File, UploadFile, Response
+
+from src.core.exceptions.not_found_exception import NotFoundException
+from src.features.syllabus.services.syllabus_service_contract import SyllabusServiceContract
+from src.features.syllabus.syllabus_container import SyllabusContainer
+from src.models.response import APIResponse, CreateResponse, DeleteResponse, UpdateResponse
+from src.models.syllabus.syllabus_models import SyllabusIn
+
+router = APIRouter(prefix="/syllabus")
+
+
+@router.post("/upload", status_code=status.HTTP_201_CREATED, summary="Save Syllabus")
+@inject
+async def save(
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        calendar_year: Optional[str] = None,
+        is_active: bool = False,
+        file: UploadFile = File(...),
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    if not file.filename.endswith(".xml"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only XML files are allowed.")
+
+    syllabus = await syllabus_service.save(
+        file=file,
+        title=title,
+        description=description,
+        calendar_year=calendar_year,
+        is_active=is_active
+    )
+    return CreateResponse(message="Syllabus uploaded successfully!", data=syllabus)
+
+
+@router.get("")
+@inject
+async def get_all(
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service]),
+        department_id: int = None
+):
+    syllabuses = await syllabus_service.get_all_syllabuses(department_id=department_id)
+    return APIResponse(data=syllabuses)
+
+
+@router.post("", status_code=status.HTTP_201_CREATED, summary="Create Syllabus")
+@inject
+async def create(
+        syllabus_in: SyllabusIn,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus = await syllabus_service.create_syllabus(syllabus_in)
+    return CreateResponse(message="Syllabus created successfully!", data=syllabus)
+
+
+@router.get("/getSyllabusByDepartment", summary="Get department wise syllabus")
+@inject
+async def get_by_department(
+        department_id: int = None,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    course = await syllabus_service.get_course_list(department_id)
+    return APIResponse(data=course)
+
+
+@router.get("/getBySemesterCode", summary="Get semester wise syllabus")
+@inject
+async def getByDeptIDAndSemesterCode(
+        department_id: int = None,
+        semester_code: int = None,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus = await syllabus_service.getByDeptIDAndSemesterCode(department_id, semester_code)
+    return syllabus
+
+
+@router.put("/updateSyllabus", summary="Update syllabus details")
+@inject
+async def updateSyllabus(
+        department_id: int,
+        semester_code: int,
+        course_code: str,
+        course_type: str,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    updated_syllabus = await syllabus_service.updateSyllabus(
+        department_id=department_id,
+        semester_code=semester_code,
+        course_code=course_code,
+        course_type=course_type
+    )
+
+    if not updated_syllabus:
+        raise HTTPException(status_code=404, detail="Syllabus not found")
+
+    return updated_syllabus
+
+
+@router.get("/template", summary="Get syllabus template xml file")
+@inject
+async def template(
+        department_id: int = None,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus_template = await syllabus_service.template(department_id)
+    return Response(content=syllabus_template, media_type="application/xml")
+
+
+@router.get("/{id}", status_code=status.HTTP_200_OK, summary="Get Syllabus")
+@inject
+async def get(
+        id: int,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus = await syllabus_service.get_syllabus(id=id)
+    return APIResponse(data=syllabus)
+
+
+@router.put("/{id}", status_code=status.HTTP_200_OK, summary="Update Syllabus")
+@inject
+async def update(
+        id: int,
+        syllabus_in: SyllabusIn,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    syllabus = await syllabus_service.update_syllabus(id, syllabus_in)
+    return UpdateResponse(data=syllabus)
+
+
+@router.get("/{id}/course_list", summary="Get syllabus courses")
+@inject
+async def get_courses(
+        id: int = None,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    course = await syllabus_service.get_syllabus_course_list(id)
+    return APIResponse(data=course)
+
+@router.delete("/{id}", status_code=status.HTTP_200_OK, summary="Delete Syllabus")
+@inject
+async def delete(
+        id: int,
+        syllabus_service: SyllabusServiceContract = Depends(Provide[SyllabusContainer.syllabus_service])
+):
+    is_deleted = await syllabus_service.delete_syllabus(id)
+    if not is_deleted:
+        raise NotFoundException
+
+    return DeleteResponse()

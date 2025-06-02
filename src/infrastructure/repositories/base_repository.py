@@ -1,102 +1,175 @@
-from contextlib import AbstractContextManager
-from typing import Any, Callable, Type, TypeVar
+from math import ceil
+from typing import Generic, Type, TypeVar, Optional, List, Dict, Any
 
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import update
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel import SQLModel, select, func
 
-from src.core.config import settings
-from src.core.entities.base_entity import BaseEntity
-from src.core.exceptions.duplicate_exception import DuplicateException
-from src.core.exceptions.not_found_exception import NotFoundException
-from src.utils.query_builder import dict_to_sqlalchemy_filter_options
+from src.core.contracts.base_repository_contract import BaseRepositoryContract
+from src.core.exceptions.db_exceptions import DatabaseIntegrityError, DatabaseError
 
-T = TypeVar("T", bound=BaseEntity)
+# Define a type variable for generic use in BaseRepository
+T = TypeVar("T", bound=SQLModel)
 
-class BaseRepository:
-    def __init__(self, session_factory: Callable[..., AbstractContextManager[Session]], model: Type[T]) -> None:
-        self.session_factory = session_factory
+
+class BaseRepository(Generic[T], BaseRepositoryContract):
+    def __init__(self, db_session: AsyncSession, model: Type[T]):
+        self.db_session = db_session
         self.model = model
 
-    def read_by_options(self, schema: T, eager: bool = False) -> dict:
-        with self.session_factory() as session:
-            schema_as_dict: dict = schema.dict(exclude_none=True)
-            ordering: str = schema_as_dict.get("ordering", settings.ORDERING)
-            order_query = (
-                getattr(self.model, ordering[1:]).desc()
-                if ordering.startswith("-")
-                else getattr(self.model, ordering).asc()
-            )
-            page = schema_as_dict.get("page", settings.PAGE)
-            page_size = schema_as_dict.get("page_size", settings.PAGE_SIZE)
-            filter_options = dict_to_sqlalchemy_filter_options(self.model, schema.dict(exclude_none=True))
-            query = session.query(self.model)
-            if eager:
-                for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
-            filtered_query = query.filter(filter_options)
-            query = filtered_query.order_by(order_query)
-            if page_size == "all":
-                query = query.all()
-            else:
-                query = query.limit(page_size).offset((page - 1) * page_size).all()
-            total_count = filtered_query.count()
+    async def get_by_id(
+            self,
+            id: int,
+            joins: Optional[List[Any]] = None
+    ) -> Optional[T]:
+        statement = select(self.model).where(self.model.id == id)
+
+        # Apply joins if provided
+        if joins:
+            for related_model, condition in joins:
+                statement = statement.join(related_model, condition).add_columns(related_model)
+
+        result = await self.db_session.execute(statement)
+        return result.scalars().one_or_none()
+
+    async def get_by_id_with_columns(
+            self,
+            id: int,
+            columns: Optional[List[Any]] = None,
+            joins: Optional[List[Any]] = None
+    ) -> Dict[str, Any]:
+        if columns is None:
+            statement = select(self.model).where(self.model.id == id)
+        else:
+            statement = select(*columns).where(self.model.id == id)
+
+        # Apply joins if provided
+        if joins:
+            for related_model, condition in joins:
+                statement = statement.join(related_model, condition)
+
+        result = await self.db_session.execute(statement)
+
+        return dict(result.mappings().first())
+
+    async def get_all(
+            self,
+            page: int = 1,
+            page_size: int = 10,
+            paginate: bool = False,
+            filters: Optional[List[Any]] = None,
+            joins: Optional[List[Any]] = None,
+            columns: Optional[List[Any]] = None,
+            group_by: Optional[List[Any]] = None
+    ) -> Dict[str, Any]:
+        # If no specific columns are passed, default to selecting all columns of the model
+        if columns is None:
+            if group_by:
+                # If grouping, we need to be explicit about which columns to select
+                raise ValueError("When using group_by, you must specify columns to select")
+            statement = select(*self.model.__table__.columns)
+        else:
+            statement = select(*columns)
+
+        # Apply joins if provided
+        if joins:
+            for related_model, condition in joins:
+                statement = statement.join(related_model, condition)
+
+        # Apply filters if provided
+        if filters:
+            for condition in filters:
+                statement = statement.where(condition)
+
+        # Apply group_by if provided
+        if group_by:
+            statement = statement.group_by(*group_by)
+
+        # Calculate total items based on the filtered query
+        total_items_stmt = (
+            select(func.count()).select_from(self.model).where(*filters)
+            if filters
+            else select(func.count()).select_from(self.model)
+        )
+
+        # Apply joins to total_items_stmt for accurate counts in joined queries
+        if joins:
+            for related_model, condition in joins:
+                total_items_stmt = total_items_stmt.join(related_model, condition)
+
+        # Clear GROUP BY for count query
+        if group_by:
+            total_items_stmt = total_items_stmt.group_by(None)
+
+        total_items_result = await self.db_session.execute(total_items_stmt)
+        total_items = total_items_result.scalar_one()
+
+        # Calculate total pages based on total items and page size
+        total_pages = ceil(total_items / page_size) if page_size else 1
+
+        # Apply pagination if enabled
+        if paginate and page_size:
+            statement = statement.offset((page - 1) * page_size).limit(page_size)
+
+        result = await self.db_session.execute(statement)
+        items = result.mappings().all()
+
+        if paginate:
             return {
-                "founds": query,
-                "search_options": {
-                    "page": page,
-                    "page_size": page_size,
-                    "ordering": ordering,
-                    "total_count": total_count,
-                },
+                "items": items,
+                "current_page": page,
+                "total_pages": total_pages,
+                "page_size": page_size,
+                "total_items": total_items,
             }
 
-    def read_by_id(self, id: int, eager: bool = False):
-        with self.session_factory() as session:
-            query = session.query(self.model)
-            if eager:
-                for eager in getattr(self.model, "eagers", []):
-                    query = query.options(joinedload(getattr(self.model, eager)))
-            query = query.filter(self.model.id == id).first()
-            if not query:
-                raise NotFoundException(detail=f"not found id : {id}")
-            return query
+        return {
+            "items": items,
+        }
 
-    def create(self, schema: T):
-        with self.session_factory() as session:
-            query = self.model(**schema.dict())
-            try:
-                session.add(query)
-                session.commit()
-                session.refresh(query)
-            except IntegrityError as e:
-                raise DuplicateException(detail=str(e.orig))
-            return query
+    async def create(self, obj: T) -> T:
+        try:
+            self.db_session.add(obj)
+            await self.db_session.commit()
+            await self.db_session.refresh(obj)
+            return obj
 
-    def update(self, id: int, schema: T):
-        with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(schema.dict(exclude_none=True))
-            session.commit()
-            return self.read_by_id(id)
+        except IntegrityError:
+            await self.db_session.rollback()
+            raise DatabaseIntegrityError(detail=f"Integrity error: {obj} already exists.")
+        except SQLAlchemyError as e:
+            await self.db_session.rollback()
+            raise DatabaseError(detail=f"Database error: {e}")
 
-    def update_attr(self, id: int, column: str, value: Any):
-        with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update({column: value})
-            session.commit()
-            return self.read_by_id(id)
+    async def update(self, id: int, obj_data: T) -> Optional[T]:
+        stmt = (
+            update(self.model)
+            .where(self.model.id == id)
+            .values(**obj_data.model_dump(exclude_unset=True))
+            .execution_options(synchronize_session="fetch")
+            .returning(self.model)
+        )
 
-    def whole_update(self, id: int, schema: T):
-        with self.session_factory() as session:
-            session.query(self.model).filter(self.model.id == id).update(schema.dict())
-            session.commit()
-            return self.read_by_id(id)
+        result = await self.db_session.execute(stmt)
+        updated_record = result.scalar_one_or_none()
+        await self.db_session.commit()
 
-    def delete_by_id(self, id: int):
-        with self.session_factory() as session:
-            query = session.query(self.model).filter(self.model.id == id).first()
-            if not query:
-                raise NotFoundException(detail=f"not found id : {id}")
-            session.delete(query)
-            session.commit()
+        return updated_record
 
-    def close_scoped_session(self):
-        return self.session_factory.close()
+    async def delete(self, id: int) -> bool:
+        statement = select(self.model).where(self.model.id == id)
+        result = await self.db_session.execute(statement)
+        obj = result.scalars().one_or_none()
+
+        if obj:
+            await self.db_session.delete(obj)
+            await self.db_session.commit()
+            return True
+
+        return False
+
+    async def bulk_insert(self, obj_list: List[T]):
+        self.db_session.add_all(obj_list)
+        await self.db_session.commit()
+        pass

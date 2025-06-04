@@ -45,3 +45,8 @@ class ResetPasswordRequest(BaseModel):
         if 'new_password' in values and v != values['new_password']:
             raise ValueError("New password and confirm password do not match")
         return v
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+    confirm_password: str

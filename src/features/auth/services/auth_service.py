@@ -14,7 +14,7 @@ from src.features.auth.utils.auth_utils import (
 )
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.entities.user import UserBase, user_entity_to_model
-from src.models.user import Token, UserOut, UserRegister, ResetPasswordRequest
+from src.models.user import Token, UserOut, UserRegister, ResetPasswordRequest, ChangePasswordRequest
 from src.utils.oauth2_utils import ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context
 
 
@@ -189,3 +189,30 @@ class AuthService(AuthServiceContract):
         await self.repository.clear_reset_token(user.id)
 
         return True
+
+    async def change_password(self, user_id: int, data: ChangePasswordRequest) -> bool:
+        if data.new_password != data.confirm_password:
+            raise HTTPException(
+                status_code=400,
+                detail="New password and confirm password do not match"
+            )
+
+        user = await self.repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        if not verify_password(data.current_password, user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is incorrect"
+            )
+
+        new_password_hash = get_password_hash(data.new_password)
+        await self.repository.update_password(user_id, new_password_hash)
+
+        return True
+
+

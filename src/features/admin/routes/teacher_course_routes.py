@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends
 from starlette.authentication import UnauthenticatedUser
@@ -34,6 +36,10 @@ async def create_teacher_course(
 @inject
 async def get_all_course_teacher(
         teacher_course_service: TeacherCourseServiceContract = Depends(Provide[AdminContainer.teacher_course_service]),
+        page: int = 1,
+        page_size: int = 20,
+        search_query: Optional[str] = None,
+        paginate: bool = True,
         token: str = Depends(oauth2_scheme),
         auth_service: AuthServiceContract = Depends(Provide[AdminContainer.auth_service]),
 ):
@@ -42,7 +48,8 @@ async def get_all_course_teacher(
     if not user:
         raise UnauthenticatedUser
 
-    course_teachers = await teacher_course_service.get_teacher_courses()
+    course_teachers = await teacher_course_service.get_teacher_courses(page=page, page_size=page_size,
+                                                                       paginate=paginate, search_query=search_query)
     return APIResponse(data=course_teachers)
 
 

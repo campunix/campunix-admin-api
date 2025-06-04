@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 from src.core.contracts.base_repository_contract import BaseRepositoryContract
@@ -20,7 +21,7 @@ class UsersRepositoryContract(BaseRepositoryContract):
 
     @abstractmethod
     async def get_user_by_email_or_username(
-        self, email_or_username: str
+            self, email_or_username: str
     ) -> Optional[User]:
         pass
 
@@ -30,19 +31,39 @@ class UsersRepositoryContract(BaseRepositoryContract):
 
     @abstractmethod
     async def create_new_user(
-        self,
-        username: str,
-        full_name: str,
-        email: str,
-        password_hash: str,
+            self,
+            username: str,
+            full_name: str,
+            email: str,
+            password_hash: str,
     ) -> User:
         pass
 
     @abstractmethod
     async def get_all_users(
-        self,
-        page: int = 1,
-        page_size: int = 10,
-        paginate: bool = False,
+            self,
+            page: int = 1,
+            page_size: int = 10,
+            paginate: bool = False,
     ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def get_by_email(self, email: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    async def save_reset_token(self, user_id: int, token: str, expiry: datetime):
+        pass
+
+    @abstractmethod
+    async def get_by_reset_token(self, token: str) -> User | None:
+        pass
+
+    @abstractmethod
+    async def update_password(self, user_id: int, password_hash: str):
+        pass
+
+    @abstractmethod
+    async def clear_reset_token(self, user_id: int):
         pass

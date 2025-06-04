@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Optional
+
 from sqlmodel import Field, SQLModel
 
 from src.core.entities.base_entity import BaseEntity
@@ -13,6 +16,9 @@ class UserBase(SQLModel):
 
 class User(BaseEntity, UserBase, table=True):
     __tablename__ = "users"
+
+    reset_token: Optional[str] = Field(default=None, index=True)
+    reset_token_expiry: Optional[datetime] = Field(default=None)
 
 
 def user_entity_to_model(user: User) -> UserOut:

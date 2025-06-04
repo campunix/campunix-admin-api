@@ -1,7 +1,7 @@
 import os
 import smtplib
 import uuid
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 from email.message import EmailMessage
 from typing import Any, Dict
 from fastapi import HTTPException, status
@@ -133,7 +133,7 @@ class AuthService(AuthServiceContract):
             )
 
         reset_token = str(uuid.uuid4())
-        token_expiry = datetime.utcnow() + timedelta(hours=1)
+        token_expiry = datetime.now(timezone.utc) + timedelta(hours=1)
 
         await self.repository.save_reset_token(user.id, reset_token, token_expiry)
 
@@ -178,7 +178,7 @@ class AuthService(AuthServiceContract):
                 detail="User not found"
             )
 
-        if user.reset_token_expiry < datetime.utcnow():
+        if user.reset_token_expiry < datetime.now(timezone.utc):
             raise HTTPException(
                 status_code=400,
                 detail="Invalid or expired token"

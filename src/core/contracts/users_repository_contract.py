@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 from src.core.contracts.base_repository_contract import BaseRepositoryContract
@@ -45,4 +46,19 @@ class UsersRepositoryContract(BaseRepositoryContract):
         page_size: int = 10,
         paginate: bool = False,
     ) -> Dict[str, Any]:
+        pass
+
+    async def get_by_email(self, email: str) -> Optional[User]:
+        pass
+
+    async def save_reset_token(self, user_id: int, token: str, expiry: datetime):
+        pass
+
+    async def get_by_reset_token(self, token: str) -> User | None:
+        pass
+
+    async def update_password(self, user_id: int, password_hash: str):
+        pass
+
+    async def clear_reset_token(self, user_id: int):
         pass

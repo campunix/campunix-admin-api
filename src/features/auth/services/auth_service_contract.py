@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-from src.models.user import Token, UserOut, UserRegister
+from src.models.user import Token, UserOut, UserRegister, ResetPasswordRequest
 
 
 class AuthServiceContract(ABC):
@@ -24,4 +24,12 @@ class AuthServiceContract(ABC):
     async def get_all_users(
         self, page: int = 1, page_size: int = 10, paginate: bool = False
     ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def initiate_password_reset(self, email: str) -> bool:
+        pass
+
+    @abstractmethod
+    async def reset_password(self, token: str, request_data: ResetPasswordRequest) -> bool:
         pass

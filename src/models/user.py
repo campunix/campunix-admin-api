@@ -1,5 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, EmailStr
+from pydantic.v1 import validator
+
 
 class UserOut(BaseModel):
     id: int
@@ -29,3 +31,17 @@ class UserPublic(BaseModel):
     full_name: str
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+    confirm_password: str
+
+    @validator("confirm_password")
+    def passwords_match(cls, v, values):
+        if 'new_password' in values and v != values['new_password']:
+            raise ValueError("New password and confirm password do not match")
+        return v

@@ -1,4 +1,8 @@
-from datetime import timedelta
+import os
+import smtplib
+import uuid
+from datetime import timedelta, datetime
+from email.message import EmailMessage
 from typing import Any, Dict
 from fastapi import HTTPException, status
 from src.features.auth.services.auth_service_contract import AuthServiceContract
@@ -10,8 +14,8 @@ from src.features.auth.utils.auth_utils import (
 )
 from src.core.contracts.users_repository_contract import UsersRepositoryContract
 from src.core.entities.user import UserBase, user_entity_to_model
-from src.models.user import Token, UserOut, UserRegister
-from src.utils.oauth2_utils import ACCESS_TOKEN_EXPIRE_MINUTES
+from src.models.user import Token, UserOut, UserRegister, ResetPasswordRequest
+from src.utils.oauth2_utils import ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context
 
 
 class AuthService(AuthServiceContract):
@@ -108,7 +112,7 @@ class AuthService(AuthServiceContract):
         return user_entity_to_model(new_user)
 
     async def get_all_users(
-        self, page: int = 1, page_size: int = 10, paginate: bool = False
+            self, page: int = 1, page_size: int = 10, paginate: bool = False
     ) -> Dict[str, Any]:
         return await self.repository.get_all_users(
             page=page,
@@ -118,3 +122,70 @@ class AuthService(AuthServiceContract):
 
     def logout_user(self, token: str):
         raise NotImplementedError("Logout functionality is not implemented.")
+
+    async def initiate_password_reset(self, email: str) -> bool:
+        user = await self.repository.get_by_email(email)
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        reset_token = str(uuid.uuid4())
+        token_expiry = datetime.utcnow() + timedelta(hours=1)
+
+        await self.repository.save_reset_token(user.id, reset_token, token_expiry)
+
+        reset_link = f"http://localhost:4200/reset-password?token={reset_token}"
+
+        # Compose email
+        message = EmailMessage()
+        message["Subject"] = "Password Reset Request"
+        message["From"] = os.getenv("GMAIL_USERNAME")
+        message["To"] = email
+        message.set_content(
+            f"Hi {user.full_name},\n\n"
+            f"Click the link below to reset your password:\n\n{reset_link}\n\n"
+            f"This link will expire in 1 hour.\n\n"
+            f"If you didn't request this, you can ignore this email."
+        )
+
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()
+                server.login(os.getenv("GMAIL_USERNAME"), os.getenv("GMAIL_APP_PASSWORD"))
+                server.send_message(message)
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to send reset email: {str(e)}"
+            )
+
+        return True
+
+    async def reset_password(self, token: str, request_data: ResetPasswordRequest) -> bool:
+        if request_data.new_password != request_data.confirm_password:
+            raise HTTPException(
+                status_code=400,
+                detail="New password and confirm password do not match"
+            )
+
+        user = await self.repository.get_by_reset_token(token)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        if user.reset_token_expiry < datetime.utcnow():
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid or expired token"
+            )
+
+        password_hash = pwd_context.hash(request_data.new_password)
+        await self.repository.update_password(user.id, password_hash)
+        await self.repository.clear_reset_token(user.id)
+
+        return True

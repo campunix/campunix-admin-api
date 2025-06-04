@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, Optional
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -67,3 +68,34 @@ class UsersRepository(BaseRepository[User], UsersRepositoryContract):
     ) -> Dict[str, Any]:
         users = await self.get_all(page=page, page_size=page_size, paginate=paginate)
         return entity_to_model_list(entity_dict=users, model=UserPublic, paginate=paginate)
+
+    async def get_by_email(self, email: str) -> User | None:
+        result = await self.db_session.execute(select(User).where(User.email == email))
+        return result.scalars().first()
+
+    async def save_reset_token(self, user_id: int, token: str, expiry: datetime):
+        result = await self.db_session.execute(select(User).where(User.id == user_id))
+        user = result.scalars().first()
+        if user:
+            user.reset_token = token
+            user.reset_token_expiry = expiry
+            await self.db_session.commit()
+
+    async def get_by_reset_token(self, token: str) -> User | None:
+        result = await self.db_session.execute(select(User).where(User.reset_token == token))
+        return result.scalars().first()
+
+    async def update_password(self, user_id: int, password_hash: str):
+        result = await self.db_session.execute(select(User).where(User.id == user_id))
+        user = result.scalars().first()
+        if user:
+            user.password_hash = password_hash
+            await self.db_session.commit()
+
+    async def clear_reset_token(self, user_id: int):
+        result = await self.db_session.execute(select(User).where(User.id == user_id))
+        user = result.scalars().first()
+        if user:
+            user.reset_token = None
+            user.reset_token_expiry = None
+            await self.db_session.commit()

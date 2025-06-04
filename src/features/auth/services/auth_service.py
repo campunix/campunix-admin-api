@@ -215,6 +215,4 @@ class AuthService(AuthServiceContract):
 
         return True
 
-#
-
 

@@ -78,7 +78,7 @@ class UsersRepository(BaseRepository[User], UsersRepositoryContract):
         user = result.scalars().first()
         if user:
             user.reset_token = token
-            user.reset_token_expiry = expiry
+            user.reset_token_expiry = expiry.replace(tzinfo=None)
             await self.db_session.commit()
 
     async def get_by_reset_token(self, token: str) -> User | None:

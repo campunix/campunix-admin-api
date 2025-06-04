@@ -178,7 +178,7 @@ class AuthService(AuthServiceContract):
                 detail="User not found"
             )
 
-        if user.reset_token_expiry < datetime.now(timezone.utc):
+        if user.reset_token_expiry < datetime.now(timezone.utc).replace(tzinfo=None):
             raise HTTPException(
                 status_code=400,
                 detail="Invalid or expired token"

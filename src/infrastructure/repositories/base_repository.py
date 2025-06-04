@@ -1,7 +1,7 @@
 from math import ceil
 from typing import Generic, Type, TypeVar, Optional, List, Dict, Any
 
-from sqlalchemy import update
+from sqlalchemy import update, distinct
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel, select, func
@@ -173,3 +173,19 @@ class BaseRepository(Generic[T], BaseRepositoryContract):
         self.db_session.add_all(obj_list)
         await self.db_session.commit()
         pass
+
+    async def count_distinct(self, field, filters=None, joins=None, model=None) -> int:
+        model = model or self.model
+        filters = filters or []
+        joins = joins or []
+
+        stmt = select(func.count(distinct(field))).select_from(model)
+
+        for join_model, condition in joins:
+            stmt = stmt.join(join_model, condition)
+
+        if filters:
+            stmt = stmt.where(*filters)
+
+        result = await self.db_session.execute(stmt)
+        return result.scalar_one()

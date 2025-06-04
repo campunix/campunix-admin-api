@@ -7,7 +7,6 @@ from src.core.contracts.courses_repository_contract import CoursesRepositoryCont
 from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.converters import entity_to_model_list
 from src.core.entities.course import Course
-from src.core.entities.department import Department
 from src.core.entities.enums.course_type import CourseType
 from src.core.entities.teacher import Teacher
 from src.core.entities.teacher_course import TeacherCourse

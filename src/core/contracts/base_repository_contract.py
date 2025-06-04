@@ -1,6 +1,7 @@
 from abc import ABC
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar, Type, Sequence, Tuple
 
+from sqlalchemy import ColumnElement
 from sqlmodel import SQLModel
 
 T = TypeVar("T", bound=SQLModel)
@@ -44,4 +45,12 @@ class BaseRepositoryContract(ABC):
         pass
 
     async def bulk_insert(self, obj_list: List[T]):
+        pass
+
+    async def count_distinct(
+            self,
+            model: Type[Any],
+            field: ColumnElement,
+            filters: Optional[Sequence[Any]] = None,
+            joins: Optional[Sequence[Tuple[Any, Any]]] = None) -> int:
         pass

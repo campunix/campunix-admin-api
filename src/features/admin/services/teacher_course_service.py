@@ -1,7 +1,11 @@
+import math
 from typing import Optional, List
+
+from sqlmodel import or_
 
 from src.core.contracts.teacher_courses_repository_contract import TeacherCoursesRepositoryContract
 from src.core.converters import entity_to_model_list
+from src.core.entities.course import Course
 from src.core.entities.teacher import Teacher
 from src.core.entities.teacher_course import TeacherCourse
 from src.core.exceptions.not_found_exception import NotFoundException
@@ -60,14 +64,35 @@ class TeacherCourseService(TeacherCourseServiceContract):
 
         return results
 
-    async def get_teacher_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False):
-        # First, get all distinct course_ids with pagination
+    async def get_teacher_courses(self, page: int = 1, page_size: int = 10, paginate: bool = False,
+                                  search_query: Optional[str] = None, ):
+
+        filters = []
+        joins = [(Course, TeacherCourse.course_id == Course.id)]
+
+        if search_query:
+            filters.append(
+                or_(
+                    Course.title.ilike(f"%{search_query}%"),
+                    Course.code.ilike(f"%{search_query}%")
+                )
+            )
+
+        # First, count unique course_ids matching filters
+        total_items = await self.teacher_course_repository.count_distinct(
+            field=TeacherCourse.course_id,
+            filters=filters,
+            joins=joins
+        )
+
         course_ids = await self.teacher_course_repository.get_all(
             page=page,
             page_size=page_size,
             paginate=paginate,
+            filters=filters,
             columns=[TeacherCourse.course_id],
-            group_by=[TeacherCourse.course_id]
+            group_by=[TeacherCourse.course_id],
+            joins=joins
         )
 
         teacher_courses = course_ids.get("items", [])
@@ -93,13 +118,16 @@ class TeacherCourseService(TeacherCourseServiceContract):
                 "teachers": teachers["items"] if teachers else []
             })
 
+        # Pagination metadata
+        total_pages = math.ceil(total_items / page_size)
+
         # Prepare response data
         data = {
             "current_page": page,
             "items": results,
             "page_size": page_size,
-            "total_items": course_ids.get("total_items", len(results)),
-            "total_pages": course_ids.get("total_pages", 1)
+            "total_items": total_items,
+            "total_pages": total_pages
         }
 
         return entity_to_model_list(entity_dict=data, model=TeachersCourseMappingOut, paginate=paginate)
